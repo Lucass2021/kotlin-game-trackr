@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">GameTrackr</string>
+    <string name="welcome_tagline">Your whole gaming journey in one place</string>
+    <string name="welcome_create_account">Create account</string>
+    <string name="welcome_sign_in">Sign in</string>
+    <string name="welcome_terms_prefix">"By continuing, you agree to our "</string>
+    <string name="welcome_terms">Terms</string>
+    <string name="welcome_terms_and">" and "</string>
+    <string name="welcome_privacy">Privacy Policy</string>
+    <string name="welcome_terms_url" translatable="false">https://github.com/lucianobcorrea/game-trackr-api</string>
+</resources>
