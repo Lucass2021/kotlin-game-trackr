@@ -1,1 +1,1 @@
-# Fix fast button press navigation bug
+# Start login screen

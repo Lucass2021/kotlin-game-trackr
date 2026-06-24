@@ -8,4 +8,41 @@
     <string name="welcome_terms_and">" and "</string>
     <string name="welcome_privacy">Privacy Policy</string>
     <string name="welcome_terms_url" translatable="false">https://github.com/lucianobcorrea/game-trackr-api</string>
+    <string name="register" translatable="false">Register aqui</string>
+
+    <string name="register_back">Back</string>
+    <string name="register_title">Create your profile</string>
+    <string name="register_subtitle">Join the global community of players.</string>
+    <string name="register_name_label">Name</string>
+    <string name="register_name_placeholder">Ex: John Doe</string>
+    <string name="register_email_label">Email</string>
+    <string name="register_email_placeholder">you@email.com</string>
+    <string name="register_password_label">Password</string>
+    <string name="register_confirm_password_label">Confirm password</string>
+    <string name="register_password_placeholder">••••••••</string>
+    <string name="register_show_password">Show password</string>
+    <string name="register_hide_password">Hide password</string>
+    <string name="register_create_account">Create account</string>
+    <string name="register_have_account">"Already have an account? "</string>
+    <string name="register_sign_in">Sign in</string>
+    <string name="register_or_continue">OR CONTINUE WITH</string>
+    <string name="register_continue_google">Continue with Google</string>
+
+    <string name="register_terms_prefix">"I have read and accept the "</string>
+    <string name="register_terms">Terms of Use</string>
+    <string name="register_terms_and">" and the "</string>
+    <string name="register_privacy">Privacy Policy</string>
+
+    <string name="password_strength_weak">WEAK PASSWORD</string>
+    <string name="password_strength_medium">MEDIUM PASSWORD</string>
+    <string name="password_strength_strong">STRONG PASSWORD</string>
+
+    <string name="validation_name_required">Full name is required</string>
+    <string name="validation_name_too_short">At least 3 characters</string>
+    <string name="validation_email_required">Email is required</string>
+    <string name="validation_email_invalid">Enter a valid email</string>
+    <string name="validation_password_required">Password is required</string>
+    <string name="validation_password_too_short">At least 6 characters</string>
+    <string name="validation_passwords_dont_match">Passwords do not match</string>
+    <string name="validation_terms_required">You must accept the terms to continue</string>
 </resources>

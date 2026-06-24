@@ -111,6 +111,45 @@ messaging, and collection.
 
 ---
 
+## Progress log
+
+### 2026-06-24 — Auth UI: Welcome + Sign-up (milestone 3, UI-first)
+
+Auth screens are being built **UI-first** (no networking yet) to match the iOS app pixel-for-pixel.
+
+- **Welcome** and **Register (sign-up)** screens implemented in pure Compose, mirroring the
+  iOS `RegisterView` structure component-for-component.
+- **Reusable auth components** in `core/ui/`:
+  - `components/AuthScreenScaffold` — dark background + scroll + `safeDrawing` insets
+  - `components/AuthTextField` — labeled field, focus/error border, placeholder, password
+    reveal toggle (uses `material-icons-extended`)
+  - `components/TitleWithSubtitle`, `components/PasswordStrengthMeter` (+ `PasswordStrength` enum)
+  - `components/PrimaryButton`, `components/SecondaryButton`, plus `pressScale`, `glow`,
+    `anim/staggeredAppear` modifiers for the shared motion language
+- **Register feature** in `feature/auth/register/`:
+  - `RegisterScreen` composes the sections; each section is its own file under
+    `register/components/` (`BackButton`, `RegisterFormSection`, `TermsAcceptanceRow`,
+    `RegisterBottomSection`, `SocialLoginSection`) — same split as iOS `Register/Components/`.
+  - `RegisterFormState` is a plain Compose state holder (not an AndroidX `ViewModel` yet —
+    `lifecycle-viewmodel-compose`/Hilt aren't wired). It mirrors the iOS `RegisterViewModel`
+    validation: errors only after `submit()`, `@StringRes` error ids resolved in the UI.
+    **Promote to a real `ViewModel` + Hilt when networking lands (milestones 2–3).**
+- **Navigation** (`navigation/AppNavGraph`):
+  - `navigateOnce()` guard ignores duplicate taps (only navigates while the source entry is
+    `RESUMED`) — fixes the screen opening twice on fast double-tap.
+  - White-flash-on-transition fixed by setting the activity `windowBackground` to the dark
+    app background in `themes.xml` (parent was `Material.Light`).
+- **Field naming:** the UI label is **"Name"** but it maps to `username` in
+  `POST /auth/register` — keep both clients + the API aligned (see shared `CLAUDE.md`).
+- **Dependency added:** `androidx.compose.material:material-icons-extended` (password eye icon).
+
+> Heads-up for testing: the **Android emulator NAT can drop its default route**
+> (`ip route` shows no `default via …` → `ERR_ADDRESS_UNREACHABLE` in Chrome / "Network is
+> unreachable"). It's an emulator/host networking glitch, **not** app code — cold-boot/wipe
+> the AVD (and disconnect any host VPN). The Terms/Privacy links themselves open correctly.
+
+---
+
 ## Folder structure (suggested)
 
 ```
