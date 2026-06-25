@@ -1,5 +1,6 @@
-package com.lucasdias.gametrackr.feature.auth.register
+package com.lucasdias.gametrackr.feature.auth.login
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -11,69 +12,82 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
 import com.lucasdias.gametrackr.core.ui.components.BackButton
+import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.components.SocialLoginSection
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
-import com.lucasdias.gametrackr.feature.auth.register.components.RegisterBottomSection
-import com.lucasdias.gametrackr.feature.auth.register.components.RegisterFormSection
-import com.lucasdias.gametrackr.feature.auth.register.components.TermsAcceptanceRow
+import com.lucasdias.gametrackr.feature.auth.login.components.LoginFormSection
+import com.lucasdias.gametrackr.feature.auth.login.components.RememberMeRow
+import com.lucasdias.gametrackr.feature.auth.login.components.SignUpPrompt
 
 @Composable
-fun RegisterScreen(
+fun LoginScreen(
     onBack: () -> Unit,
-    onSignIn: () -> Unit
+    onSignUp: () -> Unit
 ) {
-    val form = remember { RegisterFormState() }
+    val form = remember { LoginFormState() }
 
-    AuthScreenScaffold {
+    AuthScreenScaffold(scrollable = false) {
         BackButton(onBack = onBack, modifier = Modifier.staggeredAppear(0))
 
+        Spacer(modifier = Modifier.weight(1f))
+
         TitleWithSubtitle(
-            title = stringResource(R.string.register_title),
-            subtitle = stringResource(R.string.register_subtitle),
+            title = stringResource(R.string.login_title),
+            subtitle = stringResource(R.string.login_subtitle),
+            centered = true,
             modifier = Modifier
                 .padding(top = 16.dp)
                 .staggeredAppear(1)
         )
 
-        RegisterFormSection(
+        LoginFormSection(
             form = form,
             modifier = Modifier
                 .padding(top = 28.dp)
                 .staggeredAppear(2)
         )
 
-        TermsAcceptanceRow(
-            accepted = form.acceptedTerms,
-            onToggle = { form.acceptedTerms = !form.acceptedTerms },
-            error = form.termsError,
+        RememberMeRow(
+            rememberMe = form.rememberMe,
+            onToggle = { form.rememberMe = !form.rememberMe },
+            onForgotPassword = { form.forgotPassword() },
             modifier = Modifier
-                .padding(top = 24.dp)
+                .padding(top = 20.dp)
                 .staggeredAppear(3)
         )
 
-        RegisterBottomSection(
+        PrimaryButton(
+            text = stringResource(R.string.login_sign_in),
+            onClick = { form.submit() },
             isLoading = form.isLoading,
-            onCreateAccount = { form.submit() },
-            onSignIn = onSignIn,
             modifier = Modifier
                 .padding(top = 24.dp)
                 .staggeredAppear(4)
         )
 
         SocialLoginSection(
-            onGoogle = { form.signUpGoogle() },
+            onGoogle = { form.signInGoogle() },
             modifier = Modifier
                 .padding(top = 28.dp)
                 .staggeredAppear(5)
         )
+
+        SignUpPrompt(
+            onSignUp = onSignUp,
+            modifier = Modifier
+                .padding(top = 28.dp)
+                .staggeredAppear(6)
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 @Preview
 @Composable
-private fun RegisterScreenPreview() {
+private fun LoginScreenPreview() {
     GameTrackrTheme {
-        RegisterScreen(onBack = {}, onSignIn = {})
+        LoginScreen(onBack = {}, onSignUp = {})
     }
 }

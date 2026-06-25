@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.feature.auth.register.RegisterScreen
+import com.lucasdias.gametrackr.feature.auth.login.LoginScreen
 import com.lucasdias.gametrackr.feature.auth.welcome.WelcomeScreen
 
 object Routes {
@@ -39,22 +40,17 @@ fun AppNavGraph(navController: NavHostController = rememberNavController()) {
                 onSignIn = { navController.navigateOnce(entry, Routes.LOGIN) }
             )
         }
-        composable(Routes.LOGIN) { PlaceholderScreen("Login") }
+        composable(Routes.LOGIN) { entry ->
+            LoginScreen(
+                onBack = { navController.popBackStack() },
+                onSignUp = { navController.navigateOnce(entry, Routes.REGISTER) }
+            )
+        }
     }
 }
 
 private fun NavHostController.navigateOnce(from: NavBackStackEntry, route: String) {
     if (from.lifecycle.currentState == Lifecycle.State.RESUMED) {
         navigate(route)
-    }
-}
-
-@Composable
-private fun PlaceholderScreen(title: String) {
-    Box(
-        modifier = Modifier.fillMaxSize().background(AppBackground),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = title, color = AppTextPrimary)
     }
 }

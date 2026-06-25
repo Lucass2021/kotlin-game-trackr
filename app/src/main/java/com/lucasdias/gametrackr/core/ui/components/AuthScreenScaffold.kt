@@ -19,13 +19,14 @@ import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 @Composable
 fun AuthScreenScaffold(
     modifier: Modifier = Modifier,
+    scrollable: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)
                 .windowInsetsPadding(WindowInsets.safeDrawing)
                 .padding(horizontal = 24.dp)
                 .padding(top = 8.dp, bottom = 32.dp),

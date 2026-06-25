@@ -42,7 +42,8 @@ fun WelcomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(horizontal = 24.dp, vertical = 8.dp)
+                .padding(horizontal = 24.dp)
+                .padding(top = 8.dp, bottom = 24.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth().staggeredAppear(0)) {
                 Image(

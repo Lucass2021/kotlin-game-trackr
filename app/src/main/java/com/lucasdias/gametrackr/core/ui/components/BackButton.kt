@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.auth.register.components
+package com.lucasdias.gametrackr.core.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
