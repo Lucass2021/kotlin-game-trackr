@@ -1,0 +1,8 @@
+# Per-machine API override. Copy this file to config/local.properties (gitignored)
+# and set the URL for your setup. Values here win over debug/release defaults.
+#
+# Examples:
+#   Android Emulator -> host:      http://10.0.2.2:8000/api
+#   Physical device  -> your LAN:  http://192.168.0.10:8000/api
+#   Staging:                       https://staging.api.gametrackr.app
+API_BASE_URL=http://10.0.2.2:8000/api

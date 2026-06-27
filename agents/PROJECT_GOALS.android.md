@@ -1,6 +1,6 @@
 # PROJECT_GOALS — GameTrackr Android (Kotlin / Jetpack Compose)
 
-> Read this together with `PROJECT_CONTEXT.md` (shared product + API contract).
+> Read this together with `CLAUDE.md` (shared product + API contract).
 > This file covers only the **Android-specific** stack, architecture, and milestones.
 
 ## Developer context
@@ -27,11 +27,11 @@ a clean MVVM (or MVI) architecture, secure token storage, and a typed networking
 
 - **Language:** Kotlin
 - **UI:** Jetpack Compose + Material 3 (kept neutral so the design matches the iOS app)
-- **Architecture:** MVVM (or MVI) with a Repository layer; unidirectional data flow with `StateFlow`
-- **DI:** Hilt
-- **Networking:** Retrofit + OkHttp + `kotlinx.serialization` (or Moshi) — *or* Ktor Client if preferred
+- **Architecture:** MVVM with a Repository layer; unidirectional data flow with `StateFlow`
+- **DI:** **Koin** — *was Hilt. Hilt's Gradle plugin is incompatible with this project's **AGP 9.0.0** (AGP 9 removed the `BaseExtension` API the plugin relies on, and no published Hilt supports it yet). Koin needs no Gradle plugin/KSP, so it works on AGP 9. See the 2026-06-27 progress log.*
+- **Networking:** Retrofit + OkHttp + `kotlinx.serialization` (official `com.squareup.retrofit2:converter-kotlinx-serialization`)
 - **Async:** Coroutines + Flow
-- **Secure storage:** EncryptedSharedPreferences or DataStore + Jetpack Security for tokens
+- **Secure storage:** **DataStore (Preferences)** for tokens — *was "EncryptedSharedPreferences". The Jetpack Security Crypto lib (EncryptedSharedPreferences) was deprecated in 2024, so DataStore is the current path. Trade-off vs iOS: DataStore is **not encrypted at rest** (iOS uses the Keychain).*
 - **Images:** Coil
 - **Navigation:** Navigation-Compose
 - **Realtime:** `pusher-websocket-java` (Reverb / Pusher protocol)
@@ -42,7 +42,7 @@ a clean MVVM (or MVI) architecture, secure token storage, and a typed networking
 
 ## Expected screens
 
-See `PROJECT_CONTEXT.md` → *Feature scope by phase*. Auth screens are already designed
+See `CLAUDE.md` → *Feature scope by phase*. Auth screens are already designed
 (Welcome, Sign in, Create account, Forgot/Reset password, Verify email, Success). Build the
 **MVP slice** first (auth → library → profile), then layer discovery, friends, community,
 messaging, and collection.
@@ -52,13 +52,17 @@ messaging, and collection.
 ## Technical requirements
 
 ### Secure storage
-- Access token (and refresh token, if used) in **EncryptedSharedPreferences / encrypted DataStore**.
-- Logout clears all tokens.
+- Access token in **DataStore (Preferences)**; logout clears it. (EncryptedSharedPreferences was
+  the original plan, but the Jetpack Security Crypto lib is deprecated — see Stack note.)
 
 ### Auth interceptor
-- OkHttp `Authenticator` / `Interceptor` that attaches the Bearer token.
-- On `401`: attempt refresh (if the backend uses refresh tokens) with a **single-flight**
-  guard so parallel requests don't trigger multiple refreshes; otherwise route to login.
+- OkHttp `Interceptor` attaches the Bearer token; OkHttp `Authenticator` handles `401`.
+- **Verified backend behaviour:** auth is **JWT (tymon/jwt-auth), not Sanctum**, using
+  **single-token rotation** — on `401`, call `POST /auth/refresh` with the *current* token in
+  the header (no body); it returns a new token and blacklists the old one. There is **no separate
+  refresh token**. The `Authenticator` does: retry-once + concurrent-refresh **dedup**
+  (single-flight) + **network-failure ≠ auth-failure** (no logout when offline; only logout when
+  refresh genuinely fails / token is dead).
 
 ### Networking
 - Centralized API layer (Retrofit service interfaces per feature: `AuthApi`, `LibraryApi`, …).
@@ -83,9 +87,9 @@ messaging, and collection.
 
 1. **Jetpack Compose** — state, recomposition, side-effects, Navigation-Compose
 2. **Coroutines + Flow** — `StateFlow`, `combine`, `Turbine` testing
-3. **Hilt** — dependency injection on Android
+3. **Koin** — dependency injection on Android (chosen over Hilt because of AGP 9 — see Stack)
 4. **Retrofit/OkHttp** — interceptors, the equivalent of axios interceptors for token refresh
-5. **EncryptedSharedPreferences / DataStore** — secure token storage on Android
+5. **DataStore** — token storage on Android (Flow-based; EncryptedSharedPreferences is deprecated)
 6. **MVVM/MVI** — unidirectional state on Android
 7. **Pusher/Reverb on Android** — consuming Laravel Reverb channels
 8. **Compose testing + MockWebServer** — testing networking and UI
@@ -96,7 +100,7 @@ messaging, and collection.
 
 | #  | Deliverable | Estimate |
 | --- | --- | --- |
-| 1 | Project setup: Compose, Hilt, modules/packages, `TokenStore` | a few hours |
+| 1 | Project setup: Compose, Koin, modules/packages, `TokenStore` | a few hours |
 | 2 | Networking: Retrofit + serialization + typed error model + auth interceptor | half a day |
 | 3 | Auth screens wired to real API (login, register, token persistence) | a weekend |
 | 4 | Token refresh with single-flight guard (if backend uses refresh) | + half a day |
@@ -112,6 +116,44 @@ messaging, and collection.
 ---
 
 ## Progress log
+
+### 2026-06-27 — Auth networking slice + launch flow (milestones 2–4)
+
+Wired the auth UI to the real API and added the launch/refresh flow. Ported from a (now
+deleted) iOS handoff doc; several decisions **diverge** from this file's original Stack —
+recorded here so docs and code don't conflict.
+
+**Key decisions / divergences**
+- **DI = Koin, not Hilt.** This project runs **AGP 9.0.0 + Gradle 9.2.1** (note the new
+  `compileSdk { release(36) { minorApiLevel = 1 } }` DSL). The latest published Hilt (2.56.2)
+  fails at apply with *"Android BaseExtension not found"* — AGP 9 removed that API and no Hilt
+  release supports it yet. Koin has no Gradle plugin/KSP, so it works today. Wiring lives in
+  `di/AppModule.kt`, started in `GameTrackrApp.onCreate()`; ViewModels via `koinViewModel()`.
+- **JSON = `kotlinx.serialization`** with the **official Square** converter
+  (`com.squareup.retrofit2:converter-kotlinx-serialization`). (The JakeWharton 1.0.0 converter
+  lacks `asConverterFactory`.)
+- **Token storage = DataStore (Preferences)**, not EncryptedSharedPreferences (deprecated).
+- **Backend auth is JWT (tymon/jwt-auth), not Sanctum** — single-token rotation on `401`. See the
+  updated *Auth interceptor* section. This contradicts the shared `CLAUDE.md` "proposed" contract.
+- **API base URL via a `config/` folder** mirroring iOS `Config/`: committed
+  `config/debug.properties` + `config/release.properties`, gitignored `config/local.properties`
+  (per-machine override, e.g. a physical device on the LAN IP), and `config/local.properties.example`.
+  Gradle reads them into `BuildConfig.API_BASE_URL`. Emulator → `http://10.0.2.2:8000/api`
+  (the host alias; `localhost` is the emulator itself). **Not** the Android Studio `local.properties`.
+
+**What shipped**
+- Network layer: `AuthApi` + `RefreshApi` (separate OkHttp client, no authenticator → avoids
+  refresh recursion), `AuthInterceptor` (Bearer), `TokenAuthenticator` (refresh + retry-once +
+  dedup + network≠auth), typed `ApiError` sealed class + 422 error mapper.
+- `TokenStore` (DataStore), `SessionManager` (`StateFlow<AuthStatus>`), `AuthRepository`
+  returning `Result<User>`. `LoginViewModel`/`RegisterViewModel`/`AuthViewModel` (StateFlow).
+- **Launch flow:** custom animated Compose **splash** (mirrors iOS `SplashView`) held until
+  **animation finished AND `validate()` resolved** — fixes the "ghost session" deterministically.
+  `RootScreen` swaps Home/auth-graph by `AuthStatus`.
+- **Custom `Toast`** composable (top, slide+fade, 3s auto-dismiss) replacing `Snackbar`, to match
+  the iOS `ToastModifier`.
+- `HomePlaceholderScreen` with sign-out.
+- Fix: `BackHandler` on Welcome finishes the activity (back on the root no longer leaves a black screen).
 
 ### 2026-06-24 — Auth UI: Welcome + Sign-up (milestone 3, UI-first)
 
@@ -133,7 +175,8 @@ Auth screens are being built **UI-first** (no networking yet) to match the iOS a
   - `RegisterFormState` is a plain Compose state holder (not an AndroidX `ViewModel` yet —
     `lifecycle-viewmodel-compose`/Hilt aren't wired). It mirrors the iOS `RegisterViewModel`
     validation: errors only after `submit()`, `@StringRes` error ids resolved in the UI.
-    **Promote to a real `ViewModel` + Hilt when networking lands (milestones 2–3).**
+    **Promote to a real `ViewModel` + DI when networking lands (milestones 2–3).**
+    *(Done on 2026-06-27 — promoted to `ViewModel` + StateFlow with **Koin**, not Hilt. See below.)*
 - **Navigation** (`navigation/AppNavGraph`):
   - `navigateOnce()` guard ignores duplicate taps (only navigates while the source entry is
     `RESUMED`) — fixes the screen opening twice on fast double-tap.
@@ -152,17 +195,24 @@ Auth screens are being built **UI-first** (no networking yet) to match the iOS a
 
 ## Folder structure (suggested)
 
+> Note: the real package is `com/lucasdias/gametrackr/`. DI is Koin (`di/AppModule.kt`),
+> not Hilt; config lives in the repo-root `config/` folder (see the 2026-06-27 log).
+
 ```
-app/src/main/java/app/gametrackr/
-├── GameTrackrApp.kt              # @HiltAndroidApp
+app/src/main/java/com/lucasdias/gametrackr/
+├── GameTrackrApp.kt              # Application — startKoin { modules(appModule) }
+├── di/
+│   └── AppModule.kt              # Koin module: clients, APIs, repo, ViewModels
 ├── core/
 │   ├── network/
-│   │   ├── ApiClient.kt          # OkHttp + Retrofit setup
-│   │   ├── AuthInterceptor.kt
-│   │   ├── ApiError.kt           # typed error model
-│   │   └── Result.kt
+│   │   ├── AuthApi.kt / RefreshApi.kt
+│   │   ├── AuthInterceptor.kt / TokenAuthenticator.kt
+│   │   ├── ApiError.kt           # typed error model + ErrorMapper
+│   │   └── dto/                  # @Serializable DTOs
 │   ├── auth/
-│   │   └── TokenStore.kt         # EncryptedSharedPreferences / DataStore
+│   │   ├── TokenStore.kt         # DataStore (Preferences)
+│   │   ├── SessionManager.kt     # StateFlow<AuthStatus>
+│   │   └── AuthRepository.kt
 │   ├── realtime/
 │   │   └── ReverbClient.kt
 │   └── ui/                       # shared composables, theme/design tokens
@@ -185,7 +235,7 @@ app/src/main/java/app/gametrackr/
 
 ## How to use this context with an AI
 
-Paste **`PROJECT_CONTEXT.md` + this file**, then add an instruction, e.g.:
+Paste **`CLAUDE.md` + this file**, then add an instruction, e.g.:
 
 > "Based on this context, set up the Retrofit `ApiClient` with an `AuthInterceptor` and a typed `ApiError` mapped from the API's 422 shape."
 

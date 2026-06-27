@@ -2,6 +2,7 @@ package com.lucasdias.gametrackr.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -20,6 +21,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 fun AuthScreenScaffold(
     modifier: Modifier = Modifier,
     scrollable: Boolean = true,
+    overlay: @Composable BoxScope.() -> Unit = {},
     content: @Composable ColumnScope.() -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
@@ -32,5 +34,6 @@ fun AuthScreenScaffold(
                 .padding(top = 8.dp, bottom = 32.dp),
             content = content
         )
+        overlay()
     }
 }
