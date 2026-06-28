@@ -10,8 +10,11 @@ import com.lucasdias.gametrackr.core.network.AuthInterceptor
 import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
+import com.lucasdias.gametrackr.feature.auth.forgotpassword.ForgotPasswordViewModel
 import com.lucasdias.gametrackr.feature.auth.login.LoginViewModel
 import com.lucasdias.gametrackr.feature.auth.register.RegisterViewModel
+import com.lucasdias.gametrackr.feature.auth.resetpassword.ResetPasswordViewModel
+import com.lucasdias.gametrackr.feature.auth.verifyresetcode.VerifyResetCodeViewModel
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -86,4 +89,7 @@ val appModule = module {
     viewModel { AuthViewModel(get(), get()) }
     viewModel { LoginViewModel(get(), androidContext()) }
     viewModel { RegisterViewModel(get(), androidContext()) }
+    viewModel { ForgotPasswordViewModel(get(), androidContext()) }
+    viewModel { (email: String) -> VerifyResetCodeViewModel(get(), androidContext(), email) }
+    viewModel { (resetToken: String) -> ResetPasswordViewModel(get(), androidContext(), resetToken) }
 }

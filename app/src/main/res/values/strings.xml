@@ -58,6 +58,37 @@
     <string name="login_no_account">"Don\'t have an account? "</string>
     <string name="login_sign_up">Sign up</string>
 
+    <string name="forgot_title">Reset password</string>
+    <string name="forgot_subtitle">Enter your email and we\'ll send you a code to create a new password.</string>
+    <string name="forgot_email_label">Email</string>
+    <string name="forgot_send_code">Send code</string>
+    <string name="forgot_back_to_login">Back to login</string>
+
+    <string name="verify_title">Verify your email</string>
+    <string name="verify_subtitle_prefix">"We sent a code to "</string>
+    <string name="verify_confirm">Confirm</string>
+    <string name="verify_didnt_get">"Didn\'t get it? "</string>
+    <string name="verify_resend_in">Resend in %1$ds</string>
+    <string name="verify_resend">Resend code</string>
+    <string name="validation_code_required">Code is required</string>
+    <string name="validation_code_invalid">Enter the 6-digit code</string>
+
+    <string name="reset_title">Create new password</string>
+    <string name="reset_subtitle">Your new password must be different from previously used passwords.</string>
+    <string name="reset_new_password_label">New password</string>
+    <string name="reset_confirm_password_label">Confirm new password</string>
+    <string name="reset_save">Save new password</string>
+
+    <string name="success_reset_title">All set!</string>
+    <string name="success_reset_subtitle">Your password was changed successfully. You can now sign in with your new password.</string>
+    <string name="success_reset_button">Back to login</string>
+    <string name="success_register_title">Account created!</string>
+    <string name="success_register_subtitle">Your account is ready. Jump in and start tracking your gaming journey.</string>
+    <string name="success_register_button">Go to app</string>
+    <string name="success_status_title">ACCOUNT STATUS</string>
+    <string name="success_status_value">Validated and Active</string>
+    <string name="success_redirecting">Redirecting in %1$d seconds…</string>
+
     <string name="error_network">No internet connection. Please try again.</string>
     <string name="error_invalid_credentials">Invalid email or password.</string>
     <string name="error_not_found">We couldn\'t find an account with that email.</string>

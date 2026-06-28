@@ -1,7 +1,6 @@
-package com.lucasdias.gametrackr.feature.auth.login
+package com.lucasdias.gametrackr.feature.auth.resetpassword
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
@@ -14,50 +13,44 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private const val TAG = "LoginViewModel"
-
-class LoginViewModel(
+class ResetPasswordViewModel(
     private val authRepository: AuthRepository,
-    private val context: Context
+    private val context: Context,
+    private val resetToken: String
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ResetPasswordUiState())
+    val uiState: StateFlow<ResetPasswordUiState> = _uiState.asStateFlow()
 
     private var submitted = false
-
-    fun onEmailChange(value: String) {
-        _uiState.update { it.copy(email = value) }
-        revalidate()
-    }
 
     fun onPasswordChange(value: String) {
         _uiState.update { it.copy(password = value) }
         revalidate()
     }
 
-    fun onToggleRememberMe() {
-        _uiState.update { it.copy(rememberMe = !it.rememberMe) }
+    fun onConfirmPasswordChange(value: String) {
+        _uiState.update { it.copy(confirmPassword = value) }
+        revalidate()
     }
 
     fun onErrorShown() {
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun onGoogleSignIn() {
-        Log.d(TAG, "Sign in with Google")
-    }
-
     fun onSubmit() {
         submitted = true
         revalidate()
         val state = _uiState.value
-        if (state.emailError != null || state.passwordError != null) return
+        if (state.passwordError != null || state.confirmPasswordError != null) return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.login(state.email.trim(), state.password)
+            val result = authRepository.resetPassword(resetToken, state.password)
             _uiState.update { it.copy(isLoading = false) }
+            result.onSuccess {
+                _uiState.update { it.copy(done = true) }
+            }
             result.onFailure { error ->
                 val message = (error as? ApiError)?.toMessage(context)
                     ?: context.getString(R.string.error_generic)
@@ -70,18 +63,9 @@ class LoginViewModel(
         if (!submitted) return
         _uiState.update {
             it.copy(
-                emailError = emailErrorFor(it.email),
-                passwordError = passwordErrorFor(it.password)
+                passwordError = passwordErrorFor(it.password),
+                confirmPasswordError = confirmPasswordErrorFor(it.password, it.confirmPassword)
             )
-        }
-    }
-
-    private fun emailErrorFor(email: String): Int? {
-        val trimmed = email.trim()
-        return when {
-            trimmed.isEmpty() -> R.string.validation_email_required
-            !trimmed.contains("@") || !trimmed.contains(".") -> R.string.validation_email_invalid
-            else -> null
         }
     }
 
@@ -90,4 +74,7 @@ class LoginViewModel(
         password.length < 6 -> R.string.validation_password_too_short
         else -> null
     }
+
+    private fun confirmPasswordErrorFor(password: String, confirm: String): Int? =
+        if (confirm != password) R.string.validation_passwords_dont_match else null
 }

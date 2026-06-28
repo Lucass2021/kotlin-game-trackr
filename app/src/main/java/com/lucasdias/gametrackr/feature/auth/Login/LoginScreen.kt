@@ -1,6 +1,6 @@
 package com.lucasdias.gametrackr.feature.auth.login
 
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,7 +14,6 @@ import org.koin.androidx.compose.koinViewModel
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
-import com.lucasdias.gametrackr.core.ui.components.BackButton
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.components.SocialLoginSection
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
@@ -28,6 +27,7 @@ import com.lucasdias.gametrackr.feature.auth.login.components.SignUpPrompt
 fun LoginScreen(
     onBack: () -> Unit,
     onSignUp: () -> Unit,
+    onForgotPassword: () -> Unit,
     viewModel: LoginViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -39,7 +39,7 @@ fun LoginScreen(
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
         onToggleRememberMe = viewModel::onToggleRememberMe,
-        onForgotPassword = viewModel::onForgotPassword,
+        onForgotPassword = onForgotPassword,
         onSubmit = viewModel::onSubmit,
         onGoogleSignIn = viewModel::onGoogleSignIn,
         onErrorShown = viewModel::onErrorShown
@@ -60,7 +60,8 @@ private fun LoginContent(
     onErrorShown: () -> Unit
 ) {
     AuthScreenScaffold(
-        scrollable = false,
+        onBack = onBack,
+        contentArrangement = Arrangement.Center,
         overlay = {
             Toast(
                 message = uiState.errorMessage,
@@ -69,10 +70,6 @@ private fun LoginContent(
             )
         }
     ) {
-        BackButton(onBack = onBack, modifier = Modifier.staggeredAppear(0))
-
-        Spacer(modifier = Modifier.weight(1f))
-
         TitleWithSubtitle(
             title = stringResource(R.string.login_title),
             subtitle = stringResource(R.string.login_subtitle),
@@ -125,8 +122,6 @@ private fun LoginContent(
                 .padding(top = 28.dp)
                 .staggeredAppear(6)
         )
-
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
 

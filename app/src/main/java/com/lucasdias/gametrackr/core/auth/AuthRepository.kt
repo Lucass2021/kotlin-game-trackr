@@ -14,4 +14,10 @@ interface AuthRepository {
     suspend fun validate(): Result<User>
     suspend fun logout()
     suspend fun hasToken(): Boolean
+
+    fun completeRegistration()
+
+    suspend fun forgotPassword(email: String): Result<Unit>
+    suspend fun verifyResetCode(email: String, code: String): Result<String>
+    suspend fun resetPassword(resetToken: String, newPassword: String): Result<Unit>
 }

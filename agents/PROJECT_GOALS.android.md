@@ -117,6 +117,47 @@ messaging, and collection.
 
 ## Progress log
 
+### 2026-06-28 — Password-reset flow + reusable Success screen (milestone 3)
+
+Ported the iOS-built password-reset flow **1:1** to Android. The porting spec lives in the
+**sibling iOS repo**: `Projetos/GameTrackr/agents/password-reset-flow.md` (the iOS feature is
+built first, then mirrored here). Flow:
+`Login → Forgot → Verify (OTP) → Reset → Success → (pop) Login`, plus Register → Success → Home.
+
+**Key decisions / gotchas**
+- **Reset endpoints are mocked client-side.** The backend has no `password/forgot|reset` yet, so
+  `forgotPassword` / `verifyResetCode` / `resetPassword` live in `AuthRepositoryImpl` with an
+  artificial delay (any 6-digit code accepted, fake UUID reset token) — a one-line swap to the
+  real API later. Marked with `// #TODO`.
+- **Register defers authentication.** `register()` saves the token but **does not** flip the
+  session to authenticated (it stashes `pendingUser`); otherwise the app jumps to Home and the
+  Success screen is never seen. `SuccessScreen`'s `onPrimary` (button **or** 5s auto-redirect)
+  calls `AuthViewModel.completeRegistration()`, which activates the session.
+- **Pop-to-login after the flow** is driven by the single `NavController`:
+  `popBackStack(Routes.LOGIN, inclusive = false)` from the reset Success — not a flag owned by a
+  covered screen (a covered composable doesn't recompose). Reset/Verify VMs take a runtime arg
+  (`email` / `resetToken`) via Koin `parametersOf`.
+- **OTP error is inline, not a toast.** Code-validation errors render as red text **below** the
+  OTP boxes (gated on first submit); the boxes themselves **never** turn red. The toast is
+  reserved for API failures — matches the iOS `VerifyResetCodeView`.
+
+**AuthScreenScaffold rework (fixes keyboard covering inputs on every auth screen)**
+- Replaced the old `scrollable` + `safeDrawing` scaffold with the iOS model: `BoxWithConstraints`
+  + `verticalScroll` + `heightIn(min = viewportHeight)` so content **centers when it fits and
+  scrolls when the keyboard opens**, plus `imePadding()` + `WindowInsets.systemBars`.
+- New slots: `onBack` (fixed top), `bottomBar` (pinned above the keyboard), and
+  `contentArrangement` (e.g. `Center`). Applied to **all 5** auth screens (Login, Register,
+  Forgot, Verify, Reset). Weighted `Spacer`s were removed (they can't coexist with a scroll).
+
+**What shipped**
+- Shared components: `core/ui/components/OtpField` (hidden numeric field + 6 boxes, auto-focus,
+  auto-submit on the 6th digit) and `core/ui/components/SuccessScreen` (cyan check badge,
+  optional "Account status" card, 5s auto-redirect countdown cancelled on dispose).
+- Three features, each split into a `components/` folder like iOS:
+  `feature/auth/forgotpassword`, `feature/auth/verifyresetcode`, `feature/auth/resetpassword`
+  (Screen + ViewModel + UiState + `components/*FormSection`/`*BottomSection`).
+- Login "Forgot my password" now navigates; the Verify screen has a 30s resend countdown.
+
 ### 2026-06-27 — Auth networking slice + launch flow (milestones 2–4)
 
 Wired the auth UI to the real API and added the launch/refresh flow. Ported from a (now

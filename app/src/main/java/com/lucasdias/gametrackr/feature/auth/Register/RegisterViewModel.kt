@@ -74,6 +74,9 @@ class RegisterViewModel(
                 passwordConfirmation = state.confirmPassword
             )
             _uiState.update { it.copy(isLoading = false) }
+            result.onSuccess {
+                _uiState.update { it.copy(registered = true) }
+            }
             result.onFailure { error ->
                 val message = (error as? ApiError)?.toMessage(context)
                     ?: context.getString(R.string.error_generic)

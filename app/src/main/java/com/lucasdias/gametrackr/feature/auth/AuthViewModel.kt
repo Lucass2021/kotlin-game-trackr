@@ -36,6 +36,10 @@ class AuthViewModel(
         }
     }
 
+    fun completeRegistration() {
+        authRepository.completeRegistration()
+    }
+
     fun logout() {
         viewModelScope.launch { authRepository.logout() }
     }
