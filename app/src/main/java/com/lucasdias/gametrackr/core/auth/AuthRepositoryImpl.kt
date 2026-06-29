@@ -2,15 +2,14 @@ package com.lucasdias.gametrackr.core.auth
 
 import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.network.AuthApi
+import com.lucasdias.gametrackr.core.network.dto.ForgotPasswordRequest
 import com.lucasdias.gametrackr.core.network.dto.LoginRequest
 import com.lucasdias.gametrackr.core.network.dto.RegisterRequest
+import com.lucasdias.gametrackr.core.network.dto.ResetPasswordRequest
+import com.lucasdias.gametrackr.core.network.dto.VerifyResetCodeRequest
 import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.network.toApiError
-import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
-import java.util.UUID
-
-private const val MOCK_DELAY_MS = 800L
 
 class AuthRepositoryImpl(
     private val api: AuthApi,
@@ -20,6 +19,8 @@ class AuthRepositoryImpl(
 ) : AuthRepository {
 
     private var pendingUser: User? = null
+    private var pendingResetEmail: String? = null
+    private var pendingResetPassword: String? = null
 
     override suspend fun login(email: String, password: String): Result<User> = apiCall {
         val response = api.login(LoginRequest(email = email, password = password))
@@ -64,19 +65,40 @@ class AuthRepositoryImpl(
 
 
     override suspend fun forgotPassword(email: String): Result<Unit> = apiCall {
-        // #TODO Implement forgot password logic
-        delay(MOCK_DELAY_MS)
+        api.forgotPassword(ForgotPasswordRequest(email = email))
+        Unit
     }
 
-    override suspend fun verifyResetCode(email: String, code: String): Result<String> = apiCall {
-        // #TODO Implement verify reset code logic
-        delay(MOCK_DELAY_MS)
-        UUID.randomUUID().toString()
+    override suspend fun verifyResetCode(email: String, code: String): Result<Unit> = apiCall {
+        api.verifyResetCode(VerifyResetCodeRequest(email = email, code = code))
+        Unit
     }
 
-    override suspend fun resetPassword(resetToken: String, newPassword: String): Result<Unit> = apiCall {
-        // #TODO Implement reset password logic
-        delay(MOCK_DELAY_MS)
+    override suspend fun resetPassword(
+        email: String,
+        code: String,
+        newPassword: String
+    ): Result<Unit> = apiCall {
+        api.resetPassword(
+            ResetPasswordRequest(
+                email = email,
+                code = code,
+                password = newPassword,
+                passwordConfirmation = newPassword
+            )
+        )
+        pendingResetEmail = email
+        pendingResetPassword = newPassword
+    }
+
+    override suspend fun completePasswordReset(): Result<User> = apiCall {
+        val email = requireNotNull(pendingResetEmail)
+        val password = requireNotNull(pendingResetPassword)
+        val response = api.login(LoginRequest(email = email, password = password))
+        tokenStore.save(response.token)
+        pendingResetEmail = null
+        pendingResetPassword = null
+        response.user.toDomain().also(sessionManager::setAuthenticated)
     }
 
     private inline fun <T> apiCall(block: () -> T): Result<T> =

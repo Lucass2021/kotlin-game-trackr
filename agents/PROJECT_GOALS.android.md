@@ -117,6 +117,42 @@ messaging, and collection.
 
 ## Progress log
 
+### 2026-06-29 — Password-reset wired to the real OTP backend + Remember-me removed
+
+The backend shipped a real **3-step OTP** password reset (mobile branch). Replaced the
+`AuthRepositoryImpl` mocks (`delay` + fake UUID token) with live Retrofit calls, following the
+cross-client spec in the **sibling iOS repo**: `Projetos/GameTrackr/agents/password-reset-flow.md`
+(iOS built first, mirrored here). Mirrors the iOS commit *"connecting routes in reset password flow"*.
+
+- **Endpoints** (`AuthApi`): `forgot-password` · `verify-reset-code` · `reset-password` (all POST,
+  no auth — `AuthInterceptor` only attaches a Bearer if a token exists, and there is none mid-reset).
+  Request DTOs send **`client = "mobile"`** (`ForgotPasswordRequest`, `ResetPasswordRequest`). Since
+  the shared `Json` has `encodeDefaults = false`, the constant is forced on with **`@EncodeDefault`**
+  — otherwise it'd be omitted and the backend would fall into the web email-link branch.
+- **No reset token.** `verifyResetCode` now returns `Result<Unit>` (was `Result<String>`); the
+  verify screen carries **`email` + `code`** forward instead. Route changed
+  `reset_password/{token}` → `reset_password/{email}/{code}`; `resetPassword(email, code, newPassword)`.
+- **Verify is server-gated:** navigation to Reset only happens after `verify-reset-code` returns 200
+  (`uiState.verified` flips → `LaunchedEffect` calls `onVerified(code)`). A wrong code stays put.
+- **HTTP 400 mapping:** added `ApiError.BadRequest(message)` + a `400` branch in `ErrorMapper`
+  parsing the `{ error }` body, surfaced verbatim in `ApiErrorMessage` — so "Invalid code" /
+  "Code expired" / "Code already used" show as a real toast instead of the generic error.
+- **Auto-login after reset** (mirrors the Register pattern): `reset-password` returns **no token**,
+  so `resetPassword` stashes the credentials and `AuthRepository.completePasswordReset()` does a
+  silent `login` → `SessionManager.setAuthenticated` → Home. The reset Success screen's `onPrimary`
+  now calls `AuthViewModel.completePasswordReset()` (was `popBackStack` to Login).
+- **Remember-me removed:** dead UI (never read; the JWT in DataStore already persists the session).
+  `RememberMeRow` → `ForgotPasswordRow` (keeps only the trailing "Forgot my password" link);
+  `rememberMe`/`onToggleRememberMe` dropped from `LoginUiState`/`LoginViewModel`/`LoginScreen`;
+  `login_remember_me` string removed.
+- **No `isResetFlowActive` flag** (the iOS equivalent): Compose's nav back-stack handles the chain,
+  so the flag isn't needed here — see §4 of `password-reset-flow.md`.
+
+> Backend prerequisites to test end-to-end (not Android code): **Mailtrap** must be configured to
+> read the 6-digit code, and the `verified_at` **migration trap** (a column added by editing an
+> already-applied migration) needs a `migrate:rollback` + `migrate` on an existing DB — both
+> documented in §5 of `agents/password-reset-flow.md`.
+
 ### 2026-06-28 — Password-reset flow + reusable Success screen (milestone 3)
 
 Ported the iOS-built password-reset flow **1:1** to Android. The porting spec lives in the

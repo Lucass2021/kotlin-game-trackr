@@ -61,8 +61,8 @@ class VerifyResetCodeViewModel(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val result = authRepository.verifyResetCode(email, code)
             _uiState.update { it.copy(isLoading = false) }
-            result.onSuccess { token ->
-                _uiState.update { it.copy(resetToken = token) }
+            result.onSuccess {
+                _uiState.update { it.copy(verified = true) }
             }
             result.onFailure { error ->
                 val message = (error as? ApiError)?.toMessage(context)

@@ -44,8 +44,9 @@ object Routes {
     const val VERIFY_CODE = "verify_code/{email}"
     fun verifyCode(email: String) = "verify_code/${Uri.encode(email)}"
 
-    const val RESET_PASSWORD = "reset_password/{token}"
-    fun resetPassword(token: String) = "reset_password/${Uri.encode(token)}"
+    const val RESET_PASSWORD = "reset_password/{email}/{code}"
+    fun resetPassword(email: String, code: String) =
+        "reset_password/${Uri.encode(email)}/${Uri.encode(code)}"
 
     const val SUCCESS_RESET = "success_reset"
     const val SUCCESS_REGISTER = "success_register"
@@ -118,16 +119,21 @@ private fun AuthNavGraph(
             VerifyResetCodeScreen(
                 email = email,
                 onBack = { navController.popBackStack() },
-                onVerified = { token -> navController.navigate(Routes.resetPassword(token)) }
+                onVerified = { code -> navController.navigate(Routes.resetPassword(email, code)) }
             )
         }
         composable(
             Routes.RESET_PASSWORD,
-            arguments = listOf(navArgument("token") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("email") { type = NavType.StringType },
+                navArgument("code") { type = NavType.StringType }
+            )
         ) { entry ->
-            val token = entry.arguments?.getString("token").orEmpty()
+            val email = entry.arguments?.getString("email").orEmpty()
+            val code = entry.arguments?.getString("code").orEmpty()
             ResetPasswordScreen(
-                resetToken = token,
+                email = email,
+                code = code,
                 onBack = { navController.popBackStack() },
                 onReset = { navController.navigate(Routes.SUCCESS_RESET) }
             )
@@ -139,7 +145,7 @@ private fun AuthNavGraph(
                 buttonText = stringResource(R.string.success_reset_button),
                 statusTitle = stringResource(R.string.success_status_title),
                 statusValue = stringResource(R.string.success_status_value),
-                onPrimary = { navController.popBackStack(Routes.LOGIN, inclusive = false) }
+                onPrimary = authViewModel::completePasswordReset
             )
         }
         composable(Routes.SUCCESS_REGISTER) {

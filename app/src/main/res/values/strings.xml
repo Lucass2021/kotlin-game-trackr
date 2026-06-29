@@ -52,7 +52,6 @@
     <string name="login_email_placeholder">you@email.com</string>
     <string name="login_password_label">Password</string>
     <string name="login_password_placeholder">••••••••</string>
-    <string name="login_remember_me">Remember me</string>
     <string name="login_forgot_password">Forgot my password</string>
     <string name="login_sign_in">Sign in</string>
     <string name="login_no_account">"Don\'t have an account? "</string>
@@ -80,8 +79,8 @@
     <string name="reset_save">Save new password</string>
 
     <string name="success_reset_title">All set!</string>
-    <string name="success_reset_subtitle">Your password was changed successfully. You can now sign in with your new password.</string>
-    <string name="success_reset_button">Back to login</string>
+    <string name="success_reset_subtitle">Your password was changed successfully. Continue to sign in to your account.</string>
+    <string name="success_reset_button">Continue</string>
     <string name="success_register_title">Account created!</string>
     <string name="success_register_subtitle">Your account is ready. Jump in and start tracking your gaming journey.</string>
     <string name="success_register_button">Go to app</string>

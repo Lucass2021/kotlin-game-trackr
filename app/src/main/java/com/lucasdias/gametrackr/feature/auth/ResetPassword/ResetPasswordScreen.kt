@@ -25,10 +25,11 @@ import com.lucasdias.gametrackr.feature.auth.resetpassword.components.ResetPassw
 
 @Composable
 fun ResetPasswordScreen(
-    resetToken: String,
+    email: String,
+    code: String,
     onBack: () -> Unit,
     onReset: () -> Unit,
-    viewModel: ResetPasswordViewModel = koinViewModel { parametersOf(resetToken) }
+    viewModel: ResetPasswordViewModel = koinViewModel { parametersOf(email, code) }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

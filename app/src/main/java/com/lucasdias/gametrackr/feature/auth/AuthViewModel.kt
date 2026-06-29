@@ -40,6 +40,10 @@ class AuthViewModel(
         authRepository.completeRegistration()
     }
 
+    fun completePasswordReset() {
+        viewModelScope.launch { authRepository.completePasswordReset() }
+    }
+
     fun logout() {
         viewModelScope.launch { authRepository.logout() }
     }

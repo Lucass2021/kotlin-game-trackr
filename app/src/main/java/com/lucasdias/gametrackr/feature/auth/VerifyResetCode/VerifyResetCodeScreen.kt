@@ -34,8 +34,8 @@ fun VerifyResetCodeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.resetToken) {
-        uiState.resetToken?.let(onVerified)
+    LaunchedEffect(uiState.verified) {
+        if (uiState.verified) onVerified(uiState.code)
     }
 
     VerifyResetCodeContent(

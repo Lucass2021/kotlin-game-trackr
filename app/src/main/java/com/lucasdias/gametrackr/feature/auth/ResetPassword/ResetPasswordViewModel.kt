@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 class ResetPasswordViewModel(
     private val authRepository: AuthRepository,
     private val context: Context,
-    private val resetToken: String
+    private val email: String,
+    private val code: String
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ResetPasswordUiState())
@@ -46,7 +47,7 @@ class ResetPasswordViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.resetPassword(resetToken, state.password)
+            val result = authRepository.resetPassword(email, code, state.password)
             _uiState.update { it.copy(isLoading = false) }
             result.onSuccess {
                 _uiState.update { it.copy(done = true) }

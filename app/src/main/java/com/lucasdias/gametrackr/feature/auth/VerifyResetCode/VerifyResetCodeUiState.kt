@@ -7,7 +7,7 @@ data class VerifyResetCodeUiState(
     @param:StringRes val codeError: Int? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val resetToken: String? = null,
+    val verified: Boolean = false,
     val resendSeconds: Int = RESEND_SECONDS
 )
 

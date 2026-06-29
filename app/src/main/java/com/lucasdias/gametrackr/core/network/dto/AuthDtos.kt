@@ -1,6 +1,8 @@
 package com.lucasdias.gametrackr.core.network.dto
 
 import com.lucasdias.gametrackr.core.model.User
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,6 +18,29 @@ data class RegisterRequest(
     val email: String,
     val password: String,
     @SerialName("password_confirmation") val passwordConfirmation: String
+)
+
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
+data class ForgotPasswordRequest(
+    val email: String,
+    @EncodeDefault val client: String = "mobile"
+)
+
+@Serializable
+data class VerifyResetCodeRequest(
+    val email: String,
+    val code: String
+)
+
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
+data class ResetPasswordRequest(
+    val email: String,
+    val code: String,
+    val password: String,
+    @SerialName("password_confirmation") val passwordConfirmation: String,
+    @EncodeDefault val client: String = "mobile"
 )
 
 @Serializable
@@ -46,6 +71,7 @@ data class ValidateResponse(
 
 @Serializable
 data class MessageResponse(
+    val error: String? = null,
     val message: String? = null
 )
 

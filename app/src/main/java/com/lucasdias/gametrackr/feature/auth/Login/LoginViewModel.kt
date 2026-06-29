@@ -36,10 +36,6 @@ class LoginViewModel(
         revalidate()
     }
 
-    fun onToggleRememberMe() {
-        _uiState.update { it.copy(rememberMe = !it.rememberMe) }
-    }
-
     fun onErrorShown() {
         _uiState.update { it.copy(errorMessage = null) }
     }

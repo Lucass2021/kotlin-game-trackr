@@ -19,8 +19,8 @@ import com.lucasdias.gametrackr.core.ui.components.SocialLoginSection
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
+import com.lucasdias.gametrackr.feature.auth.login.components.ForgotPasswordRow
 import com.lucasdias.gametrackr.feature.auth.login.components.LoginFormSection
-import com.lucasdias.gametrackr.feature.auth.login.components.RememberMeRow
 import com.lucasdias.gametrackr.feature.auth.login.components.SignUpPrompt
 
 @Composable
@@ -38,7 +38,6 @@ fun LoginScreen(
         onSignUp = onSignUp,
         onEmailChange = viewModel::onEmailChange,
         onPasswordChange = viewModel::onPasswordChange,
-        onToggleRememberMe = viewModel::onToggleRememberMe,
         onForgotPassword = onForgotPassword,
         onSubmit = viewModel::onSubmit,
         onGoogleSignIn = viewModel::onGoogleSignIn,
@@ -53,7 +52,6 @@ private fun LoginContent(
     onSignUp: () -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onToggleRememberMe: () -> Unit,
     onForgotPassword: () -> Unit,
     onSubmit: () -> Unit,
     onGoogleSignIn: () -> Unit,
@@ -91,9 +89,7 @@ private fun LoginContent(
                 .staggeredAppear(2)
         )
 
-        RememberMeRow(
-            rememberMe = uiState.rememberMe,
-            onToggle = onToggleRememberMe,
+        ForgotPasswordRow(
             onForgotPassword = onForgotPassword,
             modifier = Modifier
                 .padding(top = 20.dp)
@@ -135,7 +131,6 @@ private fun LoginScreenPreview() {
             onSignUp = {},
             onEmailChange = {},
             onPasswordChange = {},
-            onToggleRememberMe = {},
             onForgotPassword = {},
             onSubmit = {},
             onGoogleSignIn = {},

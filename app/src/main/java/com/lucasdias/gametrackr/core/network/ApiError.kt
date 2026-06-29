@@ -5,6 +5,7 @@ sealed class ApiError(message: String? = null, cause: Throwable? = null) :
 
     data object Unauthorized : ApiError("Unauthorized")
     data object NotFound : ApiError("Not found")
+    data class BadRequest(val errorMessage: String) : ApiError(errorMessage)
     data class Validation(
         val errors: Map<String, List<String>>,
         val firstMessage: String?
