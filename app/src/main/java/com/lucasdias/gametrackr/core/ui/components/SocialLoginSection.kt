@@ -21,10 +21,13 @@ import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 
 @Composable
-fun SocialLoginSection(onGoogle: () -> Unit, modifier: Modifier = Modifier) {
+fun SocialLoginSection(
+    onGoogle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Spacer(modifier = Modifier.weight(1f).height(1.dp).background(AppOutline))
@@ -34,7 +37,7 @@ fun SocialLoginSection(onGoogle: () -> Unit, modifier: Modifier = Modifier) {
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 1.sp,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
             Spacer(modifier = Modifier.weight(1f).height(1.dp).background(AppOutline))
         }

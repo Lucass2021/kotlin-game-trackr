@@ -19,21 +19,23 @@ fun WelcomeBackground(modifier: Modifier = Modifier) {
             painter = painterResource(R.drawable.welcome_bg),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
         )
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colorStops = arrayOf(
-                            0.0f to AppBackground.copy(alpha = 0.55f),
-                            0.35f to AppBackground.copy(alpha = 0.15f),
-                            0.75f to AppBackground.copy(alpha = 0.85f),
-                            1.0f to AppBackground
-                        )
-                    )
-                )
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colorStops =
+                                arrayOf(
+                                    0.0f to AppBackground.copy(alpha = 0.55f),
+                                    0.35f to AppBackground.copy(alpha = 0.15f),
+                                    0.75f to AppBackground.copy(alpha = 0.85f),
+                                    1.0f to AppBackground,
+                                ),
+                        ),
+                    ),
         )
     }
 }

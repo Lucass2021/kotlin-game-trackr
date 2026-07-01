@@ -7,5 +7,7 @@ import retrofit2.http.POST
 
 interface RefreshApi {
     @POST("auth/refresh")
-    fun refresh(@Header("Authorization") bearer: String): Call<RefreshResponse>
+    fun refresh(
+        @Header("Authorization") bearer: String,
+    ): Call<RefreshResponse>
 }

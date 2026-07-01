@@ -58,17 +58,18 @@ fun AuthTextField(
     isPassword: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
-    @StringRes error: Int? = null
+    @StringRes error: Int? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     var revealed by remember { mutableStateOf(false) }
 
-    val borderColor = when {
-        error != null -> AppTertiary
-        isFocused -> AppPrimary
-        else -> AppOutline
-    }
+    val borderColor =
+        when {
+            error != null -> AppTertiary
+            isFocused -> AppPrimary
+            else -> AppOutline
+        }
     val borderWidth = if (error != null || isFocused) 2.dp else 1.dp
     val shape = RoundedCornerShape(14.dp)
 
@@ -77,7 +78,7 @@ fun AuthTextField(
             text = label,
             color = AppTextSecondary,
             fontSize = 15.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
         Spacer(modifier = Modifier.height(10.dp))
         BasicTextField(
@@ -86,24 +87,26 @@ fun AuthTextField(
             singleLine = true,
             textStyle = TextStyle(color = AppTextPrimary, fontSize = 16.sp),
             cursorBrush = SolidColor(AppPrimary),
-            visualTransformation = if (isPassword && !revealed) {
-                PasswordVisualTransformation()
-            } else {
-                VisualTransformation.None
-            },
+            visualTransformation =
+                if (isPassword && !revealed) {
+                    PasswordVisualTransformation()
+                } else {
+                    VisualTransformation.None
+                },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
             interactionSource = interactionSource,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) { innerTextField ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .clip(shape)
-                    .background(AppSurfaceCard)
-                    .border(borderWidth, borderColor, shape)
-                    .padding(horizontal = 18.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clip(shape)
+                        .background(AppSurfaceCard)
+                        .border(borderWidth, borderColor, shape)
+                        .padding(horizontal = 18.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(modifier = Modifier.weight(1f)) {
                     if (value.isEmpty()) {
@@ -113,16 +116,18 @@ fun AuthTextField(
                 }
                 if (isPassword) {
                     val icon = if (revealed) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    val description = stringResource(
-                        if (revealed) R.string.register_hide_password else R.string.register_show_password
-                    )
+                    val description =
+                        stringResource(
+                            if (revealed) R.string.register_hide_password else R.string.register_show_password,
+                        )
                     Icon(
                         imageVector = icon,
                         contentDescription = description,
                         tint = AppTextSecondary,
-                        modifier = Modifier
-                            .size(22.dp)
-                            .clickable { revealed = !revealed }
+                        modifier =
+                            Modifier
+                                .size(22.dp)
+                                .clickable { revealed = !revealed },
                     )
                 }
             }
@@ -133,7 +138,7 @@ fun AuthTextField(
                 text = stringResource(error),
                 color = AppTertiary,
                 fontSize = 13.sp,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.padding(horizontal = 4.dp),
             )
         }
     }

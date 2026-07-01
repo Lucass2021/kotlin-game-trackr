@@ -8,5 +8,5 @@ data class LoginUiState(
     @param:StringRes val emailError: Int? = null,
     @param:StringRes val passwordError: Int? = null,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )

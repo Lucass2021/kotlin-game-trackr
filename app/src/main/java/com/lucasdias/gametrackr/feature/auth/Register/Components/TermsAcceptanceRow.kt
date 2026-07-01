@@ -42,30 +42,32 @@ fun TermsAcceptanceRow(
     accepted: Boolean,
     onToggle: () -> Unit,
     @StringRes error: Int?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val borderColor = when {
-        error != null -> AppTertiary
-        accepted -> AppPrimary
-        else -> AppOutline
-    }
+    val borderColor =
+        when {
+            error != null -> AppTertiary
+            accepted -> AppPrimary
+            else -> AppOutline
+        }
     Column(modifier = modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.Top) {
             Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(if (accepted) AppPrimary else Color.Transparent)
-                    .border(1.5.dp, borderColor, RoundedCornerShape(6.dp))
-                    .clickable(onClick = onToggle),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(if (accepted) AppPrimary else Color.Transparent)
+                        .border(1.5.dp, borderColor, RoundedCornerShape(6.dp))
+                        .clickable(onClick = onToggle),
+                contentAlignment = Alignment.Center,
             ) {
                 if (accepted) {
                     Icon(
                         imageVector = Icons.Filled.Check,
                         contentDescription = null,
                         tint = AppOnPrimary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
@@ -81,20 +83,22 @@ fun TermsAcceptanceRow(
 
 @Composable
 private fun TermsText() {
-    val linkStyles = TextLinkStyles(
-        style = SpanStyle(color = AppSecondary, fontWeight = FontWeight.SemiBold)
-    )
+    val linkStyles =
+        TextLinkStyles(
+            style = SpanStyle(color = AppSecondary, fontWeight = FontWeight.SemiBold),
+        )
     val url = stringResource(R.string.welcome_terms_url)
-    val text = buildAnnotatedString {
-        append(stringResource(R.string.register_terms_prefix))
-        withLink(LinkAnnotation.Url(url, linkStyles)) {
-            append(stringResource(R.string.register_terms))
+    val text =
+        buildAnnotatedString {
+            append(stringResource(R.string.register_terms_prefix))
+            withLink(LinkAnnotation.Url(url, linkStyles)) {
+                append(stringResource(R.string.register_terms))
+            }
+            append(stringResource(R.string.register_terms_and))
+            withLink(LinkAnnotation.Url(url, linkStyles)) {
+                append(stringResource(R.string.register_privacy))
+            }
+            append(".")
         }
-        append(stringResource(R.string.register_terms_and))
-        withLink(LinkAnnotation.Url(url, linkStyles)) {
-            append(stringResource(R.string.register_privacy))
-        }
-        append(".")
-    }
     Text(text = text, color = AppTextSecondary, fontSize = 14.sp, lineHeight = 19.sp)
 }

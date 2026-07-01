@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 val AppPrimary = Color(0xFFB5FF3A)
 val AppSecondary = Color(0xFF22D3EE)
 val AppTertiary = Color(0xFFFF5C6C)
+val AppSuccess = Color(0xFF3DD68C)
 val AppNeutral = Color(0xFF747969)
 
 val AppBackground = Color(0xFF0B0D0A)

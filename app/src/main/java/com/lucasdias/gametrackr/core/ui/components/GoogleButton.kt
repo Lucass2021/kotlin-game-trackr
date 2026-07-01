@@ -34,30 +34,34 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 
 @Composable
-fun GoogleButton(onGoogle: () -> Unit, modifier: Modifier = Modifier) {
+fun GoogleButton(
+    onGoogle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val alpha by animateFloatAsState(
         targetValue = if (isPressed) 0.8f else 1f,
-        label = "googlePressAlpha"
+        label = "googlePressAlpha",
     )
     val shape = RoundedCornerShape(16.dp)
     Row(
-        modifier = modifier
-            .pressScale(interactionSource, pressedScale = 0.96f)
-            .fillMaxWidth()
-            .height(54.dp)
-            .clip(shape)
-            .alpha(alpha)
-            .background(AppSurfaceCard)
-            .border(1.dp, AppOutline, shape)
-            .clickable(interactionSource = interactionSource, indication = null, onClick = onGoogle),
+        modifier =
+            modifier
+                .pressScale(interactionSource, pressedScale = 0.96f)
+                .fillMaxWidth()
+                .height(54.dp)
+                .clip(shape)
+                .alpha(alpha)
+                .background(AppSurfaceCard)
+                .border(1.dp, AppOutline, shape)
+                .clickable(interactionSource = interactionSource, indication = null, onClick = onGoogle),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier.size(26.dp).clip(CircleShape).background(AppTextPrimary),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Text(text = "G", color = AppOnPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
@@ -66,7 +70,7 @@ fun GoogleButton(onGoogle: () -> Unit, modifier: Modifier = Modifier) {
             text = stringResource(R.string.auth_continue_google),
             color = AppTextPrimary,
             fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
     }
 }

@@ -1,0 +1,10 @@
+pre-commit:
+  parallel: false
+  commands:
+    format:
+      glob: "*.kt"
+      run: ktlint --format {staged_files}
+      stage_fixed: true
+    lint:
+      glob: "*.kt"
+      run: ktlint {staged_files}

@@ -16,7 +16,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 @Composable
 fun ForgotPasswordRow(
     onForgotPassword: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.weight(1f))
@@ -25,7 +25,7 @@ fun ForgotPasswordRow(
             color = AppSecondary,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.clickable(onClick = onForgotPassword)
+            modifier = Modifier.clickable(onClick = onForgotPassword),
         )
     }
 }

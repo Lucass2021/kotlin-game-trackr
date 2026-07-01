@@ -17,11 +17,11 @@ import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,7 +50,7 @@ fun SuccessScreen(
     onPrimary: () -> Unit,
     modifier: Modifier = Modifier,
     statusTitle: String? = null,
-    statusValue: String? = null
+    statusValue: String? = null,
 ) {
     var remaining by remember { mutableIntStateOf(REDIRECT_SECONDS) }
 
@@ -71,7 +71,7 @@ fun SuccessScreen(
             PrimaryButton(
                 text = buttonText,
                 onClick = onPrimary,
-                modifier = Modifier.staggeredAppear(4)
+                modifier = Modifier.staggeredAppear(4),
             )
             Text(
                 text = stringResource(R.string.success_redirecting, remaining),
@@ -79,12 +79,13 @@ fun SuccessScreen(
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
-                    .staggeredAppear(5)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                        .staggeredAppear(5),
             )
-        }
+        },
     ) {
         SuccessBadge(modifier = Modifier.staggeredAppear(0))
 
@@ -94,10 +95,11 @@ fun SuccessScreen(
             fontSize = 34.sp,
             fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp)
-                .staggeredAppear(1)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
+                    .staggeredAppear(1),
         )
 
         Text(
@@ -106,19 +108,21 @@ fun SuccessScreen(
             fontSize = 17.sp,
             lineHeight = 24.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, start = 8.dp, end = 8.dp)
-                .staggeredAppear(2)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, start = 8.dp, end = 8.dp)
+                    .staggeredAppear(2),
         )
 
         if (statusTitle != null && statusValue != null) {
             StatusCard(
                 title = statusTitle,
                 value = statusValue,
-                modifier = Modifier
-                    .padding(top = 28.dp)
-                    .staggeredAppear(3)
+                modifier =
+                    Modifier
+                        .padding(top = 28.dp)
+                        .staggeredAppear(3),
             )
         }
     }
@@ -127,29 +131,32 @@ fun SuccessScreen(
 @Composable
 private fun SuccessBadge(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .fillMaxWidth(),
+        contentAlignment = Alignment.Center,
     ) {
         Box(
-            modifier = Modifier
-                .size(112.dp)
-                .clip(CircleShape)
-                .background(AppSecondary.copy(alpha = 0.12f)),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(112.dp)
+                    .clip(CircleShape)
+                    .background(AppSecondary.copy(alpha = 0.12f)),
+            contentAlignment = Alignment.Center,
         ) {
             Box(
-                modifier = Modifier
-                    .size(76.dp)
-                    .clip(CircleShape)
-                    .background(AppSecondary),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(76.dp)
+                        .clip(CircleShape)
+                        .background(AppSecondary),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = null,
                     tint = AppOnPrimary,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(40.dp),
                 )
             }
         }
@@ -160,46 +167,50 @@ private fun SuccessBadge(modifier: Modifier = Modifier) {
 private fun StatusCard(
     title: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(AppSurfaceCard)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(18.dp))
+                .background(AppSurfaceCard)
+                .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier
-                .size(44.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(AppSecondary.copy(alpha = 0.14f)),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(AppSecondary.copy(alpha = 0.14f)),
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = Icons.Filled.VerifiedUser,
                 contentDescription = null,
                 tint = AppSecondary,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(22.dp),
             )
         }
         Column(
-            modifier = Modifier
-                .padding(start = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            modifier =
+                Modifier
+                    .padding(start = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(
                 text = title,
                 color = AppTextSecondary,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 0.5.sp,
             )
             Text(
                 text = value,
                 color = AppTextPrimary,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
     }

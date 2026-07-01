@@ -10,7 +10,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.androidx.compose.koinViewModel
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
@@ -21,13 +20,14 @@ import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.register.components.RegisterBottomSection
 import com.lucasdias.gametrackr.feature.auth.register.components.RegisterFormSection
 import com.lucasdias.gametrackr.feature.auth.register.components.TermsAcceptanceRow
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RegisterScreen(
     onBack: () -> Unit,
     onSignIn: () -> Unit,
     onRegistered: () -> Unit,
-    viewModel: RegisterViewModel = koinViewModel()
+    viewModel: RegisterViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -46,7 +46,7 @@ fun RegisterScreen(
         onToggleTerms = viewModel::onToggleTerms,
         onSubmit = viewModel::onSubmit,
         onGoogleSignUp = viewModel::onGoogleSignUp,
-        onErrorShown = viewModel::onErrorShown
+        onErrorShown = viewModel::onErrorShown,
     )
 }
 
@@ -62,7 +62,7 @@ private fun RegisterContent(
     onToggleTerms: () -> Unit,
     onSubmit: () -> Unit,
     onGoogleSignUp: () -> Unit,
-    onErrorShown: () -> Unit
+    onErrorShown: () -> Unit,
 ) {
     AuthScreenScaffold(
         onBack = onBack,
@@ -70,16 +70,17 @@ private fun RegisterContent(
             Toast(
                 message = uiState.errorMessage,
                 onDismiss = onErrorShown,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
             )
-        }
+        },
     ) {
         TitleWithSubtitle(
             title = stringResource(R.string.register_title),
             subtitle = stringResource(R.string.register_subtitle),
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .staggeredAppear(1)
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .staggeredAppear(1),
         )
 
         RegisterFormSection(
@@ -95,34 +96,38 @@ private fun RegisterContent(
             emailError = uiState.emailError,
             passwordError = uiState.passwordError,
             confirmPasswordError = uiState.confirmPasswordError,
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .staggeredAppear(2)
+            modifier =
+                Modifier
+                    .padding(top = 28.dp)
+                    .staggeredAppear(2),
         )
 
         TermsAcceptanceRow(
             accepted = uiState.acceptedTerms,
             onToggle = onToggleTerms,
             error = uiState.termsError,
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .staggeredAppear(3)
+            modifier =
+                Modifier
+                    .padding(top = 24.dp)
+                    .staggeredAppear(3),
         )
 
         RegisterBottomSection(
             isLoading = uiState.isLoading,
             onCreateAccount = onSubmit,
             onSignIn = onSignIn,
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .staggeredAppear(4)
+            modifier =
+                Modifier
+                    .padding(top = 24.dp)
+                    .staggeredAppear(4),
         )
 
         SocialLoginSection(
             onGoogle = onGoogleSignUp,
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .staggeredAppear(5)
+            modifier =
+                Modifier
+                    .padding(top = 28.dp)
+                    .staggeredAppear(5),
         )
     }
 }
@@ -142,7 +147,7 @@ private fun RegisterScreenPreview() {
             onToggleTerms = {},
             onSubmit = {},
             onGoogleSignUp = {},
-            onErrorShown = {}
+            onErrorShown = {},
         )
     }
 }

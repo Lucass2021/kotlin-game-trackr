@@ -18,9 +18,8 @@ import kotlinx.coroutines.launch
 class VerifyResetCodeViewModel(
     private val authRepository: AuthRepository,
     private val context: Context,
-    private val email: String
+    private val email: String,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(VerifyResetCodeUiState())
     val uiState: StateFlow<VerifyResetCodeUiState> = _uiState.asStateFlow()
 
@@ -41,6 +40,10 @@ class VerifyResetCodeViewModel(
 
     fun onErrorShown() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun onVerifiedHandled() {
+        _uiState.update { it.copy(verified = false) }
     }
 
     fun onResend() {
@@ -65,8 +68,9 @@ class VerifyResetCodeViewModel(
                 _uiState.update { it.copy(verified = true) }
             }
             result.onFailure { error ->
-                val message = (error as? ApiError)?.toMessage(context)
-                    ?: context.getString(R.string.error_generic)
+                val message =
+                    (error as? ApiError)?.toMessage(context)
+                        ?: context.getString(R.string.error_generic)
                 _uiState.update { it.copy(errorMessage = message) }
             }
         }
@@ -83,12 +87,13 @@ class VerifyResetCodeViewModel(
 
     private fun startCountdown() {
         countdownJob?.cancel()
-        countdownJob = viewModelScope.launch {
-            _uiState.update { it.copy(resendSeconds = RESEND_SECONDS) }
-            while (_uiState.value.resendSeconds > 0) {
-                delay(1000)
-                _uiState.update { it.copy(resendSeconds = it.resendSeconds - 1) }
+        countdownJob =
+            viewModelScope.launch {
+                _uiState.update { it.copy(resendSeconds = RESEND_SECONDS) }
+                while (_uiState.value.resendSeconds > 0) {
+                    delay(1000)
+                    _uiState.update { it.copy(resendSeconds = it.resendSeconds - 1) }
+                }
             }
-        }
     }
 }

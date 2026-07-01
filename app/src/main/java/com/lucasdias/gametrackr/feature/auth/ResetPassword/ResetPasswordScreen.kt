@@ -12,8 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
@@ -22,6 +20,8 @@ import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.resetpassword.components.ResetPasswordBottomSection
 import com.lucasdias.gametrackr.feature.auth.resetpassword.components.ResetPasswordFormSection
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ResetPasswordScreen(
@@ -29,12 +29,15 @@ fun ResetPasswordScreen(
     code: String,
     onBack: () -> Unit,
     onReset: () -> Unit,
-    viewModel: ResetPasswordViewModel = koinViewModel { parametersOf(email, code) }
+    viewModel: ResetPasswordViewModel = koinViewModel { parametersOf(email, code) },
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.done) {
-        if (uiState.done) onReset()
+        if (uiState.done) {
+            onReset()
+            viewModel.onDoneHandled()
+        }
     }
 
     ResetPasswordContent(
@@ -43,7 +46,7 @@ fun ResetPasswordScreen(
         onPasswordChange = viewModel::onPasswordChange,
         onConfirmPasswordChange = viewModel::onConfirmPasswordChange,
         onSubmit = viewModel::onSubmit,
-        onErrorShown = viewModel::onErrorShown
+        onErrorShown = viewModel::onErrorShown,
     )
 }
 
@@ -54,7 +57,7 @@ private fun ResetPasswordContent(
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    onErrorShown: () -> Unit
+    onErrorShown: () -> Unit,
 ) {
     AuthScreenScaffold(
         onBack = onBack,
@@ -63,17 +66,18 @@ private fun ResetPasswordContent(
             Toast(
                 message = uiState.errorMessage,
                 onDismiss = onErrorShown,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
             )
-        }
+        },
     ) {
         TitleWithSubtitle(
             title = stringResource(R.string.reset_title),
             subtitle = stringResource(R.string.reset_subtitle),
             centered = true,
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .staggeredAppear(1)
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .staggeredAppear(1),
         )
 
         ResetPasswordFormSection(
@@ -83,18 +87,20 @@ private fun ResetPasswordContent(
             onConfirmPasswordChange = onConfirmPasswordChange,
             passwordError = uiState.passwordError,
             confirmPasswordError = uiState.confirmPasswordError,
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .staggeredAppear(2)
+            modifier =
+                Modifier
+                    .padding(top = 28.dp)
+                    .staggeredAppear(2),
         )
 
         ResetPasswordBottomSection(
             isLoading = uiState.isLoading,
             onSave = onSubmit,
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .fillMaxWidth()
-                .staggeredAppear(3)
+            modifier =
+                Modifier
+                    .padding(top = 28.dp)
+                    .fillMaxWidth()
+                    .staggeredAppear(3),
         )
     }
 }
@@ -109,7 +115,7 @@ private fun ResetPasswordPreview() {
             onPasswordChange = {},
             onConfirmPasswordChange = {},
             onSubmit = {},
-            onErrorShown = {}
+            onErrorShown = {},
         )
     }
 }

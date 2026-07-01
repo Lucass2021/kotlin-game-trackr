@@ -18,9 +18,8 @@ private const val TAG = "RegisterViewModel"
 
 class RegisterViewModel(
     private val authRepository: AuthRepository,
-    private val context: Context
+    private val context: Context,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
@@ -67,19 +66,21 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.register(
-                name = state.name.trim(),
-                email = state.email.trim(),
-                password = state.password,
-                passwordConfirmation = state.confirmPassword
-            )
+            val result =
+                authRepository.register(
+                    name = state.name.trim(),
+                    email = state.email.trim(),
+                    password = state.password,
+                    passwordConfirmation = state.confirmPassword,
+                )
             _uiState.update { it.copy(isLoading = false) }
             result.onSuccess {
                 _uiState.update { it.copy(registered = true) }
             }
             result.onFailure { error ->
-                val message = (error as? ApiError)?.toMessage(context)
-                    ?: context.getString(R.string.error_generic)
+                val message =
+                    (error as? ApiError)?.toMessage(context)
+                        ?: context.getString(R.string.error_generic)
                 _uiState.update { it.copy(errorMessage = message) }
             }
         }
@@ -93,7 +94,7 @@ class RegisterViewModel(
                 emailError = emailErrorFor(it.email),
                 passwordError = passwordErrorFor(it.password),
                 confirmPasswordError = confirmPasswordErrorFor(it.password, it.confirmPassword),
-                termsError = termsErrorFor(it.acceptedTerms)
+                termsError = termsErrorFor(it.acceptedTerms),
             )
         }
     }
@@ -123,15 +124,17 @@ class RegisterViewModel(
         }
     }
 
-    private fun passwordErrorFor(password: String): Int? = when {
-        password.isEmpty() -> R.string.validation_password_required
-        password.length < 6 -> R.string.validation_password_too_short
-        else -> null
-    }
+    private fun passwordErrorFor(password: String): Int? =
+        when {
+            password.isEmpty() -> R.string.validation_password_required
+            password.length < 6 -> R.string.validation_password_too_short
+            else -> null
+        }
 
-    private fun confirmPasswordErrorFor(password: String, confirm: String): Int? =
-        if (confirm != password) R.string.validation_passwords_dont_match else null
+    private fun confirmPasswordErrorFor(
+        password: String,
+        confirm: String,
+    ): Int? = if (confirm != password) R.string.validation_passwords_dont_match else null
 
-    private fun termsErrorFor(accepted: Boolean): Int? =
-        if (!accepted) R.string.validation_terms_required else null
+    private fun termsErrorFor(accepted: Boolean): Int? = if (!accepted) R.string.validation_terms_required else null
 }

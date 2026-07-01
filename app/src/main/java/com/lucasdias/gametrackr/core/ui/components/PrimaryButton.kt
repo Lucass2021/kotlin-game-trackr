@@ -23,7 +23,7 @@ fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(16.dp)
@@ -31,29 +31,32 @@ fun PrimaryButton(
         onClick = onClick,
         enabled = !isLoading,
         interactionSource = interactionSource,
-        modifier = modifier
-            .pressScale(interactionSource)
-            .fillMaxWidth()
-            .height(54.dp)
-            .glow(color = AppPrimary, cornerRadius = 16.dp),
+        modifier =
+            modifier
+                .pressScale(interactionSource)
+                .fillMaxWidth()
+                .height(54.dp)
+                .glow(color = AppPrimary, cornerRadius = 16.dp),
         shape = shape,
-        elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = 0.dp,
-            pressedElevation = 0.dp,
-            disabledElevation = 0.dp
-        ),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = AppPrimary,
-            contentColor = AppOnPrimary,
-            disabledContainerColor = AppPrimary,
-            disabledContentColor = AppOnPrimary
-        )
+        elevation =
+            ButtonDefaults.buttonElevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp,
+                disabledElevation = 0.dp,
+            ),
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = AppPrimary,
+                contentColor = AppOnPrimary,
+                disabledContainerColor = AppPrimary,
+                disabledContentColor = AppOnPrimary,
+            ),
     ) {
         if (isLoading) {
             CircularProgressIndicator(
                 color = AppOnPrimary,
                 strokeWidth = 2.dp,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(22.dp),
             )
         } else {
             Text(text = text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)

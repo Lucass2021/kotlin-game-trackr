@@ -23,30 +23,30 @@ fun RegisterBottomSection(
     isLoading: Boolean,
     onCreateAccount: () -> Unit,
     onSignIn: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         PrimaryButton(
             text = stringResource(R.string.register_create_account),
             onClick = onCreateAccount,
-            isLoading = isLoading
+            isLoading = isLoading,
         )
         Row {
             Text(
                 text = stringResource(R.string.register_have_account),
                 color = AppTextSecondary,
-                fontSize = 15.sp
+                fontSize = 15.sp,
             )
             Text(
                 text = stringResource(R.string.register_sign_in),
                 color = AppSecondary,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable(onClick = onSignIn)
+                modifier = Modifier.clickable(onClick = onSignIn),
             )
         }
     }

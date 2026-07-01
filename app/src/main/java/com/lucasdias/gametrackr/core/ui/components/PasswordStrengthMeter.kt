@@ -26,10 +26,15 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 
-enum class PasswordStrength(val level: Int, @StringRes val label: Int, val color: Color) {
+enum class PasswordStrength(
+    val level: Int,
+    @StringRes val label: Int,
+    val color: Color,
+) {
     WEAK(1, R.string.password_strength_weak, AppTertiary),
     MEDIUM(2, R.string.password_strength_medium, AppSecondary),
-    STRONG(3, R.string.password_strength_strong, AppPrimary);
+    STRONG(3, R.string.password_strength_strong, AppPrimary),
+    ;
 
     companion object {
         fun of(password: String): PasswordStrength {
@@ -53,7 +58,7 @@ enum class PasswordStrength(val level: Int, @StringRes val label: Int, val color
 @Composable
 fun PasswordStrengthMeter(
     strength: PasswordStrength,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -61,10 +66,11 @@ fun PasswordStrengthMeter(
                 val target = if (index < strength.level) strength.color else AppOutline
                 val color by animateColorAsState(targetValue = target, label = "strengthSegment")
                 Spacer(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(5.dp)
-                        .background(color, CircleShape)
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .height(5.dp)
+                            .background(color, CircleShape),
                 )
                 if (index < 2) Spacer(modifier = Modifier.width(8.dp))
             }
@@ -75,7 +81,7 @@ fun PasswordStrengthMeter(
             color = strength.color,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(start = 2.dp)
+            modifier = Modifier.padding(start = 2.dp),
         )
     }
 }

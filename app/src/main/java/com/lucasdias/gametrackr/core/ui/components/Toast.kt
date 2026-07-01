@@ -24,12 +24,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.ui.theme.AppSuccess
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import kotlinx.coroutines.delay
 
-enum class ToastStyle(val color: Color) {
+enum class ToastStyle(
+    val color: Color,
+) {
     Error(AppTertiary),
-    Success(Color(0xFF3DD68C))
+    Success(AppSuccess),
 }
 
 private const val TOAST_DURATION_MS = 3000L
@@ -39,7 +42,7 @@ fun Toast(
     message: String?,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    style: ToastStyle = ToastStyle.Error
+    style: ToastStyle = ToastStyle.Error,
 ) {
     var current by remember { mutableStateOf<String?>(null) }
 
@@ -55,25 +58,28 @@ fun Toast(
         visible = message != null,
         enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
         exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 60.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(top = 60.dp),
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            contentAlignment = Alignment.TopCenter
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+            contentAlignment = Alignment.TopCenter,
         ) {
             Text(
                 text = current.orEmpty(),
                 color = Color.White,
                 fontSize = 15.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .shadow(8.dp, RoundedCornerShape(12.dp))
-                    .background(style.color, RoundedCornerShape(12.dp))
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                modifier =
+                    Modifier
+                        .shadow(8.dp, RoundedCornerShape(12.dp))
+                        .background(style.color, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
             )
         }
     }

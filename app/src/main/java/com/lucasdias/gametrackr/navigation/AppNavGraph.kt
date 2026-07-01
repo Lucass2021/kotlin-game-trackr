@@ -42,11 +42,15 @@ object Routes {
     const val FORGOT_PASSWORD = "forgot_password"
 
     const val VERIFY_CODE = "verify_code/{email}"
+
     fun verifyCode(email: String) = "verify_code/${Uri.encode(email)}"
 
     const val RESET_PASSWORD = "reset_password/{email}/{code}"
-    fun resetPassword(email: String, code: String) =
-        "reset_password/${Uri.encode(email)}/${Uri.encode(code)}"
+
+    fun resetPassword(
+        email: String,
+        code: String,
+    ) = "reset_password/${Uri.encode(email)}/${Uri.encode(code)}"
 
     const val SUCCESS_RESET = "success_reset"
     const val SUCCESS_REGISTER = "success_register"
@@ -62,13 +66,20 @@ fun RootScreen(authViewModel: AuthViewModel = koinViewModel()) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (val current = status) {
-            AuthStatus.Loading -> Unit
-            is AuthStatus.Authenticated -> HomePlaceholderScreen(
-                userName = current.user?.name,
-                onSignOut = authViewModel::logout
-            )
+            AuthStatus.Loading -> {
+                Unit
+            }
 
-            AuthStatus.Unauthenticated -> AuthNavGraph(authViewModel = authViewModel)
+            is AuthStatus.Authenticated -> {
+                HomePlaceholderScreen(
+                    userName = current.user?.name,
+                    onSignOut = authViewModel::logout,
+                )
+            }
+
+            AuthStatus.Unauthenticated -> {
+                AuthNavGraph(authViewModel = authViewModel)
+            }
         }
 
         if (showSplash) {
@@ -80,7 +91,7 @@ fun RootScreen(authViewModel: AuthViewModel = koinViewModel()) {
 @Composable
 private fun AuthNavGraph(
     authViewModel: AuthViewModel,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ) {
     NavHost(navController = navController, startDestination = Routes.WELCOME) {
         composable(Routes.WELCOME) { entry ->
@@ -88,46 +99,47 @@ private fun AuthNavGraph(
             BackHandler { activity?.finish() }
             WelcomeScreen(
                 onCreateAccount = { navController.navigateOnce(entry, Routes.REGISTER) },
-                onSignIn = { navController.navigateOnce(entry, Routes.LOGIN) }
+                onSignIn = { navController.navigateOnce(entry, Routes.LOGIN) },
             )
         }
         composable(Routes.REGISTER) { entry ->
             RegisterScreen(
                 onBack = { navController.popBackStack() },
                 onSignIn = { navController.navigateOnce(entry, Routes.LOGIN) },
-                onRegistered = { navController.navigate(Routes.SUCCESS_REGISTER) }
+                onRegistered = { navController.navigate(Routes.SUCCESS_REGISTER) },
             )
         }
         composable(Routes.LOGIN) { entry ->
             LoginScreen(
                 onBack = { navController.popBackStack() },
                 onSignUp = { navController.navigateOnce(entry, Routes.REGISTER) },
-                onForgotPassword = { navController.navigateOnce(entry, Routes.FORGOT_PASSWORD) }
+                onForgotPassword = { navController.navigateOnce(entry, Routes.FORGOT_PASSWORD) },
             )
         }
         composable(Routes.FORGOT_PASSWORD) {
             ForgotPasswordScreen(
                 onBack = { navController.popBackStack() },
-                onCodeSent = { email -> navController.navigate(Routes.verifyCode(email)) }
+                onCodeSent = { email -> navController.navigate(Routes.verifyCode(email)) },
             )
         }
         composable(
             Routes.VERIFY_CODE,
-            arguments = listOf(navArgument("email") { type = NavType.StringType })
+            arguments = listOf(navArgument("email") { type = NavType.StringType }),
         ) { entry ->
             val email = entry.arguments?.getString("email").orEmpty()
             VerifyResetCodeScreen(
                 email = email,
                 onBack = { navController.popBackStack() },
-                onVerified = { code -> navController.navigate(Routes.resetPassword(email, code)) }
+                onVerified = { code -> navController.navigate(Routes.resetPassword(email, code)) },
             )
         }
         composable(
             Routes.RESET_PASSWORD,
-            arguments = listOf(
-                navArgument("email") { type = NavType.StringType },
-                navArgument("code") { type = NavType.StringType }
-            )
+            arguments =
+                listOf(
+                    navArgument("email") { type = NavType.StringType },
+                    navArgument("code") { type = NavType.StringType },
+                ),
         ) { entry ->
             val email = entry.arguments?.getString("email").orEmpty()
             val code = entry.arguments?.getString("code").orEmpty()
@@ -135,7 +147,7 @@ private fun AuthNavGraph(
                 email = email,
                 code = code,
                 onBack = { navController.popBackStack() },
-                onReset = { navController.navigate(Routes.SUCCESS_RESET) }
+                onReset = { navController.navigate(Routes.SUCCESS_RESET) },
             )
         }
         composable(Routes.SUCCESS_RESET) {
@@ -145,7 +157,16 @@ private fun AuthNavGraph(
                 buttonText = stringResource(R.string.success_reset_button),
                 statusTitle = stringResource(R.string.success_status_title),
                 statusValue = stringResource(R.string.success_status_value),
-                onPrimary = authViewModel::completePasswordReset
+                onPrimary = {
+                    authViewModel.completePasswordReset(
+                        onFailure = {
+                            navController.navigate(Routes.LOGIN) {
+                                popUpTo(Routes.WELCOME)
+                                launchSingleTop = true
+                            }
+                        },
+                    )
+                },
             )
         }
         composable(Routes.SUCCESS_REGISTER) {
@@ -155,13 +176,16 @@ private fun AuthNavGraph(
                 buttonText = stringResource(R.string.success_register_button),
                 statusTitle = stringResource(R.string.success_status_title),
                 statusValue = stringResource(R.string.success_status_value),
-                onPrimary = authViewModel::completeRegistration
+                onPrimary = authViewModel::completeRegistration,
             )
         }
     }
 }
 
-private fun NavHostController.navigateOnce(from: NavBackStackEntry, route: String) {
+private fun NavHostController.navigateOnce(
+    from: NavBackStackEntry,
+    route: String,
+) {
     if (from.lifecycle.currentState == Lifecycle.State.RESUMED) {
         navigate(route)
     }

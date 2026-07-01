@@ -7,7 +7,11 @@ import kotlinx.coroutines.flow.asStateFlow
 
 sealed interface AuthStatus {
     data object Loading : AuthStatus
-    data class Authenticated(val user: User?) : AuthStatus
+
+    data class Authenticated(
+        val user: User?,
+    ) : AuthStatus
+
     data object Unauthenticated : AuthStatus
 }
 

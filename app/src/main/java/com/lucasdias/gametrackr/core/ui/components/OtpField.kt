@@ -39,7 +39,7 @@ fun OtpField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     length: Int = 6,
-    onImeDone: () -> Unit = {}
+    onImeDone: () -> Unit = {},
 ) {
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -47,41 +47,43 @@ fun OtpField(
     BasicTextField(
         value = value,
         onValueChange = { raw -> onValueChange(raw.filter { it.isDigit() }.take(length)) },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.NumberPassword,
-            imeAction = ImeAction.Done
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = KeyboardType.NumberPassword,
+                imeAction = ImeAction.Done,
+            ),
         keyboardActions = KeyboardActions(onDone = { onImeDone() }),
         cursorBrush = SolidColor(Color.Transparent),
         textStyle = TextStyle(color = Color.Transparent),
-        modifier = modifier.focusRequester(focusRequester)
+        modifier = modifier.focusRequester(focusRequester),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             repeat(length) { index ->
                 val char = value.getOrNull(index)?.toString().orEmpty()
                 val active = index == value.length || (index == length - 1 && value.length >= length)
                 val shape = RoundedCornerShape(12.dp)
                 Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp)
-                        .clip(shape)
-                        .background(AppSurfaceCard)
-                        .border(
-                            if (active) 2.dp else 1.dp,
-                            if (active) AppPrimary else AppOutline,
-                            shape
-                        ),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .height(56.dp)
+                            .clip(shape)
+                            .background(AppSurfaceCard)
+                            .border(
+                                if (active) 2.dp else 1.dp,
+                                if (active) AppPrimary else AppOutline,
+                                shape,
+                            ),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = char,
                         color = AppTextPrimary,
                         fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }

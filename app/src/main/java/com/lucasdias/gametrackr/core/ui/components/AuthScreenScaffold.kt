@@ -31,45 +31,49 @@ fun AuthScreenScaffold(
     contentArrangement: Arrangement.Vertical = Arrangement.Top,
     overlay: @Composable BoxScope.() -> Unit = {},
     bottomBar: (@Composable ColumnScope.() -> Unit)? = null,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.systemBars)
-                .imePadding()
-                .padding(horizontal = 24.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.systemBars)
+                    .imePadding()
+                    .padding(horizontal = 24.dp),
         ) {
             if (onBack != null) {
                 BackButton(
                     onBack = onBack,
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .staggeredAppear(0)
+                    modifier =
+                        Modifier
+                            .padding(top = 8.dp)
+                            .staggeredAppear(0),
                 )
             }
 
             BoxWithConstraints(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 val viewportHeight = maxHeight
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .heightIn(min = viewportHeight)
-                        .padding(bottom = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .heightIn(min = viewportHeight)
+                            .padding(bottom = 16.dp),
                     verticalArrangement = contentArrangement,
-                    content = content
+                    content = content,
                 )
             }
 
             if (bottomBar != null) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 24.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, bottom = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    content = bottomBar
+                    content = bottomBar,
                 )
             }
         }

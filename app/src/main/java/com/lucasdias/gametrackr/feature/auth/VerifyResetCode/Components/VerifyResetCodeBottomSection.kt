@@ -17,18 +17,18 @@ fun VerifyResetCodeBottomSection(
     onResend: () -> Unit,
     isLoading: Boolean,
     onConfirm: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ResendRow(seconds = seconds, onResend = onResend)
         PrimaryButton(
             text = stringResource(R.string.verify_confirm),
             onClick = onConfirm,
-            isLoading = isLoading
+            isLoading = isLoading,
         )
     }
 }

@@ -33,23 +33,24 @@ import com.lucasdias.gametrackr.feature.auth.welcome.components.WelcomeBottomSec
 @Composable
 fun WelcomeScreen(
     onCreateAccount: () -> Unit,
-    onSignIn: () -> Unit
+    onSignIn: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         WelcomeBackground()
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(horizontal = 24.dp)
-                .padding(top = 8.dp, bottom = 24.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.safeDrawing)
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 8.dp, bottom = 24.dp),
         ) {
             Row(modifier = Modifier.fillMaxWidth().staggeredAppear(0)) {
                 Image(
                     painter = painterResource(R.drawable.logo_wordmark),
                     contentDescription = "GameTrackr",
-                    modifier = Modifier.height(28.dp)
+                    modifier = Modifier.height(28.dp),
                 )
             }
 
@@ -57,20 +58,20 @@ fun WelcomeScreen(
 
             Column(
                 modifier = Modifier.fillMaxWidth().staggeredAppear(1),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
                     painter = painterResource(R.drawable.logo_hero),
                     contentDescription = "GameTrackr",
                     modifier = Modifier.fillMaxWidth(0.90f),
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Fit,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.welcome_tagline),
                     color = AppTextSecondary,
                     fontSize = 18.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
 
@@ -79,7 +80,7 @@ fun WelcomeScreen(
             WelcomeBottomSection(
                 onCreateAccount = onCreateAccount,
                 onSignIn = onSignIn,
-                modifier = Modifier.staggeredAppear(2)
+                modifier = Modifier.staggeredAppear(2),
             )
         }
     }

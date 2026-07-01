@@ -28,30 +28,31 @@ import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 @Composable
 fun HomePlaceholderScreen(
     userName: String?,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppBackground)
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .padding(horizontal = 24.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(AppBackground)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = stringResource(R.string.home_title),
             color = AppTextPrimary,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
         Text(
             text = stringResource(R.string.home_subtitle),
             color = AppTextSecondary,
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier.padding(top = 12.dp),
         )
         if (!userName.isNullOrBlank()) {
             Text(
@@ -59,13 +60,13 @@ fun HomePlaceholderScreen(
                 color = AppTextSecondary,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 8.dp),
             )
         }
         PrimaryButton(
             text = stringResource(R.string.sign_out),
             onClick = onSignOut,
-            modifier = Modifier.padding(top = 40.dp)
+            modifier = Modifier.padding(top = 40.dp),
         )
     }
 }

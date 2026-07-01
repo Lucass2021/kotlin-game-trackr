@@ -15,5 +15,5 @@ data class RegisterUiState(
     @param:StringRes val termsError: Int? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val registered: Boolean = false
+    val registered: Boolean = false,
 )

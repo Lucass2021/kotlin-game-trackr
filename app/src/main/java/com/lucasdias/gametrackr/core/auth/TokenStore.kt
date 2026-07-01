@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.map
 
 private val Context.authDataStore by preferencesDataStore(name = "auth")
 
-class TokenStore(context: Context) {
+class TokenStore(
+    context: Context,
+) {
     private val dataStore = context.authDataStore
     private val tokenKey = stringPreferencesKey("jwt_token")
 

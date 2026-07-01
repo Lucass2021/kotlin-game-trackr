@@ -12,10 +12,12 @@ import java.io.IOException
 class TokenAuthenticator(
     private val tokenStore: TokenStore,
     private val refreshApi: RefreshApi,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
 ) : Authenticator {
-
-    override fun authenticate(route: Route?, response: Response): Request? {
+    override fun authenticate(
+        route: Route?,
+        response: Response,
+    ): Request? {
         if (responseCount(response) >= MAX_ATTEMPTS) return null
 
         val failedToken = response.request.header(HEADER)?.removePrefix(BEARER_PREFIX)
@@ -27,12 +29,13 @@ class TokenAuthenticator(
                 return response.request.retryWith(current)
             }
 
-            val newToken = try {
-                val refreshResponse = refreshApi.refresh("$BEARER_PREFIX$current").execute()
-                if (refreshResponse.isSuccessful) refreshResponse.body()?.token else null
-            } catch (_: IOException) {
-                return null
-            }
+            val newToken =
+                try {
+                    val refreshResponse = refreshApi.refresh("$BEARER_PREFIX$current").execute()
+                    if (refreshResponse.isSuccessful) refreshResponse.body()?.token else null
+                } catch (_: IOException) {
+                    return null
+                }
 
             if (newToken == null) {
                 runBlocking { tokenStore.clear() }
@@ -45,8 +48,7 @@ class TokenAuthenticator(
         }
     }
 
-    private fun Request.retryWith(token: String): Request =
-        newBuilder().header(HEADER, "$BEARER_PREFIX$token").build()
+    private fun Request.retryWith(token: String): Request = newBuilder().header(HEADER, "$BEARER_PREFIX$token").build()
 
     private fun responseCount(response: Response): Int {
         var count = 1

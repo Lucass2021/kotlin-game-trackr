@@ -10,7 +10,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.androidx.compose.koinViewModel
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
@@ -22,13 +21,14 @@ import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.login.components.ForgotPasswordRow
 import com.lucasdias.gametrackr.feature.auth.login.components.LoginFormSection
 import com.lucasdias.gametrackr.feature.auth.login.components.SignUpPrompt
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
     onBack: () -> Unit,
     onSignUp: () -> Unit,
     onForgotPassword: () -> Unit,
-    viewModel: LoginViewModel = koinViewModel()
+    viewModel: LoginViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -41,7 +41,7 @@ fun LoginScreen(
         onForgotPassword = onForgotPassword,
         onSubmit = viewModel::onSubmit,
         onGoogleSignIn = viewModel::onGoogleSignIn,
-        onErrorShown = viewModel::onErrorShown
+        onErrorShown = viewModel::onErrorShown,
     )
 }
 
@@ -55,7 +55,7 @@ private fun LoginContent(
     onForgotPassword: () -> Unit,
     onSubmit: () -> Unit,
     onGoogleSignIn: () -> Unit,
-    onErrorShown: () -> Unit
+    onErrorShown: () -> Unit,
 ) {
     AuthScreenScaffold(
         onBack = onBack,
@@ -64,17 +64,18 @@ private fun LoginContent(
             Toast(
                 message = uiState.errorMessage,
                 onDismiss = onErrorShown,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
             )
-        }
+        },
     ) {
         TitleWithSubtitle(
             title = stringResource(R.string.login_title),
             subtitle = stringResource(R.string.login_subtitle),
             centered = true,
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .staggeredAppear(1)
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .staggeredAppear(1),
         )
 
         LoginFormSection(
@@ -84,39 +85,44 @@ private fun LoginContent(
             onPasswordChange = onPasswordChange,
             emailError = uiState.emailError,
             passwordError = uiState.passwordError,
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .staggeredAppear(2)
+            modifier =
+                Modifier
+                    .padding(top = 28.dp)
+                    .staggeredAppear(2),
         )
 
         ForgotPasswordRow(
             onForgotPassword = onForgotPassword,
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .staggeredAppear(3)
+            modifier =
+                Modifier
+                    .padding(top = 20.dp)
+                    .staggeredAppear(3),
         )
 
         PrimaryButton(
             text = stringResource(R.string.login_sign_in),
             onClick = onSubmit,
             isLoading = uiState.isLoading,
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .staggeredAppear(4)
+            modifier =
+                Modifier
+                    .padding(top = 24.dp)
+                    .staggeredAppear(4),
         )
 
         SocialLoginSection(
             onGoogle = onGoogleSignIn,
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .staggeredAppear(5)
+            modifier =
+                Modifier
+                    .padding(top = 28.dp)
+                    .staggeredAppear(5),
         )
 
         SignUpPrompt(
             onSignUp = onSignUp,
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .staggeredAppear(6)
+            modifier =
+                Modifier
+                    .padding(top = 28.dp)
+                    .staggeredAppear(6),
         )
     }
 }
@@ -134,7 +140,7 @@ private fun LoginScreenPreview() {
             onForgotPassword = {},
             onSubmit = {},
             onGoogleSignIn = {},
-            onErrorShown = {}
+            onErrorShown = {},
         )
     }
 }

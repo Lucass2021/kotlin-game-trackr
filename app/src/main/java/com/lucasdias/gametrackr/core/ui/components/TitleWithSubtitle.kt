@@ -20,11 +20,11 @@ fun TitleWithSubtitle(
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier,
-    centered: Boolean = false
+    centered: Boolean = false,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = if (centered) Alignment.CenterHorizontally else Alignment.Start
+        horizontalAlignment = if (centered) Alignment.CenterHorizontally else Alignment.Start,
     ) {
         Text(
             text = title,
@@ -32,14 +32,14 @@ fun TitleWithSubtitle(
             fontSize = 32.sp,
             lineHeight = 38.sp,
             fontWeight = FontWeight.ExtraBold,
-            textAlign = if (centered) TextAlign.Center else TextAlign.Start
+            textAlign = if (centered) TextAlign.Center else TextAlign.Start,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = subtitle,
             color = AppTextSecondary,
             fontSize = 17.sp,
-            textAlign = if (centered) TextAlign.Center else TextAlign.Start
+            textAlign = if (centered) TextAlign.Center else TextAlign.Start,
         )
     }
 }

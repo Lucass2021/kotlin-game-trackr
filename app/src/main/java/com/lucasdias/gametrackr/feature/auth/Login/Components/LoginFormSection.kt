@@ -21,11 +21,11 @@ fun LoginFormSection(
     onPasswordChange: (String) -> Unit,
     @StringRes emailError: Int?,
     @StringRes passwordError: Int?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         AuthTextField(
             label = stringResource(R.string.login_email_label),
@@ -33,7 +33,7 @@ fun LoginFormSection(
             value = email,
             onValueChange = onEmailChange,
             keyboardType = KeyboardType.Email,
-            error = emailError
+            error = emailError,
         )
         AuthTextField(
             label = stringResource(R.string.login_password_label),
@@ -43,7 +43,7 @@ fun LoginFormSection(
             isPassword = true,
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
-            error = passwordError
+            error = passwordError,
         )
     }
 }

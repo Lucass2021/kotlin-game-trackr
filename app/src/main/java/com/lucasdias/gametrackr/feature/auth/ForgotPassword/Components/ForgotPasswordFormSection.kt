@@ -14,7 +14,7 @@ fun ForgotPasswordFormSection(
     email: String,
     onEmailChange: (String) -> Unit,
     @StringRes emailError: Int?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     AuthTextField(
         label = stringResource(R.string.forgot_email_label),
@@ -24,6 +24,6 @@ fun ForgotPasswordFormSection(
         keyboardType = KeyboardType.Email,
         imeAction = ImeAction.Done,
         error = emailError,
-        modifier = modifier
+        modifier = modifier,
     )
 }

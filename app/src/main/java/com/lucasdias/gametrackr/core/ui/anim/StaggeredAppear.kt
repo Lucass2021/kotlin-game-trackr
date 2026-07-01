@@ -14,18 +14,22 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
-fun Modifier.staggeredAppear(index: Int, stepMillis: Int = 80): Modifier = composed {
-    var shown by remember { mutableStateOf(false) }
-    val translateY = with(LocalDensity.current) { 14.dp.toPx() }
-    val spec = tween<Float>(durationMillis = 400, delayMillis = index * stepMillis, easing = EaseOut)
+fun Modifier.staggeredAppear(
+    index: Int,
+    stepMillis: Int = 80,
+): Modifier =
+    composed {
+        var shown by remember { mutableStateOf(false) }
+        val translateY = with(LocalDensity.current) { 14.dp.toPx() }
+        val spec = tween<Float>(durationMillis = 400, delayMillis = index * stepMillis, easing = EaseOut)
 
-    val alpha by animateFloatAsState(if (shown) 1f else 0f, spec, label = "staggerAlpha")
-    val offsetY by animateFloatAsState(if (shown) 0f else translateY, spec, label = "staggerOffset")
+        val alpha by animateFloatAsState(if (shown) 1f else 0f, spec, label = "staggerAlpha")
+        val offsetY by animateFloatAsState(if (shown) 0f else translateY, spec, label = "staggerOffset")
 
-    LaunchedEffect(Unit) { shown = true }
+        LaunchedEffect(Unit) { shown = true }
 
-    graphicsLayer {
-        this.alpha = alpha
-        translationY = offsetY
+        graphicsLayer {
+            this.alpha = alpha
+            translationY = offsetY
+        }
     }
-}

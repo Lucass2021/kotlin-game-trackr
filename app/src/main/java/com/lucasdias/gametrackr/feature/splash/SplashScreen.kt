@@ -64,7 +64,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
         launch {
             iconScale.animateTo(
                 targetValue = 1f,
-                animationSpec = spring(dampingRatio = 0.55f, stiffness = Spring.StiffnessLow)
+                animationSpec = spring(dampingRatio = 0.55f, stiffness = Spring.StiffnessLow),
             )
         }
         launch { iconAlpha.animateTo(1f, tween(durationMillis = 400)) }
@@ -92,23 +92,24 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
         ) {
             Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .scale(iconScale.value)
-                    .alpha(iconAlpha.value)
-                    .clip(RoundedCornerShape(22.dp))
-                    .background(AppSurfaceCard)
-                    .border(0.6.dp, AppOutline, RoundedCornerShape(22.dp)),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(100.dp)
+                        .scale(iconScale.value)
+                        .alpha(iconAlpha.value)
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(AppSurfaceCard)
+                        .border(0.6.dp, AppOutline, RoundedCornerShape(22.dp)),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Filled.SportsEsports,
                     contentDescription = null,
                     tint = AppPrimary,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(40.dp),
                 )
             }
 
@@ -117,9 +118,10 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
                 color = AppTextPrimary,
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(top = 32.dp)
-                    .alpha(titleAlpha.value)
+                modifier =
+                    Modifier
+                        .padding(top = 32.dp)
+                        .alpha(titleAlpha.value),
             )
 
             Text(
@@ -128,33 +130,37 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 3.sp,
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .alpha(subtitleAlpha.value)
-                    .graphicsLayer { translationY = subtitleOffset.value }
+                modifier =
+                    Modifier
+                        .padding(top = 12.dp)
+                        .alpha(subtitleAlpha.value)
+                        .graphicsLayer { translationY = subtitleOffset.value },
             )
         }
 
         Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 64.dp)
-                .alpha(progressAlpha.value),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 64.dp)
+                    .alpha(progressAlpha.value),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
-                modifier = Modifier
-                    .width(TRACK_WIDTH_DP.dp)
-                    .height(4.dp)
-                    .clip(CircleShape)
-                    .background(AppSurfaceCard)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(progress.value)
+                modifier =
+                    Modifier
+                        .width(TRACK_WIDTH_DP.dp)
                         .height(4.dp)
                         .clip(CircleShape)
-                        .background(AppPrimary)
+                        .background(AppSurfaceCard),
+            ) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(progress.value)
+                            .height(4.dp)
+                            .clip(CircleShape)
+                            .background(AppPrimary),
                 )
             }
 
@@ -165,7 +171,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
                 color = AppTextSecondary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
-                letterSpacing = 3.sp
+                letterSpacing = 3.sp,
             )
         }
     }

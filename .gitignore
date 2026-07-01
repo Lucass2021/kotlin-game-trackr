@@ -14,3 +14,6 @@
 .cxx
 local.properties
 /config/local.properties
+
+# Lefthook
+.lefthook-local/

@@ -15,9 +15,8 @@ import kotlinx.coroutines.launch
 
 class ForgotPasswordViewModel(
     private val authRepository: AuthRepository,
-    private val context: Context
+    private val context: Context,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(ForgotPasswordUiState())
     val uiState: StateFlow<ForgotPasswordUiState> = _uiState.asStateFlow()
 
@@ -30,6 +29,10 @@ class ForgotPasswordViewModel(
 
     fun onErrorShown() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun onCodeSentHandled() {
+        _uiState.update { it.copy(sentToEmail = null) }
     }
 
     fun onSubmit() {
@@ -46,8 +49,9 @@ class ForgotPasswordViewModel(
                 _uiState.update { it.copy(sentToEmail = email) }
             }
             result.onFailure { error ->
-                val message = (error as? ApiError)?.toMessage(context)
-                    ?: context.getString(R.string.error_generic)
+                val message =
+                    (error as? ApiError)?.toMessage(context)
+                        ?: context.getString(R.string.error_generic)
                 _uiState.update { it.copy(errorMessage = message) }
             }
         }

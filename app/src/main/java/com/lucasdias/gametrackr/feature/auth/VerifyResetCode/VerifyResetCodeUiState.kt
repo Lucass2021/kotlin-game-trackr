@@ -8,7 +8,7 @@ data class VerifyResetCodeUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val verified: Boolean = false,
-    val resendSeconds: Int = RESEND_SECONDS
+    val resendSeconds: Int = RESEND_SECONDS,
 )
 
 const val RESEND_SECONDS = 30

@@ -32,66 +32,74 @@ private const val REFRESH_CLIENT = "refreshClient"
 private val baseUrl: String
     get() = BuildConfig.API_BASE_URL.let { if (it.endsWith("/")) it else "$it/" }
 
-private fun retrofit(client: OkHttpClient, json: Json): Retrofit =
-    Retrofit.Builder()
+private fun retrofit(
+    client: OkHttpClient,
+    json: Json,
+): Retrofit =
+    Retrofit
+        .Builder()
         .baseUrl(baseUrl)
         .client(client)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
-val appModule = module {
-    single {
-        Json {
-            ignoreUnknownKeys = true
-            explicitNulls = false
-        }
-    }
-
-    single {
-        HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.NONE
+val appModule =
+    module {
+        single {
+            Json {
+                ignoreUnknownKeys = true
+                explicitNulls = false
             }
         }
+
+        single {
+            HttpLoggingInterceptor().apply {
+                level =
+                    if (BuildConfig.DEBUG) {
+                        HttpLoggingInterceptor.Level.BODY
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
+            }
+        }
+
+        single { TokenStore(androidContext()) }
+        single { SessionManager() }
+
+        single { AuthInterceptor(get()) }
+        single { TokenAuthenticator(get(), get(), get()) }
+
+        single(named(REFRESH_CLIENT)) {
+            OkHttpClient
+                .Builder()
+                .addInterceptor(get<HttpLoggingInterceptor>())
+                .build()
+        }
+
+        single(named(AUTH_CLIENT)) {
+            OkHttpClient
+                .Builder()
+                .addInterceptor(get<AuthInterceptor>())
+                .authenticator(get<TokenAuthenticator>())
+                .addInterceptor(get<HttpLoggingInterceptor>())
+                .build()
+        }
+
+        single<RefreshApi> {
+            retrofit(get(named(REFRESH_CLIENT)), get()).create(RefreshApi::class.java)
+        }
+        single<AuthApi> {
+            retrofit(get(named(AUTH_CLIENT)), get()).create(AuthApi::class.java)
+        }
+
+        single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(), get()) }
+
+        viewModel { AuthViewModel(get(), get()) }
+        viewModel { LoginViewModel(get(), androidContext()) }
+        viewModel { RegisterViewModel(get(), androidContext()) }
+        viewModel { ForgotPasswordViewModel(get(), androidContext()) }
+        viewModel { (email: String) -> VerifyResetCodeViewModel(get(), androidContext(), email) }
+        viewModel { (email: String, code: String) ->
+            ResetPasswordViewModel(get(), androidContext(), email, code)
+        }
     }
-
-    single { TokenStore(androidContext()) }
-    single { SessionManager() }
-
-    single { AuthInterceptor(get()) }
-    single { TokenAuthenticator(get(), get(), get()) }
-
-    single(named(REFRESH_CLIENT)) {
-        OkHttpClient.Builder()
-            .addInterceptor(get<HttpLoggingInterceptor>())
-            .build()
-    }
-
-    single(named(AUTH_CLIENT)) {
-        OkHttpClient.Builder()
-            .addInterceptor(get<AuthInterceptor>())
-            .authenticator(get<TokenAuthenticator>())
-            .addInterceptor(get<HttpLoggingInterceptor>())
-            .build()
-    }
-
-    single<RefreshApi> {
-        retrofit(get(named(REFRESH_CLIENT)), get()).create(RefreshApi::class.java)
-    }
-    single<AuthApi> {
-        retrofit(get(named(AUTH_CLIENT)), get()).create(AuthApi::class.java)
-    }
-
-    single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(), get()) }
-
-    viewModel { AuthViewModel(get(), get()) }
-    viewModel { LoginViewModel(get(), androidContext()) }
-    viewModel { RegisterViewModel(get(), androidContext()) }
-    viewModel { ForgotPasswordViewModel(get(), androidContext()) }
-    viewModel { (email: String) -> VerifyResetCodeViewModel(get(), androidContext(), email) }
-    viewModel { (email: String, code: String) ->
-        ResetPasswordViewModel(get(), androidContext(), email, code)
-    }
-}

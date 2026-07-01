@@ -20,27 +20,29 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 fun ResendRow(
     seconds: Int,
     onResend: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val canResend = seconds <= 0
-    val text = buildAnnotatedString {
-        append(stringResource(R.string.verify_didnt_get))
-        if (canResend) {
-            withStyle(SpanStyle(color = AppSecondary, fontWeight = FontWeight.SemiBold)) {
-                append(stringResource(R.string.verify_resend))
+    val text =
+        buildAnnotatedString {
+            append(stringResource(R.string.verify_didnt_get))
+            if (canResend) {
+                withStyle(SpanStyle(color = AppSecondary, fontWeight = FontWeight.SemiBold)) {
+                    append(stringResource(R.string.verify_resend))
+                }
+            } else {
+                append(stringResource(R.string.verify_resend_in, seconds))
             }
-        } else {
-            append(stringResource(R.string.verify_resend_in, seconds))
         }
-    }
 
     Text(
         text = text,
         color = AppTextSecondary,
         fontSize = 15.sp,
         textAlign = TextAlign.Center,
-        modifier = modifier
-            .fillMaxWidth()
-            .then(if (canResend) Modifier.clickable(onClick = onResend) else Modifier)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .then(if (canResend) Modifier.clickable(onClick = onResend) else Modifier),
     )
 }

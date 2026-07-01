@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.androidx.compose.koinViewModel
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
@@ -20,17 +19,20 @@ import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.forgotpassword.components.ForgotPasswordBottomSection
 import com.lucasdias.gametrackr.feature.auth.forgotpassword.components.ForgotPasswordFormSection
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ForgotPasswordScreen(
     onBack: () -> Unit,
     onCodeSent: (String) -> Unit,
-    viewModel: ForgotPasswordViewModel = koinViewModel()
+    viewModel: ForgotPasswordViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.sentToEmail) {
-        uiState.sentToEmail?.let(onCodeSent)
+        val email = uiState.sentToEmail ?: return@LaunchedEffect
+        onCodeSent(email)
+        viewModel.onCodeSentHandled()
     }
 
     ForgotPasswordContent(
@@ -38,7 +40,7 @@ fun ForgotPasswordScreen(
         onBack = onBack,
         onEmailChange = viewModel::onEmailChange,
         onSubmit = viewModel::onSubmit,
-        onErrorShown = viewModel::onErrorShown
+        onErrorShown = viewModel::onErrorShown,
     )
 }
 
@@ -48,7 +50,7 @@ private fun ForgotPasswordContent(
     onBack: () -> Unit,
     onEmailChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    onErrorShown: () -> Unit
+    onErrorShown: () -> Unit,
 ) {
     AuthScreenScaffold(
         onBack = onBack,
@@ -57,7 +59,7 @@ private fun ForgotPasswordContent(
             Toast(
                 message = uiState.errorMessage,
                 onDismiss = onErrorShown,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
             )
         },
         bottomBar = {
@@ -65,25 +67,27 @@ private fun ForgotPasswordContent(
                 isLoading = uiState.isLoading,
                 onSendCode = onSubmit,
                 onBackToLogin = onBack,
-                modifier = Modifier.staggeredAppear(3)
+                modifier = Modifier.staggeredAppear(3),
             )
-        }
+        },
     ) {
         TitleWithSubtitle(
             title = stringResource(R.string.forgot_title),
             subtitle = stringResource(R.string.forgot_subtitle),
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .staggeredAppear(1)
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .staggeredAppear(1),
         )
 
         ForgotPasswordFormSection(
             email = uiState.email,
             onEmailChange = onEmailChange,
             emailError = uiState.emailError,
-            modifier = Modifier
-                .padding(top = 28.dp)
-                .staggeredAppear(2)
+            modifier =
+                Modifier
+                    .padding(top = 28.dp)
+                    .staggeredAppear(2),
         )
     }
 }
@@ -97,7 +101,7 @@ private fun ForgotPasswordPreview() {
             onBack = {},
             onEmailChange = {},
             onSubmit = {},
-            onErrorShown = {}
+            onErrorShown = {},
         )
     }
 }

@@ -10,12 +10,12 @@ import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 fun ResetPasswordBottomSection(
     isLoading: Boolean,
     onSave: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     PrimaryButton(
         text = stringResource(R.string.reset_save),
         onClick = onSave,
         isLoading = isLoading,
-        modifier = modifier
+        modifier = modifier,
     )
 }

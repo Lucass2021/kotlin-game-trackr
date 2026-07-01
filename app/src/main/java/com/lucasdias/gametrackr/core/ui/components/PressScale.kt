@@ -12,19 +12,21 @@ import androidx.compose.ui.graphics.graphicsLayer
 
 fun Modifier.pressScale(
     interactionSource: InteractionSource,
-    pressedScale: Float = 0.97f
-): Modifier = composed {
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) pressedScale else 1f,
-        animationSpec = spring(
-            dampingRatio = 0.6f,
-            stiffness = Spring.StiffnessMediumLow
-        ),
-        label = "pressScale"
-    )
-    graphicsLayer {
-        scaleX = scale
-        scaleY = scale
+    pressedScale: Float = 0.97f,
+): Modifier =
+    composed {
+        val isPressed by interactionSource.collectIsPressedAsState()
+        val scale by animateFloatAsState(
+            targetValue = if (isPressed) pressedScale else 1f,
+            animationSpec =
+                spring(
+                    dampingRatio = 0.6f,
+                    stiffness = Spring.StiffnessMediumLow,
+                ),
+            label = "pressScale",
+        )
+        graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+        }
     }
-}

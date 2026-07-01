@@ -11,9 +11,8 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val authRepository: AuthRepository,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
 ) : ViewModel() {
-
     val status: StateFlow<AuthStatus> = sessionManager.status
 
     init {
@@ -40,8 +39,10 @@ class AuthViewModel(
         authRepository.completeRegistration()
     }
 
-    fun completePasswordReset() {
-        viewModelScope.launch { authRepository.completePasswordReset() }
+    fun completePasswordReset(onFailure: () -> Unit) {
+        viewModelScope.launch {
+            authRepository.completePasswordReset().onFailure { onFailure() }
+        }
     }
 
     fun logout() {

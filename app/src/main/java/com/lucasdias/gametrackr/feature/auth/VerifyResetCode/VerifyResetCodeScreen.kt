@@ -13,8 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
@@ -24,18 +22,23 @@ import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.verifyresetcode.components.VerifyResetCodeBottomSection
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun VerifyResetCodeScreen(
     email: String,
     onBack: () -> Unit,
     onVerified: (String) -> Unit,
-    viewModel: VerifyResetCodeViewModel = koinViewModel { parametersOf(email) }
+    viewModel: VerifyResetCodeViewModel = koinViewModel { parametersOf(email) },
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.verified) {
-        if (uiState.verified) onVerified(uiState.code)
+        if (uiState.verified) {
+            onVerified(uiState.code)
+            viewModel.onVerifiedHandled()
+        }
     }
 
     VerifyResetCodeContent(
@@ -45,7 +48,7 @@ fun VerifyResetCodeScreen(
         onCodeChange = viewModel::onCodeChange,
         onConfirm = viewModel::onConfirm,
         onResend = viewModel::onResend,
-        onErrorShown = viewModel::onErrorShown
+        onErrorShown = viewModel::onErrorShown,
     )
 }
 
@@ -57,7 +60,7 @@ private fun VerifyResetCodeContent(
     onCodeChange: (String) -> Unit,
     onConfirm: () -> Unit,
     onResend: () -> Unit,
-    onErrorShown: () -> Unit
+    onErrorShown: () -> Unit,
 ) {
     AuthScreenScaffold(
         onBack = onBack,
@@ -65,7 +68,7 @@ private fun VerifyResetCodeContent(
             Toast(
                 message = uiState.errorMessage,
                 onDismiss = onErrorShown,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
             )
         },
         bottomBar = {
@@ -74,25 +77,27 @@ private fun VerifyResetCodeContent(
                 onResend = onResend,
                 isLoading = uiState.isLoading,
                 onConfirm = onConfirm,
-                modifier = Modifier.staggeredAppear(3)
+                modifier = Modifier.staggeredAppear(3),
             )
-        }
+        },
     ) {
         TitleWithSubtitle(
             title = stringResource(R.string.verify_title),
             subtitle = stringResource(R.string.verify_subtitle_prefix) + email,
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .staggeredAppear(1)
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .staggeredAppear(1),
         )
 
         OtpField(
             value = uiState.code,
             onValueChange = onCodeChange,
             onImeDone = onConfirm,
-            modifier = Modifier
-                .padding(top = 32.dp)
-                .staggeredAppear(2)
+            modifier =
+                Modifier
+                    .padding(top = 32.dp)
+                    .staggeredAppear(2),
         )
 
         if (uiState.codeError != null) {
@@ -100,9 +105,10 @@ private fun VerifyResetCodeContent(
                 text = stringResource(uiState.codeError),
                 color = AppTertiary,
                 fontSize = 13.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp, start = 4.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp, start = 4.dp),
             )
         }
     }
@@ -119,7 +125,7 @@ private fun VerifyResetCodePreview() {
             onCodeChange = {},
             onConfirm = {},
             onResend = {},
-            onErrorShown = {}
+            onErrorShown = {},
         )
     }
 }

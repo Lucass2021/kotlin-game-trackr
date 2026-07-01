@@ -9,5 +9,5 @@ data class ResetPasswordUiState(
     @param:StringRes val confirmPasswordError: Int? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val done: Boolean = false
+    val done: Boolean = false,
 )

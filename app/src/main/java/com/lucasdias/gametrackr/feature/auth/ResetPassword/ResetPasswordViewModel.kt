@@ -17,9 +17,8 @@ class ResetPasswordViewModel(
     private val authRepository: AuthRepository,
     private val context: Context,
     private val email: String,
-    private val code: String
+    private val code: String,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(ResetPasswordUiState())
     val uiState: StateFlow<ResetPasswordUiState> = _uiState.asStateFlow()
 
@@ -39,6 +38,10 @@ class ResetPasswordViewModel(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
+    fun onDoneHandled() {
+        _uiState.update { it.copy(done = false) }
+    }
+
     fun onSubmit() {
         submitted = true
         revalidate()
@@ -53,8 +56,9 @@ class ResetPasswordViewModel(
                 _uiState.update { it.copy(done = true) }
             }
             result.onFailure { error ->
-                val message = (error as? ApiError)?.toMessage(context)
-                    ?: context.getString(R.string.error_generic)
+                val message =
+                    (error as? ApiError)?.toMessage(context)
+                        ?: context.getString(R.string.error_generic)
                 _uiState.update { it.copy(errorMessage = message) }
             }
         }
@@ -65,17 +69,20 @@ class ResetPasswordViewModel(
         _uiState.update {
             it.copy(
                 passwordError = passwordErrorFor(it.password),
-                confirmPasswordError = confirmPasswordErrorFor(it.password, it.confirmPassword)
+                confirmPasswordError = confirmPasswordErrorFor(it.password, it.confirmPassword),
             )
         }
     }
 
-    private fun passwordErrorFor(password: String): Int? = when {
-        password.isEmpty() -> R.string.validation_password_required
-        password.length < 6 -> R.string.validation_password_too_short
-        else -> null
-    }
+    private fun passwordErrorFor(password: String): Int? =
+        when {
+            password.isEmpty() -> R.string.validation_password_required
+            password.length < 6 -> R.string.validation_password_too_short
+            else -> null
+        }
 
-    private fun confirmPasswordErrorFor(password: String, confirm: String): Int? =
-        if (confirm != password) R.string.validation_passwords_dont_match else null
+    private fun confirmPasswordErrorFor(
+        password: String,
+        confirm: String,
+    ): Int? = if (confirm != password) R.string.validation_passwords_dont_match else null
 }

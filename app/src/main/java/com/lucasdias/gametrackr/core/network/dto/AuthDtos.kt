@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LoginRequest(
     val email: String,
-    val password: String
+    val password: String,
 )
 
 @Serializable
@@ -17,20 +17,20 @@ data class RegisterRequest(
     val name: String,
     val email: String,
     val password: String,
-    @SerialName("password_confirmation") val passwordConfirmation: String
+    @SerialName("password_confirmation") val passwordConfirmation: String,
 )
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class ForgotPasswordRequest(
     val email: String,
-    @EncodeDefault val client: String = "mobile"
+    @EncodeDefault val client: String = "mobile",
 )
 
 @Serializable
 data class VerifyResetCodeRequest(
     val email: String,
-    val code: String
+    val code: String,
 )
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -40,14 +40,14 @@ data class ResetPasswordRequest(
     val code: String,
     val password: String,
     @SerialName("password_confirmation") val passwordConfirmation: String,
-    @EncodeDefault val client: String = "mobile"
+    @EncodeDefault val client: String = "mobile",
 )
 
 @Serializable
 data class UserDto(
     val id: Int,
     val name: String,
-    val email: String
+    val email: String,
 )
 
 fun UserDto.toDomain() = User(id = id, name = name, email = email)
@@ -56,28 +56,28 @@ fun UserDto.toDomain() = User(id = id, name = name, email = email)
 data class AuthResponse(
     val token: String,
     val user: UserDto,
-    val message: String? = null
+    val message: String? = null,
 )
 
 @Serializable
 data class RefreshResponse(
-    val token: String
+    val token: String,
 )
 
 @Serializable
 data class ValidateResponse(
-    val user: UserDto
+    val user: UserDto,
 )
 
 @Serializable
 data class MessageResponse(
     val error: String? = null,
-    val message: String? = null
+    val message: String? = null,
 )
 
 @Serializable
 data class ApiErrorBody(
     val message: String? = null,
     val error: String? = null,
-    val errors: Map<String, List<String>>? = null
+    val errors: Map<String, List<String>>? = null,
 )

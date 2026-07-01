@@ -23,11 +23,11 @@ fun ResetPasswordFormSection(
     onConfirmPasswordChange: (String) -> Unit,
     @StringRes passwordError: Int?,
     @StringRes confirmPasswordError: Int?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             AuthTextField(
@@ -37,7 +37,7 @@ fun ResetPasswordFormSection(
                 onValueChange = onPasswordChange,
                 isPassword = true,
                 keyboardType = KeyboardType.Password,
-                error = passwordError
+                error = passwordError,
             )
             if (password.isNotEmpty()) {
                 PasswordStrengthMeter(strength = PasswordStrength.of(password))
@@ -51,7 +51,7 @@ fun ResetPasswordFormSection(
             isPassword = true,
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
-            error = confirmPasswordError
+            error = confirmPasswordError,
         )
     }
 }

@@ -18,20 +18,24 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 
 @Composable
-fun BackButton(onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun BackButton(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(
-        modifier = modifier
-            .offset(x = (-10).dp)
-            .size(44.dp)
-            .clip(CircleShape)
-            .clickable(onClick = onBack),
-        contentAlignment = Alignment.CenterStart
+        modifier =
+            modifier
+                .offset(x = (-10).dp)
+                .size(44.dp)
+                .clip(CircleShape)
+                .clickable(onClick = onBack),
+        contentAlignment = Alignment.CenterStart,
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = stringResource(R.string.register_back),
             tint = AppTextPrimary,
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(32.dp),
         )
     }
 }

@@ -14,10 +14,14 @@ import retrofit2.http.POST
 
 interface AuthApi {
     @POST("auth/register")
-    suspend fun register(@Body body: RegisterRequest): AuthResponse
+    suspend fun register(
+        @Body body: RegisterRequest,
+    ): AuthResponse
 
     @POST("auth/login")
-    suspend fun login(@Body body: LoginRequest): AuthResponse
+    suspend fun login(
+        @Body body: LoginRequest,
+    ): AuthResponse
 
     @POST("auth/validate")
     suspend fun validate(): ValidateResponse
@@ -29,11 +33,17 @@ interface AuthApi {
     suspend fun me(): ValidateResponse
 
     @POST("auth/forgot-password")
-    suspend fun forgotPassword(@Body body: ForgotPasswordRequest): MessageResponse
+    suspend fun forgotPassword(
+        @Body body: ForgotPasswordRequest,
+    ): MessageResponse
 
     @POST("auth/verify-reset-code")
-    suspend fun verifyResetCode(@Body body: VerifyResetCodeRequest): MessageResponse
+    suspend fun verifyResetCode(
+        @Body body: VerifyResetCodeRequest,
+    ): MessageResponse
 
     @POST("auth/reset-password")
-    suspend fun resetPassword(@Body body: ResetPasswordRequest): MessageResponse
+    suspend fun resetPassword(
+        @Body body: ResetPasswordRequest,
+    ): MessageResponse
 }

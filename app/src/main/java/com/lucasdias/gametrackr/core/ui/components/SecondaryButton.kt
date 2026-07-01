@@ -21,19 +21,20 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 fun SecondaryButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     OutlinedButton(
         onClick = onClick,
         interactionSource = interactionSource,
-        modifier = modifier
-            .pressScale(interactionSource)
-            .fillMaxWidth()
-            .height(54.dp),
+        modifier =
+            modifier
+                .pressScale(interactionSource)
+                .fillMaxWidth()
+                .height(54.dp),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.5.dp, Color.White.copy(alpha = 0.18f)),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = AppTextPrimary)
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = AppTextPrimary),
     ) {
         Text(text = text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
     }

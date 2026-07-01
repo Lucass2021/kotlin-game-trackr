@@ -15,22 +15,25 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 
 @Composable
-fun SignUpPrompt(onSignUp: () -> Unit, modifier: Modifier = Modifier) {
+fun SignUpPrompt(
+    onSignUp: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         Text(
             text = stringResource(R.string.login_no_account),
             color = AppTextSecondary,
-            fontSize = 15.sp
+            fontSize = 15.sp,
         )
         Text(
             text = stringResource(R.string.login_sign_up),
             color = AppSecondary,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.clickable(onClick = onSignUp)
+            modifier = Modifier.clickable(onClick = onSignUp),
         )
     }
 }

@@ -29,18 +29,18 @@ fun RegisterFormSection(
     @StringRes emailError: Int?,
     @StringRes passwordError: Int?,
     @StringRes confirmPasswordError: Int?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         AuthTextField(
             label = stringResource(R.string.register_name_label),
             placeholder = stringResource(R.string.register_name_placeholder),
             value = name,
             onValueChange = onNameChange,
-            error = nameError
+            error = nameError,
         )
         AuthTextField(
             label = stringResource(R.string.register_email_label),
@@ -48,7 +48,7 @@ fun RegisterFormSection(
             value = email,
             onValueChange = onEmailChange,
             keyboardType = KeyboardType.Email,
-            error = emailError
+            error = emailError,
         )
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             AuthTextField(
@@ -58,7 +58,7 @@ fun RegisterFormSection(
                 onValueChange = onPasswordChange,
                 isPassword = true,
                 keyboardType = KeyboardType.Password,
-                error = passwordError
+                error = passwordError,
             )
             if (password.isNotEmpty()) {
                 PasswordStrengthMeter(strength = PasswordStrength.of(password))
@@ -72,7 +72,7 @@ fun RegisterFormSection(
             isPassword = true,
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
-            error = confirmPasswordError
+            error = confirmPasswordError,
         )
     }
 }

@@ -18,9 +18,8 @@ private const val TAG = "LoginViewModel"
 
 class LoginViewModel(
     private val authRepository: AuthRepository,
-    private val context: Context
+    private val context: Context,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -55,8 +54,9 @@ class LoginViewModel(
             val result = authRepository.login(state.email.trim(), state.password)
             _uiState.update { it.copy(isLoading = false) }
             result.onFailure { error ->
-                val message = (error as? ApiError)?.toMessage(context)
-                    ?: context.getString(R.string.error_generic)
+                val message =
+                    (error as? ApiError)?.toMessage(context)
+                        ?: context.getString(R.string.error_generic)
                 _uiState.update { it.copy(errorMessage = message) }
             }
         }
@@ -67,7 +67,7 @@ class LoginViewModel(
         _uiState.update {
             it.copy(
                 emailError = emailErrorFor(it.email),
-                passwordError = passwordErrorFor(it.password)
+                passwordError = passwordErrorFor(it.password),
             )
         }
     }
@@ -81,9 +81,10 @@ class LoginViewModel(
         }
     }
 
-    private fun passwordErrorFor(password: String): Int? = when {
-        password.isEmpty() -> R.string.validation_password_required
-        password.length < 6 -> R.string.validation_password_too_short
-        else -> null
-    }
+    private fun passwordErrorFor(password: String): Int? =
+        when {
+            password.isEmpty() -> R.string.validation_password_required
+            password.length < 6 -> R.string.validation_password_too_short
+            else -> null
+        }
 }
