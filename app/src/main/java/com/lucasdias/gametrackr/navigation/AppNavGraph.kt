@@ -24,6 +24,7 @@ import androidx.navigation.navArgument
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.auth.AuthStatus
 import com.lucasdias.gametrackr.core.ui.components.SuccessScreen
+import com.lucasdias.gametrackr.feature.app.appshell.MainTabScreen
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
 import com.lucasdias.gametrackr.feature.auth.forgotpassword.ForgotPasswordScreen
 import com.lucasdias.gametrackr.feature.auth.login.LoginScreen
@@ -31,7 +32,6 @@ import com.lucasdias.gametrackr.feature.auth.register.RegisterScreen
 import com.lucasdias.gametrackr.feature.auth.resetpassword.ResetPasswordScreen
 import com.lucasdias.gametrackr.feature.auth.verifyresetcode.VerifyResetCodeScreen
 import com.lucasdias.gametrackr.feature.auth.welcome.WelcomeScreen
-import com.lucasdias.gametrackr.feature.home.HomePlaceholderScreen
 import com.lucasdias.gametrackr.feature.splash.SplashScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -71,9 +71,20 @@ fun RootScreen(authViewModel: AuthViewModel = koinViewModel()) {
             }
 
             is AuthStatus.Authenticated -> {
-                HomePlaceholderScreen(
+                MainTabScreen(
+                    isGuest = false,
                     userName = current.user?.name,
-                    onSignOut = authViewModel::logout,
+                    email = current.user?.email,
+                    onLogout = authViewModel::logout,
+                )
+            }
+
+            AuthStatus.Guest -> {
+                MainTabScreen(
+                    isGuest = true,
+                    userName = null,
+                    email = null,
+                    onLogout = authViewModel::logout,
                 )
             }
 
@@ -114,6 +125,7 @@ private fun AuthNavGraph(
                 onBack = { navController.popBackStack() },
                 onSignUp = { navController.navigateOnce(entry, Routes.REGISTER) },
                 onForgotPassword = { navController.navigateOnce(entry, Routes.FORGOT_PASSWORD) },
+                onContinueAsGuest = authViewModel::continueAsGuest,
             )
         }
         composable(Routes.FORGOT_PASSWORD) {

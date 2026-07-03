@@ -12,6 +12,8 @@ sealed interface AuthStatus {
         val user: User?,
     ) : AuthStatus
 
+    data object Guest : AuthStatus
+
     data object Unauthenticated : AuthStatus
 }
 
@@ -21,6 +23,10 @@ class SessionManager {
 
     fun setAuthenticated(user: User?) {
         _status.value = AuthStatus.Authenticated(user)
+    }
+
+    fun setGuest() {
+        _status.value = AuthStatus.Guest
     }
 
     fun setUnauthenticated() {

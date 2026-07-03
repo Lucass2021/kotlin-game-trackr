@@ -19,6 +19,7 @@ import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.login.components.ForgotPasswordRow
+import com.lucasdias.gametrackr.feature.auth.login.components.GuestPrompt
 import com.lucasdias.gametrackr.feature.auth.login.components.LoginFormSection
 import com.lucasdias.gametrackr.feature.auth.login.components.SignUpPrompt
 import org.koin.androidx.compose.koinViewModel
@@ -28,6 +29,7 @@ fun LoginScreen(
     onBack: () -> Unit,
     onSignUp: () -> Unit,
     onForgotPassword: () -> Unit,
+    onContinueAsGuest: () -> Unit,
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -42,6 +44,7 @@ fun LoginScreen(
         onSubmit = viewModel::onSubmit,
         onGoogleSignIn = viewModel::onGoogleSignIn,
         onErrorShown = viewModel::onErrorShown,
+        onContinueAsGuest = onContinueAsGuest,
     )
 }
 
@@ -56,6 +59,7 @@ private fun LoginContent(
     onSubmit: () -> Unit,
     onGoogleSignIn: () -> Unit,
     onErrorShown: () -> Unit,
+    onContinueAsGuest: () -> Unit,
 ) {
     AuthScreenScaffold(
         onBack = onBack,
@@ -124,6 +128,14 @@ private fun LoginContent(
                     .padding(top = 28.dp)
                     .staggeredAppear(6),
         )
+
+        GuestPrompt(
+            onContinueAsGuest = onContinueAsGuest,
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .staggeredAppear(7),
+        )
     }
 }
 
@@ -141,6 +153,7 @@ private fun LoginScreenPreview() {
             onSubmit = {},
             onGoogleSignIn = {},
             onErrorShown = {},
+            onContinueAsGuest = {},
         )
     }
 }

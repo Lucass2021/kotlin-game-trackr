@@ -39,6 +39,10 @@ class AuthViewModel(
         authRepository.completeRegistration()
     }
 
+    fun continueAsGuest() {
+        sessionManager.setGuest()
+    }
+
     fun completePasswordReset(onFailure: () -> Unit) {
         viewModelScope.launch {
             authRepository.completePasswordReset().onFailure { onFailure() }
