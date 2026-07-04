@@ -14,10 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -32,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.pressScale
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
@@ -63,9 +60,9 @@ fun AppHeader(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.End),
         ) {
-            HeaderButton(Icons.Outlined.Notifications, R.string.header_notifications, onNotifications)
-            HeaderButton(Icons.Outlined.Search, R.string.header_search, onSearch)
-            HeaderButton(Icons.Outlined.Settings, R.string.header_menu, onMenu)
+            HeaderButton(AppIcon.NOTIFICATIONS.image(), R.string.header_notifications, onNotifications)
+            HeaderButton(AppIcon.SEARCH.image(), R.string.header_search, onSearch)
+            HeaderButton(AppIcon.SETTINGS.image(), R.string.header_menu, onMenu)
         }
     }
 }

@@ -79,10 +79,10 @@ private fun TabItem(
         verticalArrangement = Arrangement.spacedBy(5.dp),
     ) {
         Icon(
-            imageVector = if (isSelected) tab.selectedIcon else tab.icon,
+            imageVector = tab.icon.image(filled = isSelected),
             contentDescription = null,
             tint = color,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(22.dp),
         )
         Text(
             text = stringResource(tab.title),

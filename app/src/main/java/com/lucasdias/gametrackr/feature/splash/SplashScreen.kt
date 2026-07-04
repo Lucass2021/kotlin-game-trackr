@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -45,6 +44,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
+import com.lucasdias.gametrackr.core.ui.theme.Sora
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -106,7 +106,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = Icons.Filled.SportsEsports,
+                    imageVector = AppIcon.BRAND.image(filled = true),
                     contentDescription = null,
                     tint = AppPrimary,
                     modifier = Modifier.size(40.dp),
@@ -116,6 +116,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
             Text(
                 text = stringResource(R.string.app_name),
                 color = AppTextPrimary,
+                fontFamily = Sora,
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
                 modifier =

@@ -81,7 +81,7 @@
     <string name="reset_save">Save new password</string>
 
     <string name="success_reset_title">All set!</string>
-    <string name="success_reset_subtitle">Your password was changed successfully. Continue to sign in to your account.</string>
+    <string name="success_reset_subtitle">Your password was changed successfully.\nContinue to sign in to your account.</string>
     <string name="success_reset_button">Continue</string>
     <string name="success_register_title">Account created!</string>
     <string name="success_register_subtitle">Your account is ready. Jump in and start tracking your gaming journey.</string>

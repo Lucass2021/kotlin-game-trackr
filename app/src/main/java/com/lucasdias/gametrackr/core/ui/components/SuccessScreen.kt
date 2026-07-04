@@ -9,11 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,12 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
-import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.core.ui.theme.Sora
 import kotlinx.coroutines.delay
 
 private const val REDIRECT_SECONDS = 5
@@ -92,6 +89,7 @@ fun SuccessScreen(
         Text(
             text = title,
             color = AppPrimary,
+            fontFamily = Sora,
             fontSize = 34.sp,
             fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
@@ -111,7 +109,7 @@ fun SuccessScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, start = 8.dp, end = 8.dp)
+                    .padding(top = 12.dp)
                     .staggeredAppear(2),
         )
 
@@ -136,30 +134,12 @@ private fun SuccessBadge(modifier: Modifier = Modifier) {
                 .fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(112.dp)
-                    .clip(CircleShape)
-                    .background(AppSecondary.copy(alpha = 0.12f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(
-                modifier =
-                    Modifier
-                        .size(76.dp)
-                        .clip(CircleShape)
-                        .background(AppSecondary),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = null,
-                    tint = AppOnPrimary,
-                    modifier = Modifier.size(40.dp),
-                )
-            }
-        }
+        Icon(
+            imageVector = AppIcon.SUCCESS.image(filled = true),
+            contentDescription = null,
+            tint = AppSecondary,
+            modifier = Modifier.size(96.dp),
+        )
     }
 }
 
@@ -187,7 +167,7 @@ private fun StatusCard(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Filled.VerifiedUser,
+                imageVector = AppIcon.SHIELD_CHECK.image(filled = true),
                 contentDescription = null,
                 tint = AppSecondary,
                 modifier = Modifier.size(22.dp),

@@ -17,16 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.automirrored.outlined.ListAlt
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.GridView
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -35,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,16 +32,18 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.components.SecondaryButton
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.core.ui.theme.Sora
 import com.lucasdias.gametrackr.feature.app.appshell.components.DetailTopBar
 
 private data class MenuItem(
-    val icon: ImageVector,
+    val icon: AppIcon,
     val title: String,
 )
 
@@ -79,18 +70,18 @@ fun ProfileMenuScreen(
 
             MenuSection(
                 listOf(
-                    MenuItem(Icons.Outlined.AccountCircle, stringResource(R.string.menu_edit_profile)),
-                    MenuItem(Icons.Outlined.GridView, stringResource(R.string.menu_my_collection)),
-                    MenuItem(Icons.AutoMirrored.Outlined.ListAlt, stringResource(R.string.menu_my_lists)),
-                    MenuItem(Icons.Outlined.WorkspacePremium, stringResource(R.string.menu_achievements)),
+                    MenuItem(AppIcon.EDIT_PROFILE, stringResource(R.string.menu_edit_profile)),
+                    MenuItem(AppIcon.GRID, stringResource(R.string.menu_my_collection)),
+                    MenuItem(AppIcon.LIST, stringResource(R.string.menu_my_lists)),
+                    MenuItem(AppIcon.MEDAL, stringResource(R.string.menu_achievements)),
                 ),
             )
 
             MenuSection(
                 listOf(
-                    MenuItem(Icons.Outlined.Settings, stringResource(R.string.menu_settings)),
-                    MenuItem(Icons.AutoMirrored.Outlined.HelpOutline, stringResource(R.string.menu_help)),
-                    MenuItem(Icons.Outlined.Info, stringResource(R.string.menu_about)),
+                    MenuItem(AppIcon.SETTINGS, stringResource(R.string.menu_settings)),
+                    MenuItem(AppIcon.HELP, stringResource(R.string.menu_help)),
+                    MenuItem(AppIcon.INFO, stringResource(R.string.menu_about)),
                 ),
             )
 
@@ -121,7 +112,7 @@ private fun AccountHeader(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = Icons.Filled.AccountCircle,
+                imageVector = AppIcon.AVATAR.image(filled = true),
                 contentDescription = null,
                 tint = AppTextSecondary,
                 modifier = Modifier.size(44.dp),
@@ -130,6 +121,7 @@ private fun AccountHeader(
                 Text(
                     text = name,
                     color = AppTextPrimary,
+                    fontFamily = Sora,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )
@@ -175,10 +167,10 @@ private fun MenuRow(item: MenuItem) {
     ) {
         Box(modifier = Modifier.width(24.dp), contentAlignment = Alignment.Center) {
             Icon(
-                imageVector = item.icon,
+                imageVector = item.icon.image(),
                 contentDescription = null,
                 tint = AppPrimary,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(20.dp),
             )
         }
         Text(
@@ -189,7 +181,7 @@ private fun MenuRow(item: MenuItem) {
             modifier = Modifier.weight(1f),
         )
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            imageVector = AppIcon.FORWARD.image(),
             contentDescription = null,
             tint = AppTextSecondary,
             modifier = Modifier.size(16.dp),

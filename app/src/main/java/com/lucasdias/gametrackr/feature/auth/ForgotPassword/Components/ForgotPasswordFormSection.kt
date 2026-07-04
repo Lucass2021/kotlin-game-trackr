@@ -8,6 +8,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.AuthTextField
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 
 @Composable
 fun ForgotPasswordFormSection(
@@ -21,6 +22,7 @@ fun ForgotPasswordFormSection(
         placeholder = stringResource(R.string.login_email_placeholder),
         value = email,
         onValueChange = onEmailChange,
+        icon = AppIcon.ENVELOPE,
         keyboardType = KeyboardType.Email,
         imeAction = ImeAction.Done,
         error = emailError,

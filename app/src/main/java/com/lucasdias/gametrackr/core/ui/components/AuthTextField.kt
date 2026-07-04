@@ -17,9 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +38,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
@@ -55,6 +53,7 @@ fun AuthTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    icon: AppIcon? = null,
     isPassword: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
@@ -108,6 +107,14 @@ fun AuthTextField(
                         .padding(horizontal = 18.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon.image(),
+                        contentDescription = null,
+                        tint = AppTextSecondary,
+                        modifier = Modifier.padding(end = 12.dp).size(20.dp),
+                    )
+                }
                 Box(modifier = Modifier.weight(1f)) {
                     if (value.isEmpty()) {
                         Text(text = placeholder, color = AppTextSecondary, fontSize = 16.sp)
@@ -115,7 +122,7 @@ fun AuthTextField(
                     innerTextField()
                 }
                 if (isPassword) {
-                    val icon = if (revealed) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    val icon = if (revealed) AppIcon.EYE.image() else AppIcon.EYE_SLASH.image()
                     val description =
                         stringResource(
                             if (revealed) R.string.register_hide_password else R.string.register_show_password,

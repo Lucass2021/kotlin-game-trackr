@@ -6,28 +6,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
+import com.lucasdias.gametrackr.core.ui.theme.Sora
 
 @Composable
 fun ComingSoon(
-    icon: ImageVector,
+    icon: AppIcon,
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier,
@@ -42,7 +41,7 @@ fun ComingSoon(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
-            imageVector = icon,
+            imageVector = icon.image(),
             contentDescription = null,
             tint = AppPrimary,
             modifier = Modifier.size(40.dp),
@@ -50,6 +49,7 @@ fun ComingSoon(
         Text(
             text = title,
             color = AppTextPrimary,
+            fontFamily = Sora,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -68,7 +68,7 @@ fun ComingSoon(
 private fun ComingSoonPreview() {
     GameTrackrTheme {
         ComingSoon(
-            icon = Icons.Outlined.Layers,
+            icon = AppIcon.LIBRARY,
             title = "Library",
             subtitle = "Your game library is coming next.",
         )

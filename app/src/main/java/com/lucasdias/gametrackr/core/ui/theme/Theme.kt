@@ -1,8 +1,10 @@
 package com.lucasdias.gametrackr.core.ui.theme
 
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 
 private val AppDarkColorScheme =
     darkColorScheme(
@@ -22,6 +24,10 @@ fun GameTrackrTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = AppDarkColorScheme,
         typography = Typography,
-        content = content,
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalTextStyle provides LocalTextStyle.current.copy(fontFamily = Inter),
+            content = content,
+        )
+    }
 }

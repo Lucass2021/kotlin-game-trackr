@@ -32,6 +32,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
+import com.lucasdias.gametrackr.core.ui.theme.Sora
 
 @Composable
 fun OtpField(
@@ -82,6 +83,7 @@ fun OtpField(
                     Text(
                         text = char,
                         color = AppTextPrimary,
+                        fontFamily = Sora,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                     )

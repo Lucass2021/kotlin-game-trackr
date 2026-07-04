@@ -1,11 +1,10 @@
 package com.lucasdias.gametrackr.feature.app.profile
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.feature.app.appshell.components.ComingSoon
 
 @Composable
@@ -27,7 +26,7 @@ fun ProfileScreen(
             stringResource(R.string.profile_subtitle)
         }
     ComingSoon(
-        icon = Icons.Outlined.AccountCircle,
+        icon = AppIcon.AVATAR,
         title = title,
         subtitle = subtitle,
         modifier = modifier,
