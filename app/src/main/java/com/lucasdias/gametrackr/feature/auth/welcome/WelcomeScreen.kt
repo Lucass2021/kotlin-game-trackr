@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
+import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.welcome.components.WelcomeBackground
@@ -63,7 +64,7 @@ fun WelcomeScreen(
                 Image(
                     painter = painterResource(R.drawable.logo_hero),
                     contentDescription = "GameTrackr",
-                    modifier = Modifier.fillMaxWidth(0.90f),
+                    modifier = Modifier.fillMaxWidth(0.90f).subtleBounce(),
                     contentScale = ContentScale.Fit,
                 )
                 Spacer(modifier = Modifier.height(8.dp))

@@ -15,6 +15,7 @@ import com.adamglin.phosphoricons.regular.Eye
 import com.adamglin.phosphoricons.regular.EyeSlash
 import com.adamglin.phosphoricons.regular.GameController
 import com.adamglin.phosphoricons.regular.Gear
+import com.adamglin.phosphoricons.regular.Heart
 import com.adamglin.phosphoricons.regular.House
 import com.adamglin.phosphoricons.regular.Info
 import com.adamglin.phosphoricons.regular.ListBullets
@@ -38,6 +39,7 @@ import com.adamglin.phosphoricons.fill.Eye as EyeFill
 import com.adamglin.phosphoricons.fill.EyeSlash as EyeSlashFill
 import com.adamglin.phosphoricons.fill.GameController as GameControllerFill
 import com.adamglin.phosphoricons.fill.Gear as GearFill
+import com.adamglin.phosphoricons.fill.Heart as HeartFill
 import com.adamglin.phosphoricons.fill.House as HouseFill
 import com.adamglin.phosphoricons.fill.Info as InfoFill
 import com.adamglin.phosphoricons.fill.ListBullets as ListBulletsFill
@@ -79,6 +81,7 @@ enum class AppIcon(
     GRID(PhosphorIcons.Regular.SquaresFour, PhosphorIcons.Fill.SquaresFourFill),
     LIST(PhosphorIcons.Regular.ListBullets, PhosphorIcons.Fill.ListBulletsFill),
     HELP(PhosphorIcons.Regular.Question, PhosphorIcons.Fill.QuestionFill),
+    LIKE(PhosphorIcons.Regular.Heart, PhosphorIcons.Fill.HeartFill),
     ;
 
     fun image(filled: Boolean = false): ImageVector = if (filled) this.filled else regular

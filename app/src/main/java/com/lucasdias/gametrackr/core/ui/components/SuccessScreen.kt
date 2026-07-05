@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
+import com.lucasdias.gametrackr.core.ui.anim.subtlePulse
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
@@ -138,7 +139,11 @@ private fun SuccessBadge(modifier: Modifier = Modifier) {
             imageVector = AppIcon.SUCCESS.image(filled = true),
             contentDescription = null,
             tint = AppSecondary,
-            modifier = Modifier.size(96.dp),
+            modifier =
+                Modifier
+                    .subtlePulse()
+                    .glow(color = AppSecondary, cornerRadius = 48.dp, blurRadius = 30.dp, alpha = 0.4f)
+                    .size(96.dp),
         )
     }
 }

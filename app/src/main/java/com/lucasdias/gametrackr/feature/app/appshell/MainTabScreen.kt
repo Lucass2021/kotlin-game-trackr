@@ -54,7 +54,11 @@ fun MainTabScreen(
             SearchScreen(onBack = { navController.popBackStack() })
         }
         composable(ShellRoutes.NOTIFICATIONS) {
-            NotificationsScreen(onBack = { navController.popBackStack() })
+            NotificationsScreen(
+                isGuest = isGuest,
+                onBack = { navController.popBackStack() },
+                onCreateAccount = onLogout,
+            )
         }
         composable(ShellRoutes.MENU) {
             ProfileMenuScreen(
@@ -87,7 +91,7 @@ private fun TabShell(
 
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             when (selected) {
-                AppTab.HOME -> HomeScreen(isGuest = isGuest, userName = userName)
+                AppTab.HOME -> HomeScreen()
                 AppTab.LIBRARY -> LibraryScreen()
                 AppTab.COMMUNITY -> CommunityScreen()
                 AppTab.PROFILE -> ProfileScreen(isGuest = isGuest, userName = userName)

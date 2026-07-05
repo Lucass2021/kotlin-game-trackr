@@ -109,10 +109,9 @@
     <string name="header_search">Search</string>
     <string name="header_menu">Menu</string>
 
-    <string name="home_greeting_guest">Welcome, guest!</string>
-    <string name="home_greeting_user">Welcome, %1$s!</string>
-    <string name="home_greeting_generic">Welcome!</string>
-    <string name="home_coming_subtitle">Discover new releases and the most anticipated games. The feed is coming next.</string>
+    <string name="home_new_releases">New Releases</string>
+    <string name="home_most_anticipated">Most Anticipated</string>
+    <string name="home_view_all">View All</string>
 
     <string name="library_title">Library</string>
     <string name="library_subtitle">Track the games you own and their status. Coming next.</string>
@@ -129,7 +128,19 @@
     <string name="search_subtitle">Search the game catalog. Coming next.</string>
 
     <string name="notifications_title">Notifications</string>
-    <string name="notifications_subtitle">Friend requests, replies, and messages will show up here.</string>
+    <string name="notifications_mark_all_read">Mark all read</string>
+    <string name="notifications_filter_all">All</string>
+    <string name="notifications_filter_unread">Unread</string>
+    <string name="notifications_filter_mentions">Mentions</string>
+    <string name="notifications_section_new">New</string>
+    <string name="notifications_section_today">Today</string>
+    <string name="notifications_section_this_week">This week</string>
+    <string name="notifications_accept">Accept</string>
+    <string name="notifications_decline">Decline</string>
+    <string name="notifications_empty_title">You\'re all caught up</string>
+    <string name="notifications_empty_subtitle">New notifications will show up here.</string>
+    <string name="notifications_guest_title">Notifications need an account</string>
+    <string name="notifications_guest_subtitle">You\'re browsing as a guest. Create an account to get friend requests, replies, and messages.</string>
 
     <string name="menu_title">Menu</string>
     <string name="menu_guest_name">Guest</string>
