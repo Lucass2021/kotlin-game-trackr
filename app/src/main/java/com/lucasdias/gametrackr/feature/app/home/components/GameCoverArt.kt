@@ -21,15 +21,17 @@ import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 fun GameCoverArt(
     start: Color,
     end: Color,
-    width: Dp,
-    height: Dp,
     modifier: Modifier = Modifier,
+    width: Dp? = null,
+    height: Dp? = null,
 ) {
     val shape = RoundedCornerShape(14.dp)
+    val sizeModifier = if (width != null && height != null) Modifier.size(width, height) else Modifier
+    val brandSize = if (width != null && height != null) minOf(width, height) * 0.32f else 44.dp
     Box(
         modifier =
             modifier
-                .size(width = width, height = height)
+                .then(sizeModifier)
                 .clip(shape)
                 .background(Brush.linearGradient(listOf(start, end)))
                 .border(1.dp, AppOutline, shape),
@@ -39,7 +41,7 @@ fun GameCoverArt(
             imageVector = AppIcon.BRAND.image(),
             contentDescription = null,
             tint = Color.White.copy(alpha = 0.18f),
-            modifier = Modifier.size(minOf(width, height) * 0.32f),
+            modifier = Modifier.size(brandSize),
         )
     }
 }

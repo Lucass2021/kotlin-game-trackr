@@ -124,8 +124,16 @@
     <string name="profile_guest_subtitle">Create an account to build a public profile with your stats.</string>
     <string name="profile_subtitle">Your public profile and stats are coming next.</string>
 
-    <string name="search_title">Search</string>
-    <string name="search_subtitle">Search the game catalog. Coming next.</string>
+    <string name="search_placeholder">Search games…</string>
+    <string name="search_recent_releases">Recent Releases</string>
+    <string name="search_results">Results</string>
+    <string name="search_empty_title">No games found</string>
+    <string name="search_empty_filter">No games match this filter. Try a different platform.</string>
+    <string name="search_empty_query">No results for \"%1$s\". Try another title or platform.</string>
+    <string name="search_clear">Clear search</string>
+    <string name="search_cant_find_title">Can\'t find a game?</string>
+    <string name="search_cant_find_subtitle">Try refining your filters or browse the community collections.</string>
+    <string name="search_explore_community">Explore Community</string>
 
     <string name="notifications_title">Notifications</string>
     <string name="notifications_mark_all_read">Mark all read</string>
@@ -156,4 +164,8 @@
     <string name="menu_exit_guest">Exit guest mode</string>
 
     <string name="sign_out">Sign out</string>
+    <plurals name="search_result_count">
+        <item quantity="one">%1$d result</item>
+        <item quantity="other">%1$d results</item>
+    </plurals>
 </resources>

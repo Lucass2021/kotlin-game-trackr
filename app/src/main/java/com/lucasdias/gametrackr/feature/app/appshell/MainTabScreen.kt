@@ -39,19 +39,28 @@ fun MainTabScreen(
     onLogout: () -> Unit,
 ) {
     val navController = rememberNavController()
+    var selectedTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
         composable(ShellRoutes.TABS) {
             TabShell(
                 isGuest = isGuest,
                 userName = userName,
+                selected = selectedTab,
+                onSelect = { selectedTab = it },
                 onNotifications = { navController.navigate(ShellRoutes.NOTIFICATIONS) },
                 onSearch = { navController.navigate(ShellRoutes.SEARCH) },
                 onMenu = { navController.navigate(ShellRoutes.MENU) },
             )
         }
         composable(ShellRoutes.SEARCH) {
-            SearchScreen(onBack = { navController.popBackStack() })
+            SearchScreen(
+                onBack = { navController.popBackStack() },
+                onExploreCommunity = {
+                    selectedTab = AppTab.COMMUNITY
+                    navController.popBackStack()
+                },
+            )
         }
         composable(ShellRoutes.NOTIFICATIONS) {
             NotificationsScreen(
@@ -76,12 +85,12 @@ fun MainTabScreen(
 private fun TabShell(
     isGuest: Boolean,
     userName: String?,
+    selected: AppTab,
+    onSelect: (AppTab) -> Unit,
     onNotifications: () -> Unit,
     onSearch: () -> Unit,
     onMenu: () -> Unit,
 ) {
-    var selected by rememberSaveable { mutableStateOf(AppTab.HOME) }
-
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
             onNotifications = onNotifications,
@@ -98,6 +107,6 @@ private fun TabShell(
             }
         }
 
-        AppTabBar(selected = selected, onSelect = { selected = it })
+        AppTabBar(selected = selected, onSelect = onSelect)
     }
 }

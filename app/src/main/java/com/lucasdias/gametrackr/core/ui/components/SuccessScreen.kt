@@ -135,6 +135,12 @@ private fun SuccessBadge(modifier: Modifier = Modifier) {
                 .fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
+        Box(
+            modifier =
+                Modifier
+                    .size(96.dp)
+                    .glow(color = AppSecondary, cornerRadius = 48.dp, blurRadius = 30.dp, alpha = 0.4f),
+        )
         Icon(
             imageVector = AppIcon.SUCCESS.image(filled = true),
             contentDescription = null,
@@ -142,7 +148,6 @@ private fun SuccessBadge(modifier: Modifier = Modifier) {
             modifier =
                 Modifier
                     .subtlePulse()
-                    .glow(color = AppSecondary, cornerRadius = 48.dp, blurRadius = 30.dp, alpha = 0.4f)
                     .size(96.dp),
         )
     }

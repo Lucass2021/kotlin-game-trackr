@@ -67,7 +67,7 @@ fun WelcomeScreen(
                     modifier = Modifier.fillMaxWidth(0.90f).subtleBounce(),
                     contentScale = ContentScale.Fit,
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = stringResource(R.string.welcome_tagline),
                     color = AppTextSecondary,
