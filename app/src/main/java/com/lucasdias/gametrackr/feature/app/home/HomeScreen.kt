@@ -19,9 +19,13 @@ import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.home.components.AnticipatedCard
 import com.lucasdias.gametrackr.feature.app.home.components.HomeSectionHeader
 import com.lucasdias.gametrackr.feature.app.home.components.NewReleaseCard
+import com.lucasdias.gametrackr.feature.app.search.SearchScope
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    onViewAll: (SearchScope) -> Unit = {},
+) {
     Column(
         modifier =
             modifier
@@ -31,15 +35,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 .padding(top = 12.dp, bottom = 28.dp),
         verticalArrangement = Arrangement.spacedBy(28.dp),
     ) {
-        NewReleasesSection()
-        MostAnticipatedSection()
+        NewReleasesSection(onViewAll = { onViewAll(SearchScope.NEW_RELEASES) })
+        MostAnticipatedSection(onViewAll = { onViewAll(SearchScope.MOST_ANTICIPATED) })
     }
 }
 
 @Composable
-private fun NewReleasesSection() {
+private fun NewReleasesSection(onViewAll: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        HomeSectionHeader(title = stringResource(R.string.home_new_releases), onViewAll = {})
+        HomeSectionHeader(title = stringResource(R.string.home_new_releases), onViewAll = onViewAll)
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             contentPadding = PaddingValues(horizontal = 20.dp),
@@ -52,9 +56,9 @@ private fun NewReleasesSection() {
 }
 
 @Composable
-private fun MostAnticipatedSection() {
+private fun MostAnticipatedSection(onViewAll: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        HomeSectionHeader(title = stringResource(R.string.home_most_anticipated), onViewAll = {})
+        HomeSectionHeader(title = stringResource(R.string.home_most_anticipated), onViewAll = onViewAll)
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             contentPadding = PaddingValues(horizontal = 20.dp),

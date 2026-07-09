@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.feature.app.notifications
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,8 +35,6 @@ fun NotificationsScreen(
     onBack: () -> Unit,
     onCreateAccount: () -> Unit,
 ) {
-    BackHandler(onBack = onBack)
-
     var filter by rememberSaveable { mutableStateOf(NotificationFilter.ALL) }
     var markedAllRead by rememberSaveable { mutableStateOf(false) }
     val removedIds = remember { mutableListOf<Int>().toMutableStateList() }

@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.feature.app.search
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,9 +40,8 @@ import com.lucasdias.gametrackr.feature.app.search.components.SearchTopBar
 fun SearchScreen(
     onBack: () -> Unit,
     onExploreCommunity: () -> Unit,
+    scope: SearchScope = SearchScope.ALL,
 ) {
-    BackHandler(onBack = onBack)
-
     var query by rememberSaveable { mutableStateOf("") }
     var platform by rememberSaveable { mutableStateOf<GamePlatform?>(null) }
 
@@ -84,7 +82,7 @@ fun SearchScreen(
                 }
             } else {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    SectionHeader(isSearching = query.isNotBlank(), count = games.size)
+                    SectionHeader(scope = scope, isSearching = query.isNotBlank(), count = games.size)
                 }
                 items(games.size) { index ->
                     SearchResultCard(game = games[index])
@@ -103,6 +101,7 @@ fun SearchScreen(
 
 @Composable
 private fun SectionHeader(
+    scope: SearchScope,
     isSearching: Boolean,
     count: Int,
 ) {
@@ -113,10 +112,10 @@ private fun SectionHeader(
     ) {
         Text(
             text =
-                if (isSearching) {
-                    stringResource(R.string.search_results)
-                } else {
-                    stringResource(R.string.search_recent_releases)
+                when {
+                    isSearching -> stringResource(R.string.search_results)
+                    scope.isFiltered -> stringResource(scope.titleRes)
+                    else -> stringResource(R.string.search_recent_releases)
                 },
             color = AppTextPrimary,
             fontFamily = Sora,

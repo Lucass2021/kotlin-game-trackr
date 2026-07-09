@@ -10,9 +10,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
@@ -22,13 +26,24 @@ import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
 import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
 import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
+import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
 
 private object ShellRoutes {
     const val TABS = "tabs"
     const val SEARCH = "search"
+    const val SEARCH_ARG_SCOPE = "scope"
+    const val SEARCH_ROUTE = "$SEARCH?$SEARCH_ARG_SCOPE={$SEARCH_ARG_SCOPE}"
     const val NOTIFICATIONS = "notifications"
     const val MENU = "menu"
+
+    fun search(scope: SearchScope) = "$SEARCH?$SEARCH_ARG_SCOPE=${scope.name}"
+}
+
+private fun NavController.popBackStackIfResumed() {
+    if (currentBackStackEntry?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.RESUMED) == true) {
+        popBackStack()
+    }
 }
 
 @Composable
@@ -49,23 +64,39 @@ fun MainTabScreen(
                 selected = selectedTab,
                 onSelect = { selectedTab = it },
                 onNotifications = { navController.navigate(ShellRoutes.NOTIFICATIONS) },
-                onSearch = { navController.navigate(ShellRoutes.SEARCH) },
+                onSearch = { navController.navigate(ShellRoutes.search(SearchScope.ALL)) },
+                onViewAll = { navController.navigate(ShellRoutes.search(it)) },
                 onMenu = { navController.navigate(ShellRoutes.MENU) },
             )
         }
-        composable(ShellRoutes.SEARCH) {
+        composable(
+            route = ShellRoutes.SEARCH_ROUTE,
+            arguments =
+                listOf(
+                    navArgument(ShellRoutes.SEARCH_ARG_SCOPE) {
+                        type = NavType.StringType
+                        defaultValue = SearchScope.ALL.name
+                    },
+                ),
+        ) { backStackEntry ->
+            val scope =
+                backStackEntry.arguments
+                    ?.getString(ShellRoutes.SEARCH_ARG_SCOPE)
+                    ?.let { runCatching { SearchScope.valueOf(it) }.getOrNull() }
+                    ?: SearchScope.ALL
             SearchScreen(
-                onBack = { navController.popBackStack() },
+                onBack = { navController.popBackStackIfResumed() },
                 onExploreCommunity = {
                     selectedTab = AppTab.COMMUNITY
-                    navController.popBackStack()
+                    navController.popBackStackIfResumed()
                 },
+                scope = scope,
             )
         }
         composable(ShellRoutes.NOTIFICATIONS) {
             NotificationsScreen(
                 isGuest = isGuest,
-                onBack = { navController.popBackStack() },
+                onBack = { navController.popBackStackIfResumed() },
                 onCreateAccount = onLogout,
             )
         }
@@ -74,7 +105,7 @@ fun MainTabScreen(
                 isGuest = isGuest,
                 userName = userName,
                 email = email,
-                onBack = { navController.popBackStack() },
+                onBack = { navController.popBackStackIfResumed() },
                 onLogout = onLogout,
             )
         }
@@ -89,6 +120,7 @@ private fun TabShell(
     onSelect: (AppTab) -> Unit,
     onNotifications: () -> Unit,
     onSearch: () -> Unit,
+    onViewAll: (SearchScope) -> Unit,
     onMenu: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
@@ -100,8 +132,8 @@ private fun TabShell(
 
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             when (selected) {
-                AppTab.HOME -> HomeScreen()
-                AppTab.LIBRARY -> LibraryScreen()
+                AppTab.HOME -> HomeScreen(onViewAll = onViewAll)
+                AppTab.LIBRARY -> LibraryScreen(onBrowseGames = onSearch)
                 AppTab.COMMUNITY -> CommunityScreen()
                 AppTab.PROFILE -> ProfileScreen(isGuest = isGuest, userName = userName)
             }

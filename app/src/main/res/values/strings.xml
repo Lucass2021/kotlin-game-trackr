@@ -115,6 +115,21 @@
 
     <string name="library_title">Library</string>
     <string name="library_subtitle">Track the games you own and their status. Coming next.</string>
+    <string name="library_stats_games">%1$d games</string>
+    <string name="library_stats_platinum">%1$d platinum</string>
+    <string name="library_hours">%1$dh</string>
+    <string name="library_filter_all">All</string>
+    <string name="library_status_playing">Playing</string>
+    <string name="library_status_completed">Completed</string>
+    <string name="library_status_backlog">Backlog</string>
+    <string name="library_status_platinum">Platinum</string>
+    <string name="library_status_abandoned">Abandoned</string>
+    <string name="library_status_wishlist">Wishlist</string>
+    <string name="library_empty_title">Your library is empty</string>
+    <string name="library_empty_subtitle">Find games to start tracking your journey and building your ultimate collection.</string>
+    <string name="library_browse_games">Browse games</string>
+    <string name="library_filter_empty_title">Nothing here yet</string>
+    <string name="library_filter_empty_subtitle">No games marked as \"%1$s\".</string>
 
     <string name="community_title">Community</string>
     <string name="community_subtitle">Join topics, discover communities, and talk games. Coming next.</string>
@@ -125,6 +140,7 @@
     <string name="profile_subtitle">Your public profile and stats are coming next.</string>
 
     <string name="search_placeholder">Search games…</string>
+    <string name="search_scope_all">Search</string>
     <string name="search_recent_releases">Recent Releases</string>
     <string name="search_results">Results</string>
     <string name="search_empty_title">No games found</string>

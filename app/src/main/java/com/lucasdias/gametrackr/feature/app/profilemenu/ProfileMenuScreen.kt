@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.feature.app.profilemenu
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -55,7 +54,6 @@ fun ProfileMenuScreen(
     onBack: () -> Unit,
     onLogout: () -> Unit,
 ) {
-    BackHandler(onBack = onBack)
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         DetailTopBar(title = stringResource(R.string.menu_title), onBack = onBack)
         Column(
