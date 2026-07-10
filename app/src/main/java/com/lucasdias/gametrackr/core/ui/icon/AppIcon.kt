@@ -5,6 +5,8 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Fill
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Bell
+import com.adamglin.phosphoricons.regular.CalendarBlank
+import com.adamglin.phosphoricons.regular.CaretDown
 import com.adamglin.phosphoricons.regular.CaretLeft
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.adamglin.phosphoricons.regular.Check
@@ -21,7 +23,9 @@ import com.adamglin.phosphoricons.regular.Info
 import com.adamglin.phosphoricons.regular.ListBullets
 import com.adamglin.phosphoricons.regular.MagnifyingGlass
 import com.adamglin.phosphoricons.regular.Medal
+import com.adamglin.phosphoricons.regular.PlusSquare
 import com.adamglin.phosphoricons.regular.Question
+import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.adamglin.phosphoricons.regular.SquaresFour
 import com.adamglin.phosphoricons.regular.Stack
@@ -29,6 +33,8 @@ import com.adamglin.phosphoricons.regular.User
 import com.adamglin.phosphoricons.regular.UserCircle
 import com.adamglin.phosphoricons.regular.UsersThree
 import com.adamglin.phosphoricons.fill.Bell as BellFill
+import com.adamglin.phosphoricons.fill.CalendarBlank as CalendarBlankFill
+import com.adamglin.phosphoricons.fill.CaretDown as CaretDownFill
 import com.adamglin.phosphoricons.fill.CaretLeft as CaretLeftFill
 import com.adamglin.phosphoricons.fill.CaretRight as CaretRightFill
 import com.adamglin.phosphoricons.fill.Check as CheckFill
@@ -45,7 +51,9 @@ import com.adamglin.phosphoricons.fill.Info as InfoFill
 import com.adamglin.phosphoricons.fill.ListBullets as ListBulletsFill
 import com.adamglin.phosphoricons.fill.MagnifyingGlass as MagnifyingGlassFill
 import com.adamglin.phosphoricons.fill.Medal as MedalFill
+import com.adamglin.phosphoricons.fill.PlusSquare as PlusSquareFill
 import com.adamglin.phosphoricons.fill.Question as QuestionFill
+import com.adamglin.phosphoricons.fill.ShareNetwork as ShareNetworkFill
 import com.adamglin.phosphoricons.fill.ShieldCheck as ShieldCheckFill
 import com.adamglin.phosphoricons.fill.SquaresFour as SquaresFourFill
 import com.adamglin.phosphoricons.fill.Stack as StackFill
@@ -82,6 +90,10 @@ enum class AppIcon(
     LIST(PhosphorIcons.Regular.ListBullets, PhosphorIcons.Fill.ListBulletsFill),
     HELP(PhosphorIcons.Regular.Question, PhosphorIcons.Fill.QuestionFill),
     LIKE(PhosphorIcons.Regular.Heart, PhosphorIcons.Fill.HeartFill),
+    SHARE(PhosphorIcons.Regular.ShareNetwork, PhosphorIcons.Fill.ShareNetworkFill),
+    ADD_TO_LIBRARY(PhosphorIcons.Regular.PlusSquare, PhosphorIcons.Fill.PlusSquareFill),
+    CARET_DOWN(PhosphorIcons.Regular.CaretDown, PhosphorIcons.Fill.CaretDownFill),
+    CALENDAR(PhosphorIcons.Regular.CalendarBlank, PhosphorIcons.Fill.CalendarBlankFill),
     ;
 
     fun image(filled: Boolean = false): ImageVector = if (filled) this.filled else regular

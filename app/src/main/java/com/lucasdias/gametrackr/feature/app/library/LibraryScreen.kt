@@ -1,6 +1,7 @@
 package com.lucasdias.gametrackr.feature.app.library
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,6 +36,7 @@ import com.lucasdias.gametrackr.feature.app.library.components.LibraryStatsBar
 fun LibraryScreen(
     modifier: Modifier = Modifier,
     onBrowseGames: () -> Unit = {},
+    onGameClick: () -> Unit = {},
 ) {
     val entries = LibraryMockData.entries
     var filter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
@@ -70,7 +72,7 @@ fun LibraryScreen(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     items(filteredEntries) { entry ->
-                        LibraryEntryRow(entry = entry)
+                        LibraryEntryRow(entry = entry, modifier = Modifier.clickable(onClick = onGameClick))
                     }
                 }
             }

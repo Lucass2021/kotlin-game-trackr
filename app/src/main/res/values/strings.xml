@@ -180,6 +180,32 @@
     <string name="menu_exit_guest">Exit guest mode</string>
 
     <string name="sign_out">Sign out</string>
+
+    <string name="game_detail_back">Back</string>
+    <string name="game_detail_share">Share</string>
+    <string name="game_detail_add_to_library">Add to library</string>
+    <string name="game_detail_screenshots">Screenshots</string>
+    <string name="game_detail_about">About</string>
+    <string name="game_detail_read_more">Read more</string>
+    <string name="game_detail_read_less">Read less</string>
+    <string name="game_detail_community">Community</string>
+    <string name="game_detail_see_all">See all discussions</string>
+    <string name="game_detail_specifications">Specifications</string>
+    <string name="game_detail_system_requirements">System Requirements</string>
+
+    <string name="add_library_title">Add to Library</string>
+    <string name="add_library_status">Playing status</string>
+    <string name="add_library_rating">Rating</string>
+    <string name="add_library_hours">Hours played</string>
+    <string name="add_library_hours_placeholder">42</string>
+    <string name="add_library_platform">Platform</string>
+    <string name="add_library_started">Started</string>
+    <string name="add_library_finished">Finished</string>
+    <string name="add_library_date_placeholder">dd/mm/yyyy</string>
+    <string name="add_library_review">Review</string>
+    <string name="add_library_review_placeholder">Write a short review…</string>
+    <string name="add_library_save">Save to library</string>
+
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
         <item quantity="other">%1$d results</item>

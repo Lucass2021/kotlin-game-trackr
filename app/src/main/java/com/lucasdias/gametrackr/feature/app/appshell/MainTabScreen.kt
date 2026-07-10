@@ -21,6 +21,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
 import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
+import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
 import com.lucasdias.gametrackr.feature.app.home.HomeScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
 import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
@@ -36,6 +37,7 @@ private object ShellRoutes {
     const val SEARCH_ROUTE = "$SEARCH?$SEARCH_ARG_SCOPE={$SEARCH_ARG_SCOPE}"
     const val NOTIFICATIONS = "notifications"
     const val MENU = "menu"
+    const val GAME_DETAIL = "gamedetail"
 
     fun search(scope: SearchScope) = "$SEARCH?$SEARCH_ARG_SCOPE=${scope.name}"
 }
@@ -67,6 +69,7 @@ fun MainTabScreen(
                 onSearch = { navController.navigate(ShellRoutes.search(SearchScope.ALL)) },
                 onViewAll = { navController.navigate(ShellRoutes.search(it)) },
                 onMenu = { navController.navigate(ShellRoutes.MENU) },
+                onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
             )
         }
         composable(
@@ -90,7 +93,17 @@ fun MainTabScreen(
                     selectedTab = AppTab.COMMUNITY
                     navController.popBackStackIfResumed()
                 },
+                onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
                 scope = scope,
+            )
+        }
+        composable(ShellRoutes.GAME_DETAIL) {
+            GameDetailScreen(
+                onBack = { navController.popBackStackIfResumed() },
+                onExploreCommunity = {
+                    selectedTab = AppTab.COMMUNITY
+                    navController.popBackStack(ShellRoutes.TABS, inclusive = false)
+                },
             )
         }
         composable(ShellRoutes.NOTIFICATIONS) {
@@ -122,6 +135,7 @@ private fun TabShell(
     onSearch: () -> Unit,
     onViewAll: (SearchScope) -> Unit,
     onMenu: () -> Unit,
+    onGameClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
@@ -132,8 +146,8 @@ private fun TabShell(
 
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             when (selected) {
-                AppTab.HOME -> HomeScreen(onViewAll = onViewAll)
-                AppTab.LIBRARY -> LibraryScreen(onBrowseGames = onSearch)
+                AppTab.HOME -> HomeScreen(onViewAll = onViewAll, onGameClick = onGameClick)
+                AppTab.LIBRARY -> LibraryScreen(onBrowseGames = onSearch, onGameClick = onGameClick)
                 AppTab.COMMUNITY -> CommunityScreen()
                 AppTab.PROFILE -> ProfileScreen(isGuest = isGuest, userName = userName)
             }

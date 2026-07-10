@@ -1,6 +1,7 @@
 package com.lucasdias.gametrackr.feature.app.search
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,6 +41,7 @@ import com.lucasdias.gametrackr.feature.app.search.components.SearchTopBar
 fun SearchScreen(
     onBack: () -> Unit,
     onExploreCommunity: () -> Unit,
+    onGameClick: () -> Unit,
     scope: SearchScope = SearchScope.ALL,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
@@ -85,7 +87,10 @@ fun SearchScreen(
                     SectionHeader(scope = scope, isSearching = query.isNotBlank(), count = games.size)
                 }
                 items(games.size) { index ->
-                    SearchResultCard(game = games[index])
+                    SearchResultCard(
+                        game = games[index],
+                        modifier = Modifier.clickable(onClick = onGameClick),
+                    )
                 }
             }
 

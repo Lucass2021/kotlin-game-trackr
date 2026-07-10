@@ -1,6 +1,7 @@
 package com.lucasdias.gametrackr.feature.app.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +26,7 @@ import com.lucasdias.gametrackr.feature.app.search.SearchScope
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onViewAll: (SearchScope) -> Unit = {},
+    onGameClick: () -> Unit = {},
 ) {
     Column(
         modifier =
@@ -35,13 +37,16 @@ fun HomeScreen(
                 .padding(top = 12.dp, bottom = 28.dp),
         verticalArrangement = Arrangement.spacedBy(28.dp),
     ) {
-        NewReleasesSection(onViewAll = { onViewAll(SearchScope.NEW_RELEASES) })
-        MostAnticipatedSection(onViewAll = { onViewAll(SearchScope.MOST_ANTICIPATED) })
+        NewReleasesSection(onViewAll = { onViewAll(SearchScope.NEW_RELEASES) }, onGameClick = onGameClick)
+        MostAnticipatedSection(onViewAll = { onViewAll(SearchScope.MOST_ANTICIPATED) }, onGameClick = onGameClick)
     }
 }
 
 @Composable
-private fun NewReleasesSection(onViewAll: () -> Unit) {
+private fun NewReleasesSection(
+    onViewAll: () -> Unit,
+    onGameClick: () -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         HomeSectionHeader(title = stringResource(R.string.home_new_releases), onViewAll = onViewAll)
         LazyRow(
@@ -49,14 +54,17 @@ private fun NewReleasesSection(onViewAll: () -> Unit) {
             contentPadding = PaddingValues(horizontal = 20.dp),
         ) {
             items(HomeMockData.newReleases) { release ->
-                NewReleaseCard(release = release)
+                NewReleaseCard(release = release, modifier = Modifier.clickable(onClick = onGameClick))
             }
         }
     }
 }
 
 @Composable
-private fun MostAnticipatedSection(onViewAll: () -> Unit) {
+private fun MostAnticipatedSection(
+    onViewAll: () -> Unit,
+    onGameClick: () -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         HomeSectionHeader(title = stringResource(R.string.home_most_anticipated), onViewAll = onViewAll)
         LazyRow(
@@ -64,7 +72,7 @@ private fun MostAnticipatedSection(onViewAll: () -> Unit) {
             contentPadding = PaddingValues(horizontal = 20.dp),
         ) {
             items(HomeMockData.mostAnticipated) { game ->
-                AnticipatedCard(game = game)
+                AnticipatedCard(game = game, modifier = Modifier.clickable(onClick = onGameClick))
             }
         }
     }
