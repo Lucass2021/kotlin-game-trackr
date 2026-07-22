@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 
@@ -38,6 +39,23 @@ val Inter =
         inter(FontWeight.SemiBold, 600),
         inter(FontWeight.Bold, 700),
     )
+
+object AppType {
+    fun headline(
+        size: TextUnit,
+        weight: FontWeight = FontWeight.Bold,
+    ) = TextStyle(fontFamily = Sora, fontSize = size, fontWeight = weight)
+
+    fun body(
+        size: TextUnit,
+        weight: FontWeight = FontWeight.Normal,
+    ) = TextStyle(fontFamily = Inter, fontSize = size, fontWeight = weight)
+
+    fun label(
+        size: TextUnit = 16.sp,
+        weight: FontWeight = FontWeight.SemiBold,
+    ) = TextStyle(fontFamily = Inter, fontSize = size, fontWeight = weight)
+}
 
 val Typography =
     Typography(

@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 
 @Composable
 fun TitleWithSubtitle(
@@ -30,8 +30,7 @@ fun TitleWithSubtitle(
         Text(
             text = title,
             color = AppPrimary,
-            fontFamily = Sora,
-            fontSize = 32.sp,
+            style = AppType.headline(32.sp),
             lineHeight = 38.sp,
             fontWeight = FontWeight.ExtraBold,
             textAlign = if (centered) TextAlign.Center else TextAlign.Start,

@@ -20,7 +20,10 @@ import androidx.navigation.navArgument
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
+import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
 import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
+import com.lucasdias.gametrackr.feature.app.community.detail.CommunityDetailScreen
+import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScreen
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
 import com.lucasdias.gametrackr.feature.app.home.HomeScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
@@ -38,6 +41,8 @@ private object ShellRoutes {
     const val NOTIFICATIONS = "notifications"
     const val MENU = "menu"
     const val GAME_DETAIL = "gamedetail"
+    const val COMMUNITY_DETAIL = "communitydetail"
+    const val POST_DETAIL = "postdetail"
 
     fun search(scope: SearchScope) = "$SEARCH?$SEARCH_ARG_SCOPE=${scope.name}"
 }
@@ -70,6 +75,8 @@ fun MainTabScreen(
                 onViewAll = { navController.navigate(ShellRoutes.search(it)) },
                 onMenu = { navController.navigate(ShellRoutes.MENU) },
                 onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
+                onPostClick = { navController.navigate(ShellRoutes.POST_DETAIL) },
+                onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
             )
         }
         composable(
@@ -106,6 +113,20 @@ fun MainTabScreen(
                 },
             )
         }
+        composable(ShellRoutes.COMMUNITY_DETAIL) {
+            CommunityDetailScreen(
+                community = CommunityMockData.detailCommunity,
+                onBack = { navController.popBackStackIfResumed() },
+                onPostClick = { navController.navigate(ShellRoutes.POST_DETAIL) },
+            )
+        }
+        composable(ShellRoutes.POST_DETAIL) {
+            PostDetailScreen(
+                post = CommunityMockData.detailPost,
+                onBack = { navController.popBackStackIfResumed() },
+                onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
+            )
+        }
         composable(ShellRoutes.NOTIFICATIONS) {
             NotificationsScreen(
                 isGuest = isGuest,
@@ -136,6 +157,8 @@ private fun TabShell(
     onViewAll: (SearchScope) -> Unit,
     onMenu: () -> Unit,
     onGameClick: () -> Unit,
+    onPostClick: () -> Unit,
+    onCommunityClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
@@ -148,7 +171,7 @@ private fun TabShell(
             when (selected) {
                 AppTab.HOME -> HomeScreen(onViewAll = onViewAll, onGameClick = onGameClick)
                 AppTab.LIBRARY -> LibraryScreen(onBrowseGames = onSearch, onGameClick = onGameClick)
-                AppTab.COMMUNITY -> CommunityScreen()
+                AppTab.COMMUNITY -> CommunityScreen(onPostClick = onPostClick, onCommunityClick = onCommunityClick)
                 AppTab.PROFILE -> ProfileScreen(isGuest = isGuest, userName = userName)
             }
         }

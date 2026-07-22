@@ -35,7 +35,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import kotlinx.coroutines.delay
 
 private const val REDIRECT_SECONDS = 5
@@ -90,9 +90,7 @@ fun SuccessScreen(
         Text(
             text = title,
             color = AppPrimary,
-            fontFamily = Sora,
-            fontSize = 34.sp,
-            fontWeight = FontWeight.ExtraBold,
+            style = AppType.headline(34.sp, FontWeight.ExtraBold),
             textAlign = TextAlign.Center,
             modifier =
                 Modifier

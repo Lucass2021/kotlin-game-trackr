@@ -28,7 +28,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameSpec
 import com.lucasdias.gametrackr.feature.app.gamedetail.SystemRequirementTier
 
@@ -62,9 +62,7 @@ fun GameSpecificationsSection(
             Text(
                 text = stringResource(R.string.game_detail_system_requirements),
                 color = AppTextPrimary,
-                fontFamily = Sora,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
+                style = AppType.headline(17.sp),
                 modifier = Modifier.padding(top = 6.dp),
             )
 

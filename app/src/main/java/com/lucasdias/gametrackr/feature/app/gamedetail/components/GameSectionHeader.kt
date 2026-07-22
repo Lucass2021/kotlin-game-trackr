@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 
 @Composable
 fun GameSectionHeader(
@@ -29,9 +29,7 @@ fun GameSectionHeader(
         Text(
             text = title,
             color = AppTextPrimary,
-            fontFamily = Sora,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
+            style = AppType.headline(22.sp),
         )
         if (actionText != null && onAction != null) {
             Text(

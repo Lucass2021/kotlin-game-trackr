@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
@@ -28,7 +27,7 @@ import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.addtolibrary.AddToLibrarySheet
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameAboutSection
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameCommunitySection
@@ -76,9 +75,7 @@ fun GameDetailScreen(
             Text(
                 text = game.title,
                 color = AppTextPrimary,
-                fontFamily = Sora,
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
+                style = AppType.headline(30.sp),
                 lineHeight = 36.sp,
             )
 

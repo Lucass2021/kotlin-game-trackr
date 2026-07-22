@@ -34,7 +34,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 
 @Composable
 fun LibraryEmptyState(
@@ -68,9 +68,7 @@ fun LibraryEmptyState(
         Text(
             text = stringResource(R.string.library_empty_title),
             color = AppTextPrimary,
-            fontFamily = Sora,
-            fontSize = 26.sp,
-            fontWeight = FontWeight.ExtraBold,
+            style = AppType.headline(26.sp, FontWeight.ExtraBold),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 28.dp),
         )

@@ -25,7 +25,7 @@ import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 
 @Composable
 fun NotificationsTopBar(
@@ -48,9 +48,7 @@ fun NotificationsTopBar(
         Text(
             text = stringResource(R.string.notifications_title),
             color = AppTextPrimary,
-            fontFamily = Sora,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
+            style = AppType.headline(22.sp),
             modifier = Modifier.weight(1f),
         )
         if (showMarkAllRead) {

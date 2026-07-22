@@ -35,7 +35,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDiscussion
 
 @Composable
@@ -111,9 +111,7 @@ private fun DiscussionCard(discussion: GameDiscussion) {
             Text(
                 text = discussion.title,
                 color = AppTextPrimary,
-                fontFamily = Sora,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
+                style = AppType.headline(17.sp),
             )
 
             Text(

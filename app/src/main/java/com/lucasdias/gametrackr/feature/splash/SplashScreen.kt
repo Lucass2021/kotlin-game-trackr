@@ -43,8 +43,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
-import com.lucasdias.gametrackr.core.ui.theme.Sora
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -116,9 +116,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
             Text(
                 text = stringResource(R.string.app_name),
                 color = AppTextPrimary,
-                fontFamily = Sora,
-                fontSize = 34.sp,
-                fontWeight = FontWeight.Bold,
+                style = AppType.headline(34.sp),
                 modifier =
                     Modifier
                         .padding(top = 32.dp)

@@ -206,6 +206,22 @@
     <string name="add_library_review_placeholder">Write a short review…</string>
     <string name="add_library_save">Save to library</string>
 
+    <string name="community_action_like">Like</string>
+    <string name="community_action_unlike">Unlike</string>
+    <string name="community_action_comment">Comment</string>
+    <string name="community_action_share">Share</string>
+    <string name="community_action_bookmark">Bookmark</string>
+    <string name="community_action_unbookmark">Remove bookmark</string>
+    <string name="community_action_back">Back</string>
+    <string name="community_action_more">More options</string>
+    <string name="community_action_close">Close</string>
+    <string name="community_action_send">Send comment</string>
+    <string name="community_action_like_comment">Like comment</string>
+    <string name="community_action_unlike_comment">Unlike comment</string>
+    <string name="community_action_create_post">Create post</string>
+    <string name="community_action_notifications">Community notifications</string>
+    <string name="community_action_share_community">Share community</string>
+
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
         <item quantity="other">%1$d results</item>

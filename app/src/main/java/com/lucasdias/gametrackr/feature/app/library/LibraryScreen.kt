@@ -26,7 +26,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryFilterChips
@@ -90,9 +90,7 @@ private fun FilterEmptyState(status: LibraryStatus?) {
         Text(
             text = stringResource(R.string.library_filter_empty_title),
             color = AppTextPrimary,
-            fontFamily = Sora,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.ExtraBold,
+            style = AppType.headline(20.sp, FontWeight.ExtraBold),
         )
         Text(
             text =

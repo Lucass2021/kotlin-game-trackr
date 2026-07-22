@@ -35,7 +35,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Inter
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 
 @Composable
 fun SearchTopBar(
@@ -78,20 +78,14 @@ fun SearchTopBar(
                     Text(
                         text = stringResource(R.string.search_placeholder),
                         color = AppTextSecondary,
-                        fontFamily = Inter,
-                        fontSize = 16.sp,
+                        style = AppType.body(16.sp),
                     )
                 }
                 BasicTextField(
                     value = query,
                     onValueChange = onQueryChange,
                     singleLine = true,
-                    textStyle =
-                        TextStyle(
-                            color = AppTextPrimary,
-                            fontFamily = Inter,
-                            fontSize = 16.sp,
-                        ),
+                    textStyle = AppType.body(16.sp).copy(color = AppTextPrimary),
                     cursorBrush = SolidColor(AppPrimary),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     modifier = Modifier.fillMaxWidth(),

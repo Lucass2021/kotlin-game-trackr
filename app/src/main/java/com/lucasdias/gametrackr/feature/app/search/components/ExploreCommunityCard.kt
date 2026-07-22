@@ -33,7 +33,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 
 @Composable
 fun ExploreCommunityCard(
@@ -66,9 +66,7 @@ fun ExploreCommunityCard(
             Text(
                 text = stringResource(R.string.search_cant_find_title),
                 color = AppTextPrimary,
-                fontFamily = Sora,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.ExtraBold,
+                style = AppType.headline(20.sp, FontWeight.ExtraBold),
                 textAlign = TextAlign.Center,
             )
             Text(

@@ -23,7 +23,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Inter
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
 import com.lucasdias.gametrackr.feature.app.library.LibraryEntry
 
@@ -53,9 +53,7 @@ fun LibraryEntryRow(
             Text(
                 text = entry.title,
                 color = AppTextPrimary,
-                fontFamily = Inter,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
+                style = AppType.label(18.sp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

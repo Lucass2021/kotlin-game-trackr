@@ -38,7 +38,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.appshell.components.DetailTopBar
 
 private data class MenuItem(
@@ -119,9 +119,7 @@ private fun AccountHeader(
                 Text(
                     text = name,
                     color = AppTextPrimary,
-                    fontFamily = Sora,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = AppType.headline(18.sp),
                 )
                 Text(
                     text = subtitle,

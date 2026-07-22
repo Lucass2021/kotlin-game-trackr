@@ -23,14 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.Sora
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.search.components.ExploreCommunityCard
 import com.lucasdias.gametrackr.feature.app.search.components.SearchFilterChips
 import com.lucasdias.gametrackr.feature.app.search.components.SearchResultCard
@@ -123,9 +122,7 @@ private fun SectionHeader(
                     else -> stringResource(R.string.search_recent_releases)
                 },
             color = AppTextPrimary,
-            fontFamily = Sora,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
+            style = AppType.headline(22.sp),
         )
         Text(
             text = pluralStringResource(R.plurals.search_result_count, count, count),

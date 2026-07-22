@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,8 +20,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
-import com.lucasdias.gametrackr.core.ui.theme.Sora
 
 @Composable
 fun ComingSoon(
@@ -49,9 +48,7 @@ fun ComingSoon(
         Text(
             text = title,
             color = AppTextPrimary,
-            fontFamily = Sora,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
+            style = AppType.headline(22.sp),
             textAlign = TextAlign.Center,
         )
         Text(
