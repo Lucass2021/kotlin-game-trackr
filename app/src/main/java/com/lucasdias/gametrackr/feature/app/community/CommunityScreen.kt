@@ -32,12 +32,13 @@ import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommuniti
 
 @Composable
 fun CommunityScreen(
+    feed: SnapshotStateList<CommunityPost>,
     onPostClick: () -> Unit,
     onCommunityClick: () -> Unit,
+    onCreatePost: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val communities = remember { CommunityMockData.all.toMutableStateList() }
-    val feed = remember { CommunityMockData.feed.toMutableStateList() }
 
     var segment by remember { mutableStateOf(CommunitySegment.MY_FEED) }
     var feedFilter by remember { mutableStateOf(CommunityMockData.feedFilters.first()) }
@@ -75,7 +76,7 @@ fun CommunityScreen(
 
         if (segment == CommunitySegment.MY_FEED && feed.isNotEmpty()) {
             CreatePostButton(
-                onClick = {},
+                onClick = onCreatePost,
                 modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
             )
         }

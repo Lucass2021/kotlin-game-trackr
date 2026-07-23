@@ -1,5 +1,6 @@
 package com.lucasdias.gametrackr.feature.app.appshell
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,8 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
@@ -21,7 +25,9 @@ import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
 import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
+import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
+import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicScreen
 import com.lucasdias.gametrackr.feature.app.community.detail.CommunityDetailScreen
 import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScreen
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
@@ -43,8 +49,13 @@ private object ShellRoutes {
     const val GAME_DETAIL = "gamedetail"
     const val COMMUNITY_DETAIL = "communitydetail"
     const val POST_DETAIL = "postdetail"
+    const val CREATE_TOPIC = "createtopic"
+    const val CREATE_TOPIC_ARG_COMMUNITY = "community"
+    const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
 
     fun search(scope: SearchScope) = "$SEARCH?$SEARCH_ARG_SCOPE=${scope.name}"
+
+    fun createTopic(communityName: String = "") = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY=${Uri.encode(communityName)}"
 }
 
 private fun NavController.popBackStackIfResumed() {
@@ -62,6 +73,8 @@ fun MainTabScreen(
 ) {
     val navController = rememberNavController()
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
+    val feed = remember { CommunityMockData.feed.toMutableStateList() }
+    val communityPosts = remember { CommunityMockData.communityPosts.toMutableStateList() }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
         composable(ShellRoutes.TABS) {
@@ -70,6 +83,7 @@ fun MainTabScreen(
                 userName = userName,
                 selected = selectedTab,
                 onSelect = { selectedTab = it },
+                feed = feed,
                 onNotifications = { navController.navigate(ShellRoutes.NOTIFICATIONS) },
                 onSearch = { navController.navigate(ShellRoutes.search(SearchScope.ALL)) },
                 onViewAll = { navController.navigate(ShellRoutes.search(it)) },
@@ -77,6 +91,7 @@ fun MainTabScreen(
                 onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
                 onPostClick = { navController.navigate(ShellRoutes.POST_DETAIL) },
                 onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
+                onCreatePost = { navController.navigate(ShellRoutes.createTopic()) },
             )
         }
         composable(
@@ -116,8 +131,34 @@ fun MainTabScreen(
         composable(ShellRoutes.COMMUNITY_DETAIL) {
             CommunityDetailScreen(
                 community = CommunityMockData.detailCommunity,
+                posts = communityPosts,
                 onBack = { navController.popBackStackIfResumed() },
                 onPostClick = { navController.navigate(ShellRoutes.POST_DETAIL) },
+                onCreatePost = {
+                    navController.navigate(ShellRoutes.createTopic(CommunityMockData.detailCommunity.name))
+                },
+            )
+        }
+        composable(
+            route = ShellRoutes.CREATE_TOPIC_ROUTE,
+            arguments =
+                listOf(
+                    navArgument(ShellRoutes.CREATE_TOPIC_ARG_COMMUNITY) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    },
+                ),
+        ) { backStackEntry ->
+            val communityName =
+                backStackEntry.arguments?.getString(ShellRoutes.CREATE_TOPIC_ARG_COMMUNITY).orEmpty()
+            CreateTopicScreen(
+                isGuest = isGuest,
+                communityName = communityName,
+                onBack = { navController.popBackStackIfResumed() },
+                onCreateAccount = onLogout,
+                onPost = { post ->
+                    if (communityName.isBlank()) feed.add(0, post) else communityPosts.add(0, post)
+                },
             )
         }
         composable(ShellRoutes.POST_DETAIL) {
@@ -152,6 +193,7 @@ private fun TabShell(
     userName: String?,
     selected: AppTab,
     onSelect: (AppTab) -> Unit,
+    feed: SnapshotStateList<CommunityPost>,
     onNotifications: () -> Unit,
     onSearch: () -> Unit,
     onViewAll: (SearchScope) -> Unit,
@@ -159,6 +201,7 @@ private fun TabShell(
     onGameClick: () -> Unit,
     onPostClick: () -> Unit,
     onCommunityClick: () -> Unit,
+    onCreatePost: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
@@ -169,10 +212,26 @@ private fun TabShell(
 
         Box(modifier = Modifier.weight(1f).fillMaxSize()) {
             when (selected) {
-                AppTab.HOME -> HomeScreen(onViewAll = onViewAll, onGameClick = onGameClick)
-                AppTab.LIBRARY -> LibraryScreen(onBrowseGames = onSearch, onGameClick = onGameClick)
-                AppTab.COMMUNITY -> CommunityScreen(onPostClick = onPostClick, onCommunityClick = onCommunityClick)
-                AppTab.PROFILE -> ProfileScreen(isGuest = isGuest, userName = userName)
+                AppTab.HOME -> {
+                    HomeScreen(onViewAll = onViewAll, onGameClick = onGameClick)
+                }
+
+                AppTab.LIBRARY -> {
+                    LibraryScreen(onBrowseGames = onSearch, onGameClick = onGameClick)
+                }
+
+                AppTab.COMMUNITY -> {
+                    CommunityScreen(
+                        feed = feed,
+                        onPostClick = onPostClick,
+                        onCommunityClick = onCommunityClick,
+                        onCreatePost = onCreatePost,
+                    )
+                }
+
+                AppTab.PROFILE -> {
+                    ProfileScreen(isGuest = isGuest, userName = userName)
+                }
             }
         }
 

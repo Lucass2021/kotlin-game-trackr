@@ -57,13 +57,14 @@ import com.lucasdias.gametrackr.feature.app.community.components.JoinButton
 @Composable
 fun CommunityDetailScreen(
     community: Community,
+    posts: SnapshotStateList<CommunityPost>,
     onBack: () -> Unit,
     onPostClick: () -> Unit,
+    onCreatePost: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isJoined by remember { mutableStateOf(community.isJoined) }
     var tab by remember { mutableStateOf(CommunityDetailTab.POSTS) }
-    val posts = remember { CommunityMockData.communityPosts.toMutableStateList() }
 
     Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
         LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
@@ -100,7 +101,7 @@ fun CommunityDetailScreen(
                                 title = "No posts yet",
                                 message = "Start the first discussion in this community.",
                                 actionTitle = "Create post",
-                                onAction = {},
+                                onAction = onCreatePost,
                             )
                         }
                     } else {
@@ -135,7 +136,7 @@ fun CommunityDetailScreen(
         BackCircle(icon = AppIcon.OVERFLOW, onClick = {}, modifier = Modifier.align(Alignment.TopEnd))
 
         if (tab == CommunityDetailTab.POSTS && posts.isNotEmpty()) {
-            CreatePostButton(onClick = {}, modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp))
+            CreatePostButton(onClick = onCreatePost, modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp))
         }
     }
 }

@@ -222,6 +222,29 @@
     <string name="community_action_notifications">Community notifications</string>
     <string name="community_action_share_community">Share community</string>
 
+    <string name="create_topic_title">New post</string>
+    <string name="create_topic_submit">Post</string>
+    <string name="create_topic_field_community">Community</string>
+    <string name="create_topic_field_title">Title</string>
+    <string name="create_topic_field_body">Body</string>
+    <string name="create_topic_community_placeholder">Choose a community</string>
+    <string name="create_topic_title_placeholder">What\'s the discussion about?</string>
+    <string name="create_topic_body_placeholder">Share your thoughts with the community…</string>
+    <string name="create_topic_discard_title">Discard this post?</string>
+    <string name="create_topic_discard_confirm">Discard</string>
+    <string name="create_topic_discard_cancel">Keep editing</string>
+    <string name="create_topic_guest_title">Posting needs an account</string>
+    <string name="create_topic_guest_message">You\'re browsing as a guest. Create an account to start discussions in your communities.</string>
+    <string name="create_topic_guest_action">Create an account</string>
+
+    <string name="validation_community_required">Pick a community</string>
+    <string name="validation_topic_title_required">Title is required</string>
+    <string name="validation_topic_title_too_short">At least 3 characters</string>
+    <string name="validation_topic_title_too_long">Title is too long</string>
+    <string name="validation_topic_body_required">Body is required</string>
+    <string name="validation_topic_body_too_short">At least 10 characters</string>
+    <string name="validation_topic_body_too_long">Body is too long</string>
+
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
         <item quantity="other">%1$d results</item>
