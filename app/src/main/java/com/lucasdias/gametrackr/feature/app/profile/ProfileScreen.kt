@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,23 +16,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
+import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
+import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
@@ -176,19 +182,31 @@ private fun GuestState(
     Column(
         modifier = modifier.fillMaxSize().background(AppBackground).padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.Center,
     ) {
-        Icon(
-            imageVector = AppIcon.AVATAR.image(),
-            contentDescription = null,
-            tint = AppPrimary,
-            modifier = Modifier.size(40.dp),
-        )
+        Box(
+            modifier =
+                Modifier
+                    .subtleBounce()
+                    .size(120.dp)
+                    .glow(color = AppPrimary, cornerRadius = 28.dp, blurRadius = 34.dp, alpha = 0.35f)
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(AppSurfaceCard),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = AppIcon.AVATAR.image(),
+                contentDescription = null,
+                tint = AppPrimary,
+                modifier = Modifier.size(56.dp),
+            )
+        }
 
         Text(
             text = stringResource(R.string.profile_guest_title),
             color = AppTextPrimary,
-            style = AppType.headline(22.sp),
+            style = AppType.headline(24.sp),
+            modifier = Modifier.padding(top = 28.dp),
         )
 
         Text(
@@ -196,12 +214,13 @@ private fun GuestState(
             color = AppTextSecondary,
             style = AppType.body(15.sp),
             textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 10.dp),
         )
 
         PrimaryButton(
             text = stringResource(R.string.profile_guest_action),
             onClick = onCreateAccount,
-            modifier = Modifier.padding(top = 10.dp),
+            modifier = Modifier.padding(top = 28.dp),
         )
     }
 }
