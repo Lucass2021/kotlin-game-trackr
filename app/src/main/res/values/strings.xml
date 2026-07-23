@@ -138,6 +138,22 @@
     <string name="profile_title_fallback">Profile</string>
     <string name="profile_guest_subtitle">Create an account to build a public profile with your stats.</string>
     <string name="profile_subtitle">Your public profile and stats are coming next.</string>
+    <string name="profile_guest_action">Create an account</string>
+    <string name="profile_action_edit">Edit profile</string>
+    <string name="profile_action_share">Share profile</string>
+    <string name="profile_stat_games">Games</string>
+    <string name="profile_stat_hours">Hours</string>
+    <string name="profile_stat_platinum">Platinum</string>
+    <string name="profile_section_breakdown">Breakdown</string>
+    <string name="profile_section_favorites">Favorites</string>
+    <string name="profile_section_currently_playing">Currently playing</string>
+    <string name="profile_section_activity">Recent activity</string>
+    <string name="profile_section_view_all">View all</string>
+    <string name="profile_activity_platinum">Platinum on</string>
+    <string name="profile_activity_completed">Completed</string>
+    <string name="profile_activity_started">Started playing</string>
+    <string name="profile_activity_rated">Rated</string>
+    <string name="profile_activity_added">Added to library</string>
 
     <string name="search_placeholder">Search games…</string>
     <string name="search_scope_all">Search</string>

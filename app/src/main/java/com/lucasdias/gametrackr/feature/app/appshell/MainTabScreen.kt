@@ -33,6 +33,7 @@ import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScree
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
 import com.lucasdias.gametrackr.feature.app.home.HomeScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
+import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
 import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
@@ -75,15 +76,22 @@ fun MainTabScreen(
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
     val feed = remember { CommunityMockData.feed.toMutableStateList() }
     val communityPosts = remember { CommunityMockData.communityPosts.toMutableStateList() }
+    var libraryFilter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
         composable(ShellRoutes.TABS) {
             TabShell(
                 isGuest = isGuest,
-                userName = userName,
                 selected = selectedTab,
                 onSelect = { selectedTab = it },
                 feed = feed,
+                libraryFilter = libraryFilter,
+                onLibraryFilterChange = { libraryFilter = it },
+                onStatusClick = { status ->
+                    libraryFilter = status
+                    selectedTab = AppTab.LIBRARY
+                },
+                onCreateAccount = onLogout,
                 onNotifications = { navController.navigate(ShellRoutes.NOTIFICATIONS) },
                 onSearch = { navController.navigate(ShellRoutes.search(SearchScope.ALL)) },
                 onViewAll = { navController.navigate(ShellRoutes.search(it)) },
@@ -190,10 +198,11 @@ fun MainTabScreen(
 @Composable
 private fun TabShell(
     isGuest: Boolean,
-    userName: String?,
     selected: AppTab,
     onSelect: (AppTab) -> Unit,
     feed: SnapshotStateList<CommunityPost>,
+    libraryFilter: LibraryStatus?,
+    onLibraryFilterChange: (LibraryStatus?) -> Unit,
     onNotifications: () -> Unit,
     onSearch: () -> Unit,
     onViewAll: (SearchScope) -> Unit,
@@ -202,6 +211,8 @@ private fun TabShell(
     onPostClick: () -> Unit,
     onCommunityClick: () -> Unit,
     onCreatePost: () -> Unit,
+    onStatusClick: (LibraryStatus) -> Unit,
+    onCreateAccount: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
@@ -217,7 +228,12 @@ private fun TabShell(
                 }
 
                 AppTab.LIBRARY -> {
-                    LibraryScreen(onBrowseGames = onSearch, onGameClick = onGameClick)
+                    LibraryScreen(
+                        filter = libraryFilter,
+                        onFilterChange = onLibraryFilterChange,
+                        onBrowseGames = onSearch,
+                        onGameClick = onGameClick,
+                    )
                 }
 
                 AppTab.COMMUNITY -> {
@@ -230,7 +246,13 @@ private fun TabShell(
                 }
 
                 AppTab.PROFILE -> {
-                    ProfileScreen(isGuest = isGuest, userName = userName)
+                    ProfileScreen(
+                        isGuest = isGuest,
+                        onGameClick = onGameClick,
+                        onStatusClick = onStatusClick,
+                        onEditProfile = onMenu,
+                        onCreateAccount = onCreateAccount,
+                    )
                 }
             }
         }

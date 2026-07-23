@@ -34,12 +34,13 @@ import com.lucasdias.gametrackr.feature.app.library.components.LibraryStatsBar
 
 @Composable
 fun LibraryScreen(
+    filter: LibraryStatus?,
+    onFilterChange: (LibraryStatus?) -> Unit,
     modifier: Modifier = Modifier,
     onBrowseGames: () -> Unit = {},
     onGameClick: () -> Unit = {},
 ) {
     val entries = LibraryMockData.entries
-    var filter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
     val filteredEntries = if (filter == null) entries else entries.filter { it.status == filter }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
@@ -52,7 +53,7 @@ fun LibraryScreen(
 
         LibraryFilterChips(
             selection = filter,
-            onSelect = { filter = it },
+            onSelect = onFilterChange,
             modifier = Modifier.padding(top = if (entries.isEmpty()) 12.dp else 0.dp, bottom = 14.dp),
         )
 
