@@ -10,10 +10,12 @@ import com.adamglin.phosphoricons.regular.CalendarBlank
 import com.adamglin.phosphoricons.regular.CaretDown
 import com.adamglin.phosphoricons.regular.CaretLeft
 import com.adamglin.phosphoricons.regular.CaretRight
+import com.adamglin.phosphoricons.regular.ChartLineUp
 import com.adamglin.phosphoricons.regular.ChatCircle
 import com.adamglin.phosphoricons.regular.Check
 import com.adamglin.phosphoricons.regular.CheckCircle
 import com.adamglin.phosphoricons.regular.Compass
+import com.adamglin.phosphoricons.regular.Devices
 import com.adamglin.phosphoricons.regular.DotsThree
 import com.adamglin.phosphoricons.regular.Envelope
 import com.adamglin.phosphoricons.regular.Eye
@@ -34,6 +36,7 @@ import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.adamglin.phosphoricons.regular.SquaresFour
 import com.adamglin.phosphoricons.regular.Stack
+import com.adamglin.phosphoricons.regular.Trophy
 import com.adamglin.phosphoricons.regular.User
 import com.adamglin.phosphoricons.regular.UserCircle
 import com.adamglin.phosphoricons.regular.UsersThree
@@ -44,10 +47,12 @@ import com.adamglin.phosphoricons.fill.CalendarBlank as CalendarBlankFill
 import com.adamglin.phosphoricons.fill.CaretDown as CaretDownFill
 import com.adamglin.phosphoricons.fill.CaretLeft as CaretLeftFill
 import com.adamglin.phosphoricons.fill.CaretRight as CaretRightFill
+import com.adamglin.phosphoricons.fill.ChartLineUp as ChartLineUpFill
 import com.adamglin.phosphoricons.fill.ChatCircle as ChatCircleFill
 import com.adamglin.phosphoricons.fill.Check as CheckFill
 import com.adamglin.phosphoricons.fill.CheckCircle as CheckCircleFill
 import com.adamglin.phosphoricons.fill.Compass as CompassFill
+import com.adamglin.phosphoricons.fill.Devices as DevicesFill
 import com.adamglin.phosphoricons.fill.DotsThree as DotsThreeFill
 import com.adamglin.phosphoricons.fill.Envelope as EnvelopeFill
 import com.adamglin.phosphoricons.fill.Eye as EyeFill
@@ -68,6 +73,7 @@ import com.adamglin.phosphoricons.fill.ShareNetwork as ShareNetworkFill
 import com.adamglin.phosphoricons.fill.ShieldCheck as ShieldCheckFill
 import com.adamglin.phosphoricons.fill.SquaresFour as SquaresFourFill
 import com.adamglin.phosphoricons.fill.Stack as StackFill
+import com.adamglin.phosphoricons.fill.Trophy as TrophyFill
 import com.adamglin.phosphoricons.fill.User as UserFill
 import com.adamglin.phosphoricons.fill.UserCircle as UserCircleFill
 import com.adamglin.phosphoricons.fill.UsersThree as UsersThreeFill
@@ -97,9 +103,12 @@ enum class AppIcon(
     AVATAR(PhosphorIcons.Regular.UserCircle, PhosphorIcons.Fill.UserCircleFill),
     EDIT_PROFILE(PhosphorIcons.Regular.UserCircle, PhosphorIcons.Fill.UserCircleFill),
     MEDAL(PhosphorIcons.Regular.Medal, PhosphorIcons.Fill.MedalFill),
+    TROPHY(PhosphorIcons.Regular.Trophy, PhosphorIcons.Fill.TrophyFill),
     INFO(PhosphorIcons.Regular.Info, PhosphorIcons.Fill.InfoFill),
     GRID(PhosphorIcons.Regular.SquaresFour, PhosphorIcons.Fill.SquaresFourFill),
     LIST(PhosphorIcons.Regular.ListBullets, PhosphorIcons.Fill.ListBulletsFill),
+    CHART(PhosphorIcons.Regular.ChartLineUp, PhosphorIcons.Fill.ChartLineUpFill),
+    DEVICES(PhosphorIcons.Regular.Devices, PhosphorIcons.Fill.DevicesFill),
     HELP(PhosphorIcons.Regular.Question, PhosphorIcons.Fill.QuestionFill),
     LIKE(PhosphorIcons.Regular.Heart, PhosphorIcons.Fill.HeartFill),
     SHARE(PhosphorIcons.Regular.ShareNetwork, PhosphorIcons.Fill.ShareNetworkFill),

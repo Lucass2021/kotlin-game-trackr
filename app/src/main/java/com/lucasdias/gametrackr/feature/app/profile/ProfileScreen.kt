@@ -56,6 +56,7 @@ fun ProfileScreen(
     onStatusClick: (LibraryStatus) -> Unit,
     onEditProfile: () -> Unit,
     onCreateAccount: () -> Unit,
+    onViewStats: () -> Unit,
     modifier: Modifier = Modifier,
     profile: Profile = ProfileMockData.profile,
 ) {
@@ -74,7 +75,11 @@ fun ProfileScreen(
         }
 
         item {
-            ProfileStatsBar(stats = profile.stats, modifier = Modifier.padding(horizontal = 20.dp))
+            ProfileStatsBar(
+                stats = profile.stats,
+                modifier = Modifier.padding(horizontal = 20.dp),
+                onClick = onViewStats,
+            )
             Spacer(Modifier.height(26.dp))
         }
 

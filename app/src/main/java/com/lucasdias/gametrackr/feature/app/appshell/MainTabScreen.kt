@@ -39,6 +39,7 @@ import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
+import com.lucasdias.gametrackr.feature.app.stats.StatsScreen
 
 private object ShellRoutes {
     const val TABS = "tabs"
@@ -50,6 +51,7 @@ private object ShellRoutes {
     const val GAME_DETAIL = "gamedetail"
     const val COMMUNITY_DETAIL = "communitydetail"
     const val POST_DETAIL = "postdetail"
+    const val STATS = "stats"
     const val CREATE_TOPIC = "createtopic"
     const val CREATE_TOPIC_ARG_COMMUNITY = "community"
     const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
@@ -100,6 +102,7 @@ fun MainTabScreen(
                 onPostClick = { navController.navigate(ShellRoutes.POST_DETAIL) },
                 onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
                 onCreatePost = { navController.navigate(ShellRoutes.createTopic()) },
+                onViewStats = { navController.navigate(ShellRoutes.STATS) },
             )
         }
         composable(
@@ -190,6 +193,13 @@ fun MainTabScreen(
                 email = email,
                 onBack = { navController.popBackStackIfResumed() },
                 onLogout = onLogout,
+                onStats = { navController.navigate(ShellRoutes.STATS) },
+            )
+        }
+        composable(ShellRoutes.STATS) {
+            StatsScreen(
+                onBack = { navController.popBackStackIfResumed() },
+                onAchievements = {},
             )
         }
     }
@@ -213,6 +223,7 @@ private fun TabShell(
     onCreatePost: () -> Unit,
     onStatusClick: (LibraryStatus) -> Unit,
     onCreateAccount: () -> Unit,
+    onViewStats: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
@@ -252,6 +263,7 @@ private fun TabShell(
                         onStatusClick = onStatusClick,
                         onEditProfile = onMenu,
                         onCreateAccount = onCreateAccount,
+                        onViewStats = onViewStats,
                     )
                 }
             }

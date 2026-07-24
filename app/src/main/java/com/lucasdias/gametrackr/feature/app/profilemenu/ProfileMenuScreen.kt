@@ -26,7 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
@@ -41,10 +41,13 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.appshell.components.DetailTopBar
+import com.lucasdias.gametrackr.feature.app.profile.Profile
+import com.lucasdias.gametrackr.feature.app.profile.ProfileMockData
 
 private data class MenuItem(
     val icon: AppIcon,
     val title: String,
+    val onClick: () -> Unit = {},
 )
 
 @Composable
@@ -54,6 +57,8 @@ fun ProfileMenuScreen(
     email: String?,
     onBack: () -> Unit,
     onLogout: () -> Unit,
+    onStats: () -> Unit,
+    profile: Profile = ProfileMockData.profile,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         DetailTopBar(title = stringResource(R.string.menu_title), onBack = onBack)
@@ -65,13 +70,12 @@ fun ProfileMenuScreen(
                     .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            AccountHeader(isGuest = isGuest, userName = userName, email = email)
+            AccountHeader(isGuest = isGuest, userName = userName, email = email, profile = profile)
 
             MenuSection(
                 listOf(
                     MenuItem(AppIcon.EDIT_PROFILE, stringResource(R.string.menu_edit_profile)),
-                    MenuItem(AppIcon.GRID, stringResource(R.string.menu_my_collection)),
-                    MenuItem(AppIcon.LIST, stringResource(R.string.menu_my_lists)),
+                    MenuItem(AppIcon.CHART, stringResource(R.string.menu_my_stats), onStats),
                     MenuItem(AppIcon.MEDAL, stringResource(R.string.menu_achievements)),
                 ),
             )
@@ -94,15 +98,20 @@ private fun AccountHeader(
     isGuest: Boolean,
     userName: String?,
     email: String?,
+    profile: Profile,
 ) {
     val name =
         when {
             isGuest -> stringResource(R.string.menu_guest_name)
             !userName.isNullOrBlank() -> userName
-            else -> stringResource(R.string.profile_title_fallback)
+            else -> profile.name
         }
     val subtitle =
-        if (isGuest) stringResource(R.string.menu_not_signed_in) else email.orEmpty()
+        when {
+            isGuest -> stringResource(R.string.menu_not_signed_in)
+            !email.isNullOrBlank() -> email
+            else -> profile.username
+        }
 
     Surface(color = AppSurfaceCard, shape = RoundedCornerShape(16.dp)) {
         Row(
@@ -122,11 +131,13 @@ private fun AccountHeader(
                     color = AppTextPrimary,
                     style = AppType.headline(18.sp),
                 )
-                Text(
-                    text = subtitle,
-                    color = AppTextSecondary,
-                    fontSize = 14.sp,
-                )
+                if (subtitle.isNotEmpty()) {
+                    Text(
+                        text = subtitle,
+                        color = AppTextSecondary,
+                        style = AppType.body(14.sp),
+                    )
+                }
             }
         }
     }
@@ -157,8 +168,13 @@ private fun MenuRow(item: MenuItem) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable(interactionSource = interactionSource, indication = null) {}
-                .padding(horizontal = 16.dp, vertical = 15.dp),
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClickLabel = item.title,
+                    role = Role.Button,
+                    onClick = item.onClick,
+                ).padding(horizontal = 16.dp, vertical = 15.dp),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -173,8 +189,7 @@ private fun MenuRow(item: MenuItem) {
         Text(
             text = item.title,
             color = AppTextPrimary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
+            style = AppType.label(16.sp),
             modifier = Modifier.weight(1f),
         )
         Icon(
