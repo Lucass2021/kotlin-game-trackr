@@ -47,6 +47,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.CommunityDetailTab
+import com.lucasdias.gametrackr.feature.app.community.CommunityMember
 import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
@@ -61,6 +62,7 @@ fun CommunityDetailScreen(
     onBack: () -> Unit,
     onPostClick: () -> Unit,
     onCreatePost: () -> Unit,
+    onMemberClick: (CommunityMember) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isJoined by remember { mutableStateOf(community.isJoined) }
@@ -127,7 +129,7 @@ fun CommunityDetailScreen(
                 }
 
                 CommunityDetailTab.MEMBERS -> {
-                    item { CommunityMembersSection() }
+                    item { CommunityMembersSection(onMemberClick = onMemberClick) }
                 }
             }
         }

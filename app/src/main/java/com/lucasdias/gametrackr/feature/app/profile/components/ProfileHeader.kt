@@ -41,6 +41,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
 import com.lucasdias.gametrackr.feature.app.profile.Profile
+import com.lucasdias.gametrackr.feature.app.profile.ProfileHeaderMode
 
 private val AvatarSize = 88.dp
 private val AvatarOverhang = 44.dp
@@ -48,9 +49,12 @@ private val AvatarOverhang = 44.dp
 @Composable
 fun ProfileHeader(
     profile: Profile,
-    onEdit: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
+    mode: ProfileHeaderMode = ProfileHeaderMode.Own,
+    onEdit: () -> Unit = {},
+    onAddFriend: () -> Unit = {},
+    onMessage: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -99,7 +103,13 @@ fun ProfileHeader(
 
             Text(text = profile.joinedAt, color = AppTextSecondary, style = AppType.body(13.sp))
 
-            Actions(onEdit = onEdit, onShare = onShare)
+            Actions(
+                mode = mode,
+                onEdit = onEdit,
+                onShare = onShare,
+                onAddFriend = onAddFriend,
+                onMessage = onMessage,
+            )
         }
     }
 }
@@ -134,66 +144,157 @@ private fun Banner(profile: Profile) {
 
 @Composable
 private fun Actions(
+    mode: ProfileHeaderMode,
     onEdit: () -> Unit,
     onShare: () -> Unit,
+    onAddFriend: () -> Unit,
+    onMessage: () -> Unit,
 ) {
-    val editInteraction = remember { MutableInteractionSource() }
-    val shareInteraction = remember { MutableInteractionSource() }
-    val shareLabel = stringResource(R.string.profile_action_share)
-
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Row(
-            modifier =
-                Modifier
-                    .pressScale(editInteraction)
-                    .weight(1f)
-                    .height(46.dp)
-                    .clip(CircleShape)
-                    .background(AppPrimary)
-                    .clickable(
-                        interactionSource = editInteraction,
-                        indication = null,
-                        role = Role.Button,
-                        onClick = onEdit,
-                    ),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = AppIcon.EDIT_PROFILE.image(),
-                contentDescription = null,
-                tint = AppOnPrimary,
-                modifier = Modifier.size(18.dp),
-            )
-            Text(
-                text = stringResource(R.string.profile_action_edit),
-                color = AppOnPrimary,
-                style = AppType.label(15.sp),
-            )
-        }
+        when (mode) {
+            ProfileHeaderMode.Own -> {
+                PrimaryPill(
+                    icon = AppIcon.EDIT_PROFILE,
+                    text = stringResource(R.string.profile_action_edit),
+                    onClick = onEdit,
+                    modifier = Modifier.weight(1f),
+                )
+                CircleAction(
+                    icon = AppIcon.SHARE,
+                    label = stringResource(R.string.profile_action_share),
+                    onClick = onShare,
+                )
+            }
 
-        Box(
-            modifier =
-                Modifier
-                    .pressScale(shareInteraction)
-                    .size(46.dp)
-                    .clip(CircleShape)
-                    .border(1.dp, AppOutline, CircleShape)
-                    .clickable(
-                        interactionSource = shareInteraction,
-                        indication = null,
-                        onClickLabel = shareLabel,
-                        role = Role.Button,
-                        onClick = onShare,
-                    ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = AppIcon.SHARE.image(),
-                contentDescription = shareLabel,
-                tint = AppTextPrimary,
-                modifier = Modifier.size(20.dp),
-            )
+            is ProfileHeaderMode.Other -> {
+                if (mode.isFriend) {
+                    SecondaryPill(
+                        icon = AppIcon.CHECK,
+                        text = stringResource(R.string.profile_action_friends),
+                        onClick = onAddFriend,
+                        modifier = Modifier.weight(1f),
+                    )
+                } else {
+                    PrimaryPill(
+                        icon = AppIcon.ADD_FRIEND,
+                        text = stringResource(R.string.profile_action_add_friend),
+                        onClick = onAddFriend,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                CircleAction(
+                    icon = AppIcon.ENVELOPE,
+                    label = stringResource(R.string.profile_action_message),
+                    onClick = onMessage,
+                )
+                CircleAction(
+                    icon = AppIcon.SHARE,
+                    label = stringResource(R.string.profile_action_share),
+                    onClick = onShare,
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun PrimaryPill(
+    icon: AppIcon,
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    Row(
+        modifier =
+            modifier
+                .pressScale(interaction)
+                .height(46.dp)
+                .clip(CircleShape)
+                .background(AppPrimary)
+                .clickable(
+                    interactionSource = interaction,
+                    indication = null,
+                    onClickLabel = text,
+                    role = Role.Button,
+                    onClick = onClick,
+                ),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = icon.image(),
+            contentDescription = null,
+            tint = AppOnPrimary,
+            modifier = Modifier.size(18.dp),
+        )
+        Text(text = text, color = AppOnPrimary, style = AppType.label(15.sp))
+    }
+}
+
+@Composable
+private fun SecondaryPill(
+    icon: AppIcon,
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    Row(
+        modifier =
+            modifier
+                .pressScale(interaction)
+                .height(46.dp)
+                .clip(CircleShape)
+                .border(1.dp, AppOutline, CircleShape)
+                .clickable(
+                    interactionSource = interaction,
+                    indication = null,
+                    onClickLabel = text,
+                    role = Role.Button,
+                    onClick = onClick,
+                ),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = icon.image(),
+            contentDescription = null,
+            tint = AppTextPrimary,
+            modifier = Modifier.size(18.dp),
+        )
+        Text(text = text, color = AppTextPrimary, style = AppType.label(15.sp))
+    }
+}
+
+@Composable
+private fun CircleAction(
+    icon: AppIcon,
+    label: String,
+    onClick: () -> Unit,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    Box(
+        modifier =
+            Modifier
+                .pressScale(interaction)
+                .size(46.dp)
+                .clip(CircleShape)
+                .border(1.dp, AppOutline, CircleShape)
+                .clickable(
+                    interactionSource = interaction,
+                    indication = null,
+                    onClickLabel = label,
+                    role = Role.Button,
+                    onClick = onClick,
+                ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon.image(),
+            contentDescription = label,
+            tint = AppTextPrimary,
+            modifier = Modifier.size(20.dp),
+        )
     }
 }

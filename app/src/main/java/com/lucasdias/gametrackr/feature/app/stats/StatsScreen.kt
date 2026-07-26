@@ -34,11 +34,11 @@ fun StatsScreen(
         if (ownerName == null) {
             stringResource(R.string.stats_title_own)
         } else {
-            stringResource(R.string.stats_title_other, ownerName)
+            stringResource(R.string.stats_title)
         }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
-        StatsTopBar(title = title, onBack = onBack, onShare = {})
+        StatsTopBar(title = title, subtitle = ownerName, onBack = onBack, onShare = {})
 
         LazyColumn(
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),

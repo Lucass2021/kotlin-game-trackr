@@ -140,6 +140,13 @@
     <string name="profile_guest_action">Create an account</string>
     <string name="profile_action_edit">Edit profile</string>
     <string name="profile_action_share">Share profile</string>
+    <string name="profile_action_add_friend">Add friend</string>
+    <string name="profile_action_friends">Friends</string>
+    <string name="profile_action_message">Send message</string>
+    <string name="profile_more_options">More options</string>
+    <string name="user_profile_back">Back</string>
+    <string name="user_profile_guest_add_friend">You\'re browsing as a guest. Create an account to add friends.</string>
+    <string name="user_profile_guest_message">You\'re browsing as a guest. Create an account to send messages.</string>
     <string name="profile_stat_games">Games</string>
     <string name="profile_stat_hours">Hours</string>
     <string name="profile_stat_platinum">Platinum</string>
@@ -194,7 +201,7 @@
     <string name="menu_exit_guest">Exit guest mode</string>
 
     <string name="stats_title_own">Your Stats</string>
-    <string name="stats_title_other">%1$s\'s Stats</string>
+    <string name="stats_title">Stats</string>
     <string name="stats_share">Share stats</string>
     <string name="stats_view_full">View full stats</string>
     <string name="stats_highlight_games">Games</string>

@@ -39,6 +39,7 @@ import com.adamglin.phosphoricons.regular.Stack
 import com.adamglin.phosphoricons.regular.Trophy
 import com.adamglin.phosphoricons.regular.User
 import com.adamglin.phosphoricons.regular.UserCircle
+import com.adamglin.phosphoricons.regular.UserPlus
 import com.adamglin.phosphoricons.regular.UsersThree
 import com.adamglin.phosphoricons.regular.X
 import com.adamglin.phosphoricons.fill.Bell as BellFill
@@ -76,6 +77,7 @@ import com.adamglin.phosphoricons.fill.Stack as StackFill
 import com.adamglin.phosphoricons.fill.Trophy as TrophyFill
 import com.adamglin.phosphoricons.fill.User as UserFill
 import com.adamglin.phosphoricons.fill.UserCircle as UserCircleFill
+import com.adamglin.phosphoricons.fill.UserPlus as UserPlusFill
 import com.adamglin.phosphoricons.fill.UsersThree as UsersThreeFill
 import com.adamglin.phosphoricons.fill.X as XFill
 
@@ -102,6 +104,7 @@ enum class AppIcon(
     BRAND(PhosphorIcons.Regular.GameController, PhosphorIcons.Fill.GameControllerFill),
     AVATAR(PhosphorIcons.Regular.UserCircle, PhosphorIcons.Fill.UserCircleFill),
     EDIT_PROFILE(PhosphorIcons.Regular.UserCircle, PhosphorIcons.Fill.UserCircleFill),
+    ADD_FRIEND(PhosphorIcons.Regular.UserPlus, PhosphorIcons.Fill.UserPlusFill),
     MEDAL(PhosphorIcons.Regular.Medal, PhosphorIcons.Fill.MedalFill),
     TROPHY(PhosphorIcons.Regular.Trophy, PhosphorIcons.Fill.TrophyFill),
     INFO(PhosphorIcons.Regular.Info, PhosphorIcons.Fill.InfoFill),

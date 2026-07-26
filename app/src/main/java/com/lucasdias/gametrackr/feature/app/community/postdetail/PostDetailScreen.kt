@@ -59,6 +59,7 @@ fun PostDetailScreen(
     post: CommunityPost,
     onBack: () -> Unit,
     onCommunityClick: () -> Unit,
+    onAuthorClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isLiked by remember { mutableStateOf(post.isLiked) }
@@ -79,7 +80,12 @@ fun PostDetailScreen(
                     .padding(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            AuthorRow(post = post, isFollowing = isFollowing, onFollow = { isFollowing = !isFollowing })
+            AuthorRow(
+                post = post,
+                isFollowing = isFollowing,
+                onFollow = { isFollowing = !isFollowing },
+                onAuthorClick = onAuthorClick,
+            )
             CommunityChip(name = post.communityName, onClick = onCommunityClick)
             Text(
                 text = post.title,
@@ -187,21 +193,38 @@ private fun AuthorRow(
     post: CommunityPost,
     isFollowing: Boolean,
     onFollow: () -> Unit,
+    onAuthorClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val authorInteraction = remember { MutableInteractionSource() }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        CommunityAvatar(start = post.avatarStart, end = post.avatarEnd, size = 44.dp)
-        Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
-            Text(
-                text = post.author,
-                color = AppPrimary,
-                style = AppType.label(15.sp),
-            )
-            Text(
-                text = post.timeAgo,
-                color = AppTextSecondary,
-                style = AppType.body(13.sp),
-            )
+        Row(
+            modifier =
+                Modifier
+                    .pressScale(authorInteraction)
+                    .weight(1f)
+                    .clickable(
+                        interactionSource = authorInteraction,
+                        indication = null,
+                        onClickLabel = post.author,
+                        role = Role.Button,
+                        onClick = onAuthorClick,
+                    ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CommunityAvatar(start = post.avatarStart, end = post.avatarEnd, size = 44.dp)
+            Column(modifier = Modifier.padding(start = 12.dp)) {
+                Text(
+                    text = post.author,
+                    color = AppPrimary,
+                    style = AppType.label(15.sp),
+                )
+                Text(
+                    text = post.timeAgo,
+                    color = AppTextSecondary,
+                    style = AppType.body(13.sp),
+                )
+            }
         }
         val shape = CircleShape
         Text(

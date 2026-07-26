@@ -36,6 +36,8 @@ import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
 import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
+import com.lucasdias.gametrackr.feature.app.profile.UserProfileMockData
+import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
@@ -52,11 +54,20 @@ private object ShellRoutes {
     const val COMMUNITY_DETAIL = "communitydetail"
     const val POST_DETAIL = "postdetail"
     const val STATS = "stats"
+    const val STATS_ARG_OWNER = "owner"
+    const val STATS_ROUTE = "$STATS?$STATS_ARG_OWNER={$STATS_ARG_OWNER}"
+    const val USER_PROFILE = "userprofile"
+    const val USER_PROFILE_ARG_NAME = "name"
+    const val USER_PROFILE_ROUTE = "$USER_PROFILE?$USER_PROFILE_ARG_NAME={$USER_PROFILE_ARG_NAME}"
     const val CREATE_TOPIC = "createtopic"
     const val CREATE_TOPIC_ARG_COMMUNITY = "community"
     const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
 
     fun search(scope: SearchScope) = "$SEARCH?$SEARCH_ARG_SCOPE=${scope.name}"
+
+    fun stats(ownerName: String = "") = "$STATS?$STATS_ARG_OWNER=${Uri.encode(ownerName)}"
+
+    fun userProfile(name: String) = "$USER_PROFILE?$USER_PROFILE_ARG_NAME=${Uri.encode(name)}"
 
     fun createTopic(communityName: String = "") = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY=${Uri.encode(communityName)}"
 }
@@ -102,7 +113,7 @@ fun MainTabScreen(
                 onPostClick = { navController.navigate(ShellRoutes.POST_DETAIL) },
                 onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
                 onCreatePost = { navController.navigate(ShellRoutes.createTopic()) },
-                onViewStats = { navController.navigate(ShellRoutes.STATS) },
+                onViewStats = { navController.navigate(ShellRoutes.stats()) },
             )
         }
         composable(
@@ -148,6 +159,9 @@ fun MainTabScreen(
                 onCreatePost = {
                     navController.navigate(ShellRoutes.createTopic(CommunityMockData.detailCommunity.name))
                 },
+                onMemberClick = { member ->
+                    navController.navigate(ShellRoutes.userProfile(member.author))
+                },
             )
         }
         composable(
@@ -177,6 +191,9 @@ fun MainTabScreen(
                 post = CommunityMockData.detailPost,
                 onBack = { navController.popBackStackIfResumed() },
                 onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
+                onAuthorClick = {
+                    navController.navigate(ShellRoutes.userProfile(CommunityMockData.detailPost.author))
+                },
             )
         }
         composable(ShellRoutes.NOTIFICATIONS) {
@@ -193,13 +210,43 @@ fun MainTabScreen(
                 email = email,
                 onBack = { navController.popBackStackIfResumed() },
                 onLogout = onLogout,
-                onStats = { navController.navigate(ShellRoutes.STATS) },
+                onStats = { navController.navigate(ShellRoutes.stats()) },
             )
         }
-        composable(ShellRoutes.STATS) {
+        composable(
+            route = ShellRoutes.STATS_ROUTE,
+            arguments =
+                listOf(
+                    navArgument(ShellRoutes.STATS_ARG_OWNER) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    },
+                ),
+        ) { backStackEntry ->
+            val owner = backStackEntry.arguments?.getString(ShellRoutes.STATS_ARG_OWNER).orEmpty()
             StatsScreen(
                 onBack = { navController.popBackStackIfResumed() },
                 onAchievements = {},
+                ownerName = owner.ifBlank { null },
+            )
+        }
+        composable(
+            route = ShellRoutes.USER_PROFILE_ROUTE,
+            arguments =
+                listOf(
+                    navArgument(ShellRoutes.USER_PROFILE_ARG_NAME) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    },
+                ),
+        ) { backStackEntry ->
+            val name = backStackEntry.arguments?.getString(ShellRoutes.USER_PROFILE_ARG_NAME).orEmpty()
+            UserProfileScreen(
+                user = UserProfileMockData.forName(name),
+                isGuest = isGuest,
+                onBack = { navController.popBackStackIfResumed() },
+                onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
+                onViewStats = { navController.navigate(ShellRoutes.stats(name)) },
             )
         }
     }

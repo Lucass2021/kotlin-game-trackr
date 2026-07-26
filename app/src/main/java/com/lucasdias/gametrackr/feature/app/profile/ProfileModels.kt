@@ -31,6 +31,14 @@ data class ProfileStats(
         get() = if (totalGames == 0) 0 else (platinum.toDouble() / totalGames * 100).roundToInt()
 }
 
+sealed interface ProfileHeaderMode {
+    data object Own : ProfileHeaderMode
+
+    data class Other(
+        val isFriend: Boolean,
+    ) : ProfileHeaderMode
+}
+
 data class StatusCount(
     val status: LibraryStatus,
     val count: Int,
