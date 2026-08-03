@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -58,27 +58,37 @@ fun ProfileMenuScreen(
     onBack: () -> Unit,
     onLogout: () -> Unit,
     onStats: () -> Unit,
+    onEditProfile: () -> Unit,
     profile: Profile = ProfileMockData.profile,
 ) {
-    Column(modifier = Modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(AppBackground)
+                .statusBarsPadding()
+                .navigationBarsPadding(),
+    ) {
         DetailTopBar(title = stringResource(R.string.menu_title), onBack = onBack)
         Column(
             modifier =
                 Modifier
-                    .fillMaxSize()
+                    .weight(1f)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             AccountHeader(isGuest = isGuest, userName = userName, email = email, profile = profile)
 
-            MenuSection(
-                listOf(
-                    MenuItem(AppIcon.EDIT_PROFILE, stringResource(R.string.menu_edit_profile)),
-                    MenuItem(AppIcon.CHART, stringResource(R.string.menu_my_stats), onStats),
-                    MenuItem(AppIcon.MEDAL, stringResource(R.string.menu_achievements)),
-                ),
-            )
+            if (!isGuest) {
+                MenuSection(
+                    listOf(
+                        MenuItem(AppIcon.EDIT_PROFILE, stringResource(R.string.menu_edit_profile), onEditProfile),
+                        MenuItem(AppIcon.CHART, stringResource(R.string.menu_my_stats), onStats),
+                        MenuItem(AppIcon.MEDAL, stringResource(R.string.menu_achievements)),
+                    ),
+                )
+            }
 
             MenuSection(
                 listOf(
@@ -87,9 +97,13 @@ fun ProfileMenuScreen(
                     MenuItem(AppIcon.INFO, stringResource(R.string.menu_about)),
                 ),
             )
-
-            SessionSection(isGuest = isGuest, onLogout = onLogout)
         }
+
+        SessionSection(
+            isGuest = isGuest,
+            onLogout = onLogout,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+        )
     }
 }
 
@@ -205,14 +219,14 @@ private fun MenuRow(item: MenuItem) {
 private fun SessionSection(
     isGuest: Boolean,
     onLogout: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    if (isGuest) {
-        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        if (isGuest) {
             PrimaryButton(text = stringResource(R.string.menu_create_account), onClick = onLogout)
             SecondaryButton(text = stringResource(R.string.menu_exit_guest), onClick = onLogout)
+        } else {
+            SecondaryButton(text = stringResource(R.string.sign_out), onClick = onLogout)
         }
-    } else {
-        SecondaryButton(text = stringResource(R.string.sign_out), onClick = onLogout)
     }
-    Spacer(modifier = Modifier.size(8.dp))
 }

@@ -10,6 +10,8 @@ import com.lucasdias.gametrackr.core.network.AuthInterceptor
 import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
+import com.lucasdias.gametrackr.feature.app.profile.Profile
+import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
 import com.lucasdias.gametrackr.feature.auth.forgotpassword.ForgotPasswordViewModel
 import com.lucasdias.gametrackr.feature.auth.login.LoginViewModel
@@ -104,4 +106,5 @@ val appModule =
             ResetPasswordViewModel(get(), androidContext(), email, code)
         }
         viewModel { (communityName: String) -> CreateTopicViewModel(communityName) }
+        viewModel { (profile: Profile) -> EditProfileViewModel(profile) }
     }

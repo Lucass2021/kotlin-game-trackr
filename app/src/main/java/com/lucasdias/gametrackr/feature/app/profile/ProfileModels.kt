@@ -20,7 +20,25 @@ data class Profile(
     val avatarStart: Color,
     val avatarEnd: Color,
     val stats: ProfileStats,
+    val visibility: ProfileVisibility = ProfileVisibility.PUBLIC,
 )
+
+enum class ProfileVisibility(
+    val icon: AppIcon,
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val detailRes: Int,
+) {
+    PUBLIC(
+        AppIcon.EYE,
+        R.string.edit_profile_visibility_public,
+        R.string.edit_profile_visibility_public_detail,
+    ),
+    PRIVATE(
+        AppIcon.EYE_SLASH,
+        R.string.edit_profile_visibility_private,
+        R.string.edit_profile_visibility_private_detail,
+    ),
+}
 
 data class ProfileStats(
     val totalGames: Int,

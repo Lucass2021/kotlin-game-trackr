@@ -35,9 +35,12 @@ import com.lucasdias.gametrackr.feature.app.home.HomeScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
+import com.lucasdias.gametrackr.feature.app.profile.Profile
+import com.lucasdias.gametrackr.feature.app.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileMockData
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
+import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileScreen
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
@@ -59,6 +62,7 @@ private object ShellRoutes {
     const val USER_PROFILE = "userprofile"
     const val USER_PROFILE_ARG_NAME = "name"
     const val USER_PROFILE_ROUTE = "$USER_PROFILE?$USER_PROFILE_ARG_NAME={$USER_PROFILE_ARG_NAME}"
+    const val EDIT_PROFILE = "editprofile"
     const val CREATE_TOPIC = "createtopic"
     const val CREATE_TOPIC_ARG_COMMUNITY = "community"
     const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
@@ -90,6 +94,7 @@ fun MainTabScreen(
     val feed = remember { CommunityMockData.feed.toMutableStateList() }
     val communityPosts = remember { CommunityMockData.communityPosts.toMutableStateList() }
     var libraryFilter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
+    var profile by remember { mutableStateOf(ProfileMockData.profile) }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
         composable(ShellRoutes.TABS) {
@@ -114,6 +119,15 @@ fun MainTabScreen(
                 onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
                 onCreatePost = { navController.navigate(ShellRoutes.createTopic()) },
                 onViewStats = { navController.navigate(ShellRoutes.stats()) },
+                profile = profile,
+                onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
+            )
+        }
+        composable(ShellRoutes.EDIT_PROFILE) {
+            EditProfileScreen(
+                profile = profile,
+                onBack = { navController.popBackStackIfResumed() },
+                onSave = { profile = it },
             )
         }
         composable(
@@ -211,6 +225,8 @@ fun MainTabScreen(
                 onBack = { navController.popBackStackIfResumed() },
                 onLogout = onLogout,
                 onStats = { navController.navigate(ShellRoutes.stats()) },
+                onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
+                profile = profile,
             )
         }
         composable(
@@ -271,6 +287,8 @@ private fun TabShell(
     onStatusClick: (LibraryStatus) -> Unit,
     onCreateAccount: () -> Unit,
     onViewStats: () -> Unit,
+    profile: Profile,
+    onEditProfile: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
@@ -308,9 +326,10 @@ private fun TabShell(
                         isGuest = isGuest,
                         onGameClick = onGameClick,
                         onStatusClick = onStatusClick,
-                        onEditProfile = onMenu,
+                        onEditProfile = onEditProfile,
                         onCreateAccount = onCreateAccount,
                         onViewStats = onViewStats,
+                        profile = profile,
                     )
                 }
             }

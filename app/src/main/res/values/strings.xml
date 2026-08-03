@@ -277,6 +277,32 @@
     <string name="validation_topic_body_required">Body is required</string>
     <string name="validation_topic_body_too_short">At least 10 characters</string>
     <string name="validation_topic_body_too_long">Body is too long</string>
+    <string name="validation_name_too_long">Name is too long</string>
+    <string name="validation_username_required">Username is required</string>
+    <string name="validation_username_too_short">At least 3 characters</string>
+    <string name="validation_username_too_long">Username is too long</string>
+    <string name="validation_username_invalid">Only letters, numbers and underscore</string>
+    <string name="validation_bio_too_long">Bio is too long</string>
+
+    <string name="edit_profile_title">Edit profile</string>
+    <string name="edit_profile_back">Back</string>
+    <string name="edit_profile_save">Save</string>
+    <string name="edit_profile_field_avatar">Avatar</string>
+    <string name="edit_profile_field_name">Display name</string>
+    <string name="edit_profile_field_username">Username</string>
+    <string name="edit_profile_field_bio">Bio</string>
+    <string name="edit_profile_field_visibility">Profile visibility</string>
+    <string name="edit_profile_name_placeholder">How should we call you?</string>
+    <string name="edit_profile_username_placeholder">lucasdias</string>
+    <string name="edit_profile_username_prefix">\@</string>
+    <string name="edit_profile_bio_placeholder">Tell other players what you\'re into...</string>
+    <string name="edit_profile_discard_title">Discard your changes?</string>
+    <string name="edit_profile_discard_confirm">Discard</string>
+    <string name="edit_profile_discard_cancel">Keep editing</string>
+    <string name="edit_profile_visibility_public">Public</string>
+    <string name="edit_profile_visibility_public_detail">Anyone can find you and see your library and stats.</string>
+    <string name="edit_profile_visibility_private">Private</string>
+    <string name="edit_profile_visibility_private_detail">Only friends can see your library and stats.</string>
 
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
