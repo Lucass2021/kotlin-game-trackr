@@ -37,9 +37,9 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 fun StatsTopBar(
     title: String,
     onBack: () -> Unit,
-    onShare: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    onShare: (() -> Unit)? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val shareLabel = stringResource(R.string.stats_share)
@@ -73,20 +73,22 @@ fun StatsTopBar(
             }
         }
 
-        Icon(
-            imageVector = AppIcon.SHARE.image(),
-            contentDescription = shareLabel,
-            tint = AppSecondary,
-            modifier =
-                Modifier
-                    .pressScale(interactionSource)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClickLabel = shareLabel,
-                        role = Role.Button,
-                        onClick = onShare,
-                    ).size(22.dp),
-        )
+        if (onShare != null) {
+            Icon(
+                imageVector = AppIcon.SHARE.image(),
+                contentDescription = shareLabel,
+                tint = AppSecondary,
+                modifier =
+                    Modifier
+                        .pressScale(interactionSource)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null,
+                            onClickLabel = shareLabel,
+                            role = Role.Button,
+                            onClick = onShare,
+                        ).size(22.dp),
+            )
+        }
     }
 }

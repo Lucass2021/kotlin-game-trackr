@@ -59,6 +59,7 @@ fun ProfileMenuScreen(
     onLogout: () -> Unit,
     onStats: () -> Unit,
     onEditProfile: () -> Unit,
+    onAchievements: () -> Unit,
     profile: Profile = ProfileMockData.profile,
 ) {
     Column(
@@ -85,7 +86,7 @@ fun ProfileMenuScreen(
                     listOf(
                         MenuItem(AppIcon.EDIT_PROFILE, stringResource(R.string.menu_edit_profile), onEditProfile),
                         MenuItem(AppIcon.CHART, stringResource(R.string.menu_my_stats), onStats),
-                        MenuItem(AppIcon.MEDAL, stringResource(R.string.menu_achievements)),
+                        MenuItem(AppIcon.MEDAL, stringResource(R.string.menu_achievements), onAchievements),
                     ),
                 )
             }

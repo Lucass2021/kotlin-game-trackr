@@ -22,6 +22,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
+import com.lucasdias.gametrackr.feature.app.achievements.AchievementsMockData
+import com.lucasdias.gametrackr.feature.app.achievements.AchievementsScreen
+import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsScreen
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
 import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
@@ -63,6 +66,12 @@ private object ShellRoutes {
     const val USER_PROFILE_ARG_NAME = "name"
     const val USER_PROFILE_ROUTE = "$USER_PROFILE?$USER_PROFILE_ARG_NAME={$USER_PROFILE_ARG_NAME}"
     const val EDIT_PROFILE = "editprofile"
+    const val ACHIEVEMENTS = "achievements"
+    const val ACHIEVEMENTS_ARG_OWNER = "owner"
+    const val ACHIEVEMENTS_ROUTE = "$ACHIEVEMENTS?$ACHIEVEMENTS_ARG_OWNER={$ACHIEVEMENTS_ARG_OWNER}"
+    const val GAME_ACHIEVEMENTS = "gameachievements"
+    const val GAME_ACHIEVEMENTS_ARG_ID = "gameId"
+    const val GAME_ACHIEVEMENTS_ROUTE = "$GAME_ACHIEVEMENTS/{$GAME_ACHIEVEMENTS_ARG_ID}"
     const val CREATE_TOPIC = "createtopic"
     const val CREATE_TOPIC_ARG_COMMUNITY = "community"
     const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
@@ -70,6 +79,10 @@ private object ShellRoutes {
     fun search(scope: SearchScope) = "$SEARCH?$SEARCH_ARG_SCOPE=${scope.name}"
 
     fun stats(ownerName: String = "") = "$STATS?$STATS_ARG_OWNER=${Uri.encode(ownerName)}"
+
+    fun achievements(ownerName: String = "") = "$ACHIEVEMENTS?$ACHIEVEMENTS_ARG_OWNER=${Uri.encode(ownerName)}"
+
+    fun gameAchievements(gameId: Long) = "$GAME_ACHIEVEMENTS/$gameId"
 
     fun userProfile(name: String) = "$USER_PROFILE?$USER_PROFILE_ARG_NAME=${Uri.encode(name)}"
 
@@ -226,6 +239,7 @@ fun MainTabScreen(
                 onLogout = onLogout,
                 onStats = { navController.navigate(ShellRoutes.stats()) },
                 onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
+                onAchievements = { navController.navigate(ShellRoutes.achievements()) },
                 profile = profile,
             )
         }
@@ -242,8 +256,35 @@ fun MainTabScreen(
             val owner = backStackEntry.arguments?.getString(ShellRoutes.STATS_ARG_OWNER).orEmpty()
             StatsScreen(
                 onBack = { navController.popBackStackIfResumed() },
-                onAchievements = {},
+                onAchievements = { navController.navigate(ShellRoutes.achievements(owner)) },
                 ownerName = owner.ifBlank { null },
+            )
+        }
+        composable(
+            route = ShellRoutes.ACHIEVEMENTS_ROUTE,
+            arguments =
+                listOf(
+                    navArgument(ShellRoutes.ACHIEVEMENTS_ARG_OWNER) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    },
+                ),
+        ) { backStackEntry ->
+            val owner = backStackEntry.arguments?.getString(ShellRoutes.ACHIEVEMENTS_ARG_OWNER).orEmpty()
+            AchievementsScreen(
+                onBack = { navController.popBackStackIfResumed() },
+                onGameClick = { navController.navigate(ShellRoutes.gameAchievements(it)) },
+                ownerName = owner.ifBlank { null },
+            )
+        }
+        composable(
+            route = ShellRoutes.GAME_ACHIEVEMENTS_ROUTE,
+            arguments = listOf(navArgument(ShellRoutes.GAME_ACHIEVEMENTS_ARG_ID) { type = NavType.LongType }),
+        ) { backStackEntry ->
+            val gameId = backStackEntry.arguments?.getLong(ShellRoutes.GAME_ACHIEVEMENTS_ARG_ID) ?: 0L
+            GameAchievementsScreen(
+                game = AchievementsMockData.byId(gameId),
+                onBack = { navController.popBackStackIfResumed() },
             )
         }
         composable(

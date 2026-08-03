@@ -304,6 +304,31 @@
     <string name="edit_profile_visibility_private">Private</string>
     <string name="edit_profile_visibility_private_detail">Only friends can see your library and stats.</string>
 
+    <string name="achievements_title">Achievements</string>
+    <string name="achievements_summary_of">of %1$d unlocked</string>
+    <string name="achievements_summary_percent">%1$d%%</string>
+    <string name="achievements_summary_a11y">%1$d of %2$d achievements unlocked</string>
+    <string name="achievements_filter_all">All</string>
+    <string name="achievements_filter_in_progress">In progress</string>
+    <string name="achievements_filter_completed">Completed</string>
+    <string name="achievements_count_of">%1$d of %2$d</string>
+    <string name="achievements_ratio">%1$d/%2$d</string>
+    <string name="achievements_percent_suffix">· %1$d%%</string>
+    <string name="achievements_platinum_earned">Platinum earned</string>
+    <string name="achievements_hidden_title">Hidden achievement</string>
+    <string name="achievements_hidden_detail">Keep playing to reveal this one.</string>
+    <string name="achievements_section_unlocked">Unlocked</string>
+    <string name="achievements_section_locked">Locked</string>
+    <string name="achievements_stat_platinums">Platinums</string>
+    <string name="achievements_stat_completed">Completed</string>
+    <string name="achievements_stat_games">Games</string>
+    <string name="achievements_empty_title">Nothing here yet</string>
+    <string name="achievements_empty_message">Achievements from the games in your library show up here as you unlock them.</string>
+    <string name="achievements_tier_bronze">Bronze</string>
+    <string name="achievements_tier_silver">Silver</string>
+    <string name="achievements_tier_gold">Gold</string>
+    <string name="achievements_tier_platinum">Platinum</string>
+
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
         <item quantity="other">%1$d results</item>
