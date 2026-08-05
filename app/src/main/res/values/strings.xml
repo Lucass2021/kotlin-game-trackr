@@ -362,6 +362,14 @@
     <string name="change_password_success_subtitle">Your password was changed successfully.</string>
     <string name="change_password_success_button">Done</string>
 
+    <string name="about_title">About</string>
+    <string name="about_version">Version 1.0.0</string>
+    <string name="about_description">Track your games, share your progress, and connect with fellow gamers.</string>
+    <string name="about_section_legal">Legal</string>
+    <string name="about_terms">Terms of Use</string>
+    <string name="about_privacy">Privacy Policy</string>
+    <string name="about_credits">Made with ♥ by the GameTrackr team</string>
+
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
         <item quantity="other">%1$d results</item>

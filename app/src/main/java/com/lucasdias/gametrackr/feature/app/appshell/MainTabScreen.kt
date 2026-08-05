@@ -25,6 +25,7 @@ import androidx.navigation.navArgument
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.SuccessScreen
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
+import com.lucasdias.gametrackr.feature.app.about.AboutScreen
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsMockData
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsScreen
 import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsScreen
@@ -80,6 +81,7 @@ private object ShellRoutes {
     const val SETTINGS = "settings"
     const val CHANGE_PASSWORD = "changepassword"
     const val CHANGE_PASSWORD_SUCCESS = "changepasswordsuccess"
+    const val ABOUT = "about"
     const val CREATE_TOPIC = "createtopic"
     const val CREATE_TOPIC_ARG_COMMUNITY = "community"
     const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
@@ -249,6 +251,7 @@ fun MainTabScreen(
                 onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
                 onAchievements = { navController.navigate(ShellRoutes.achievements()) },
                 onSettings = { navController.navigate(ShellRoutes.SETTINGS) },
+                onAbout = { navController.navigate(ShellRoutes.ABOUT) },
                 profile = profile,
             )
         }
@@ -268,6 +271,9 @@ fun MainTabScreen(
                     }
                 },
             )
+        }
+        composable(ShellRoutes.ABOUT) {
+            AboutScreen(onBack = { navController.popBackStackIfResumed() })
         }
         composable(ShellRoutes.CHANGE_PASSWORD_SUCCESS) {
             SuccessScreen(

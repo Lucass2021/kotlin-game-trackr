@@ -61,6 +61,7 @@ fun ProfileMenuScreen(
     onEditProfile: () -> Unit,
     onAchievements: () -> Unit,
     onSettings: () -> Unit,
+    onAbout: () -> Unit,
     profile: Profile = ProfileMockData.profile,
 ) {
     Column(
@@ -96,13 +97,13 @@ fun ProfileMenuScreen(
                 if (isGuest) {
                     listOf(
                         MenuItem(AppIcon.HELP, stringResource(R.string.menu_help)),
-                        MenuItem(AppIcon.INFO, stringResource(R.string.menu_about)),
+                        MenuItem(AppIcon.INFO, stringResource(R.string.menu_about), onAbout),
                     )
                 } else {
                     listOf(
                         MenuItem(AppIcon.SETTINGS, stringResource(R.string.menu_settings), onSettings),
                         MenuItem(AppIcon.HELP, stringResource(R.string.menu_help)),
-                        MenuItem(AppIcon.INFO, stringResource(R.string.menu_about)),
+                        MenuItem(AppIcon.INFO, stringResource(R.string.menu_about), onAbout),
                     )
                 },
             )
