@@ -370,6 +370,22 @@
     <string name="about_privacy">Privacy Policy</string>
     <string name="about_credits">Made with ♥ by the GameTrackr team</string>
 
+    <string name="help_title">Help &amp; feedback</string>
+    <string name="help_hero_title">How can we help?</string>
+    <string name="help_hero_subtitle">Find answers below or reach out to us directly.</string>
+    <string name="help_section_contact">Get in touch</string>
+    <string name="help_send_feedback">Send feedback</string>
+    <string name="help_report_bug">Report a bug</string>
+    <string name="help_section_faq">Common questions</string>
+    <string name="help_faq_1_question">How do I add a game to my library?</string>
+    <string name="help_faq_1_answer">Search for a game using the search bar, open its detail page, and tap "Add to library". You can then set a status like playing, completed, or backlog.</string>
+    <string name="help_faq_2_question">Can I track my playtime?</string>
+    <string name="help_faq_2_answer">Yes! Open any game in your library and edit its details. You can log hours played, start and finish dates, and even write a short review.</string>
+    <string name="help_faq_3_question">How do I connect with friends?</string>
+    <string name="help_faq_3_answer">Visit another user\'s profile and send them a friend request. Once accepted, you\'ll see their activity in your feed and can message them directly.</string>
+    <string name="help_faq_4_question">Is my data private?</string>
+    <string name="help_faq_4_answer">By default your profile is public, but you can change its visibility in Settings. Your library, stats, and activity respect your privacy preferences.</string>
+
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
         <item quantity="other">%1$d results</item>

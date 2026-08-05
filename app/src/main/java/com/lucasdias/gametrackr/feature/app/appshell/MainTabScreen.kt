@@ -38,6 +38,7 @@ import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicScr
 import com.lucasdias.gametrackr.feature.app.community.detail.CommunityDetailScreen
 import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScreen
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
+import com.lucasdias.gametrackr.feature.app.help.HelpScreen
 import com.lucasdias.gametrackr.feature.app.home.HomeScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
@@ -82,6 +83,7 @@ private object ShellRoutes {
     const val CHANGE_PASSWORD = "changepassword"
     const val CHANGE_PASSWORD_SUCCESS = "changepasswordsuccess"
     const val ABOUT = "about"
+    const val HELP = "help"
     const val CREATE_TOPIC = "createtopic"
     const val CREATE_TOPIC_ARG_COMMUNITY = "community"
     const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
@@ -252,6 +254,7 @@ fun MainTabScreen(
                 onAchievements = { navController.navigate(ShellRoutes.achievements()) },
                 onSettings = { navController.navigate(ShellRoutes.SETTINGS) },
                 onAbout = { navController.navigate(ShellRoutes.ABOUT) },
+                onHelp = { navController.navigate(ShellRoutes.HELP) },
                 profile = profile,
             )
         }
@@ -274,6 +277,9 @@ fun MainTabScreen(
         }
         composable(ShellRoutes.ABOUT) {
             AboutScreen(onBack = { navController.popBackStackIfResumed() })
+        }
+        composable(ShellRoutes.HELP) {
+            HelpScreen(onBack = { navController.popBackStackIfResumed() })
         }
         composable(ShellRoutes.CHANGE_PASSWORD_SUCCESS) {
             SuccessScreen(
