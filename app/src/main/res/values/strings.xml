@@ -329,6 +329,39 @@
     <string name="achievements_tier_gold">Gold</string>
     <string name="achievements_tier_platinum">Platinum</string>
 
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_notifications">Notifications</string>
+    <string name="settings_push_notifications">Push notifications</string>
+    <string name="settings_friend_requests">Friend requests</string>
+    <string name="settings_community_replies">Community replies</string>
+    <string name="settings_section_account">Account</string>
+    <string name="settings_change_password">Change password</string>
+    <string name="settings_section_data">Data &amp; Storage</string>
+    <string name="settings_cache">Cache</string>
+    <string name="settings_cache_value">48 MB</string>
+    <string name="settings_section_danger">Danger zone</string>
+    <string name="settings_delete_account">Delete account</string>
+    <string name="settings_delete_dialog_title">Delete account?</string>
+    <string name="settings_delete_dialog_message">This action cannot be undone. All your data, library, and stats will be permanently removed.</string>
+    <string name="settings_delete_dialog_confirm">Delete</string>
+    <string name="settings_delete_dialog_cancel">Cancel</string>
+    <string name="settings_guest_title">Settings need an account</string>
+    <string name="settings_guest_message">Create an account to manage notifications, security, and account preferences.</string>
+    <string name="settings_guest_action">Create an account</string>
+
+    <string name="change_password_title">Change password</string>
+    <string name="change_password_current_label">Current password</string>
+    <string name="change_password_new_label">New password</string>
+    <string name="change_password_confirm_label">Confirm new password</string>
+    <string name="change_password_placeholder">••••••••</string>
+    <string name="change_password_save">Save new password</string>
+    <string name="change_password_error_current_required">Current password is required</string>
+    <string name="change_password_error_new_required">New password is required</string>
+    <string name="change_password_error_confirm_required">Confirm your new password</string>
+    <string name="change_password_success_title">Password updated!</string>
+    <string name="change_password_success_subtitle">Your password was changed successfully.</string>
+    <string name="change_password_success_button">Done</string>
+
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
         <item quantity="other">%1$d results</item>

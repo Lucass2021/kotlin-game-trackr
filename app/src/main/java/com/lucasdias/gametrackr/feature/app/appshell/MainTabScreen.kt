@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -21,6 +22,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.SuccessScreen
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsMockData
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsScreen
@@ -47,6 +50,8 @@ import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileScree
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
+import com.lucasdias.gametrackr.feature.app.settings.ChangePasswordScreen
+import com.lucasdias.gametrackr.feature.app.settings.SettingsScreen
 import com.lucasdias.gametrackr.feature.app.stats.StatsScreen
 
 private object ShellRoutes {
@@ -72,6 +77,9 @@ private object ShellRoutes {
     const val GAME_ACHIEVEMENTS = "gameachievements"
     const val GAME_ACHIEVEMENTS_ARG_ID = "gameId"
     const val GAME_ACHIEVEMENTS_ROUTE = "$GAME_ACHIEVEMENTS/{$GAME_ACHIEVEMENTS_ARG_ID}"
+    const val SETTINGS = "settings"
+    const val CHANGE_PASSWORD = "changepassword"
+    const val CHANGE_PASSWORD_SUCCESS = "changepasswordsuccess"
     const val CREATE_TOPIC = "createtopic"
     const val CREATE_TOPIC_ARG_COMMUNITY = "community"
     const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
@@ -240,7 +248,35 @@ fun MainTabScreen(
                 onStats = { navController.navigate(ShellRoutes.stats()) },
                 onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
                 onAchievements = { navController.navigate(ShellRoutes.achievements()) },
+                onSettings = { navController.navigate(ShellRoutes.SETTINGS) },
                 profile = profile,
+            )
+        }
+        composable(ShellRoutes.SETTINGS) {
+            SettingsScreen(
+                onBack = { navController.popBackStackIfResumed() },
+                onChangePassword = { navController.navigate(ShellRoutes.CHANGE_PASSWORD) },
+                onLogout = onLogout,
+            )
+        }
+        composable(ShellRoutes.CHANGE_PASSWORD) {
+            ChangePasswordScreen(
+                onBack = { navController.popBackStackIfResumed() },
+                onSuccess = {
+                    navController.navigate(ShellRoutes.CHANGE_PASSWORD_SUCCESS) {
+                        popUpTo(ShellRoutes.SETTINGS)
+                    }
+                },
+            )
+        }
+        composable(ShellRoutes.CHANGE_PASSWORD_SUCCESS) {
+            SuccessScreen(
+                title = stringResource(R.string.change_password_success_title),
+                subtitle = stringResource(R.string.change_password_success_subtitle),
+                buttonText = stringResource(R.string.change_password_success_button),
+                onPrimary = {
+                    navController.popBackStack(ShellRoutes.SETTINGS, inclusive = false)
+                },
             )
         }
         composable(

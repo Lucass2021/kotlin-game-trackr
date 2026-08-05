@@ -60,6 +60,7 @@ fun ProfileMenuScreen(
     onStats: () -> Unit,
     onEditProfile: () -> Unit,
     onAchievements: () -> Unit,
+    onSettings: () -> Unit,
     profile: Profile = ProfileMockData.profile,
 ) {
     Column(
@@ -92,11 +93,18 @@ fun ProfileMenuScreen(
             }
 
             MenuSection(
-                listOf(
-                    MenuItem(AppIcon.SETTINGS, stringResource(R.string.menu_settings)),
-                    MenuItem(AppIcon.HELP, stringResource(R.string.menu_help)),
-                    MenuItem(AppIcon.INFO, stringResource(R.string.menu_about)),
-                ),
+                if (isGuest) {
+                    listOf(
+                        MenuItem(AppIcon.HELP, stringResource(R.string.menu_help)),
+                        MenuItem(AppIcon.INFO, stringResource(R.string.menu_about)),
+                    )
+                } else {
+                    listOf(
+                        MenuItem(AppIcon.SETTINGS, stringResource(R.string.menu_settings), onSettings),
+                        MenuItem(AppIcon.HELP, stringResource(R.string.menu_help)),
+                        MenuItem(AppIcon.INFO, stringResource(R.string.menu_about)),
+                    )
+                },
             )
         }
 
@@ -225,7 +233,6 @@ private fun SessionSection(
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         if (isGuest) {
             PrimaryButton(text = stringResource(R.string.menu_create_account), onClick = onLogout)
-            SecondaryButton(text = stringResource(R.string.menu_exit_guest), onClick = onLogout)
         } else {
             SecondaryButton(text = stringResource(R.string.sign_out), onClick = onLogout)
         }
