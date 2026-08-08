@@ -22,12 +22,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +39,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.network.CommunityApi
+import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -48,25 +51,51 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.CommunityDetailTab
 import com.lucasdias.gametrackr.feature.app.community.CommunityMember
-import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityPostCard
 import com.lucasdias.gametrackr.feature.app.community.components.CreatePostButton
 import com.lucasdias.gametrackr.feature.app.community.components.JoinButton
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun CommunityDetailScreen(
     community: Community,
-    posts: SnapshotStateList<CommunityPost>,
     onBack: () -> Unit,
-    onPostClick: () -> Unit,
+    onPostClick: (CommunityPost) -> Unit,
     onCreatePost: () -> Unit,
     onMemberClick: (CommunityMember) -> Unit,
     modifier: Modifier = Modifier,
+    api: CommunityApi = koinInject(),
 ) {
     var isJoined by remember { mutableStateOf(community.isJoined) }
     var tab by remember { mutableStateOf(CommunityDetailTab.POSTS) }
+    val posts = remember { mutableStateListOf<CommunityPost>() }
+    val members = remember { mutableStateListOf<CommunityMember>() }
+    var postsError by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    suspend fun loadData() {
+        postsError = false
+        try {
+            val response = api.getPosts(communityId = community.id, perPage = 30)
+            posts.clear()
+            posts.addAll(response.data.map { it.toDomain() })
+        } catch (_: Exception) {
+            postsError = true
+        }
+
+        try {
+            val detail = api.getCommunity(community.id)
+            val apiMembers = detail.members?.map { it.toDomain() }.orEmpty()
+            members.clear()
+            members.addAll(apiMembers)
+        } catch (_: Exception) {
+        }
+    }
+
+    LaunchedEffect(community.id) { loadData() }
 
     Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
         LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
@@ -84,7 +113,21 @@ fun CommunityDetailScreen(
                 Spacer(Modifier.height(20.dp))
                 ActionRow(
                     isJoined = isJoined,
-                    onJoin = { isJoined = !isJoined },
+                    onJoin = {
+                        val wasJoined = isJoined
+                        isJoined = !wasJoined
+                        scope.launch {
+                            try {
+                                if (wasJoined) {
+                                    api.leaveCommunity(community.id)
+                                } else {
+                                    api.joinCommunity(community.id)
+                                }
+                            } catch (_: Exception) {
+                                isJoined = wasJoined
+                            }
+                        }
+                    },
                     modifier = Modifier.padding(horizontal = 20.dp),
                 )
                 Spacer(Modifier.height(20.dp))
@@ -96,14 +139,29 @@ fun CommunityDetailScreen(
 
             when (tab) {
                 CommunityDetailTab.POSTS -> {
-                    if (posts.isEmpty()) {
+                    if (postsError && posts.isEmpty()) {
+                        item {
+                            CommunityEmptyState(
+                                icon = AppIcon.INFO,
+                                title = "Couldn't load posts",
+                                message = "Check your connection\nand try again.",
+                                actionTitle = "Try again",
+                                onAction = { scope.launch { loadData() } },
+                            )
+                        }
+                    } else if (posts.isEmpty()) {
                         item {
                             CommunityEmptyState(
                                 icon = AppIcon.COMMUNITY,
                                 title = "No posts yet",
-                                message = "Start the first discussion in this community.",
-                                actionTitle = "Create post",
-                                onAction = onCreatePost,
+                                message =
+                                    if (isJoined) {
+                                        "Start the first discussion in this community."
+                                    } else {
+                                        "Join this community to start posting."
+                                    },
+                                actionTitle = if (isJoined) "Create post" else null,
+                                onAction = if (isJoined) onCreatePost else null,
                             )
                         }
                     } else {
@@ -111,12 +169,41 @@ fun CommunityDetailScreen(
                             CommunityPostCard(
                                 post = post,
                                 showsCommunityName = false,
-                                onSelect = onPostClick,
+                                onSelect = { onPostClick(post) },
                                 onLike = {
-                                    posts[index] = post.copy(isLiked = !post.isLiked, likes = post.likes + if (post.isLiked) -1 else 1)
+                                    val wasLiked = post.isLiked
+                                    posts[index] =
+                                        post.copy(
+                                            isLiked = !wasLiked,
+                                            likes = post.likes + if (wasLiked) -1 else 1,
+                                        )
+                                    scope.launch {
+                                        try {
+                                            val response = api.toggleLike(post.id)
+                                            val i = posts.indexOfFirst { it.id == post.id }
+                                            if (i >= 0) {
+                                                posts[i] =
+                                                    posts[i].copy(
+                                                        isLiked = response.isLiked,
+                                                        likes = response.likes,
+                                                    )
+                                            }
+                                        } catch (_: Exception) {
+                                            val i = posts.indexOfFirst { it.id == post.id }
+                                            if (i >= 0) {
+                                                posts[i] =
+                                                    posts[i].copy(
+                                                        isLiked = wasLiked,
+                                                        likes = post.likes,
+                                                    )
+                                            }
+                                        }
+                                    }
                                 },
-                                onComment = onPostClick,
-                                onBookmark = { posts[index] = post.copy(isBookmarked = !post.isBookmarked) },
+                                onComment = { onPostClick(post) },
+                                onBookmark = {
+                                    posts[index] = post.copy(isBookmarked = !post.isBookmarked)
+                                },
                                 modifier = Modifier.padding(horizontal = 20.dp),
                             )
                             Spacer(Modifier.height(16.dp))
@@ -129,7 +216,12 @@ fun CommunityDetailScreen(
                 }
 
                 CommunityDetailTab.MEMBERS -> {
-                    item { CommunityMembersSection(onMemberClick = onMemberClick) }
+                    item {
+                        CommunityMembersSection(
+                            members = members,
+                            onMemberClick = onMemberClick,
+                        )
+                    }
                 }
             }
         }
@@ -137,7 +229,7 @@ fun CommunityDetailScreen(
         BackCircle(icon = AppIcon.BACK, onClick = onBack, modifier = Modifier.align(Alignment.TopStart))
         BackCircle(icon = AppIcon.OVERFLOW, onClick = {}, modifier = Modifier.align(Alignment.TopEnd))
 
-        if (tab == CommunityDetailTab.POSTS && posts.isNotEmpty()) {
+        if (tab == CommunityDetailTab.POSTS && isJoined) {
             CreatePostButton(onClick = onCreatePost, modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp))
         }
     }

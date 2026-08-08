@@ -7,8 +7,10 @@ import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
 import com.lucasdias.gametrackr.core.network.AuthApi
 import com.lucasdias.gametrackr.core.network.AuthInterceptor
+import com.lucasdias.gametrackr.core.network.CommunityApi
 import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
+import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
 import com.lucasdias.gametrackr.feature.app.profile.Profile
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
@@ -94,9 +96,13 @@ val appModule =
         single<AuthApi> {
             retrofit(get(named(AUTH_CLIENT)), get()).create(AuthApi::class.java)
         }
+        single<CommunityApi> {
+            retrofit(get(named(AUTH_CLIENT)), get()).create(CommunityApi::class.java)
+        }
 
         single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(), get()) }
 
+        viewModel { CommunityViewModel(get()) }
         viewModel { AuthViewModel(get(), get()) }
         viewModel { LoginViewModel(get(), androidContext()) }
         viewModel { RegisterViewModel(get(), androidContext()) }
@@ -105,6 +111,6 @@ val appModule =
         viewModel { (email: String, code: String) ->
             ResetPasswordViewModel(get(), androidContext(), email, code)
         }
-        viewModel { (communityName: String) -> CreateTopicViewModel(communityName) }
+        viewModel { (communityName: String) -> CreateTopicViewModel(communityName, get()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile) }
     }

@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
+import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
@@ -37,8 +38,8 @@ fun CommunityEmptyState(
     icon: AppIcon,
     title: String,
     message: String,
-    actionTitle: String,
-    onAction: () -> Unit,
+    actionTitle: String? = null,
+    onAction: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -79,18 +80,21 @@ fun CommunityEmptyState(
             modifier = Modifier.padding(top = 10.dp),
         )
 
-        Text(
-            text = actionTitle,
-            color = AppOnPrimary,
-            style = AppType.label(16.sp),
-            modifier =
-                Modifier
-                    .padding(top = 28.dp)
-                    .pressScale(interactionSource)
-                    .clip(CircleShape)
-                    .background(AppPrimary)
-                    .clickable(interactionSource = interactionSource, indication = null, onClick = onAction)
-                    .padding(horizontal = 28.dp, vertical = 15.dp),
-        )
+        if (actionTitle != null && onAction != null) {
+            Text(
+                text = actionTitle,
+                color = AppOnPrimary,
+                style = AppType.label(16.sp),
+                modifier =
+                    Modifier
+                        .padding(top = 28.dp)
+                        .pressScale(interactionSource)
+                        .glow(color = AppPrimary, cornerRadius = 24.dp, alpha = 0.35f)
+                        .clip(CircleShape)
+                        .background(AppPrimary)
+                        .clickable(interactionSource = interactionSource, indication = null, onClick = onAction)
+                        .padding(horizontal = 28.dp, vertical = 15.dp),
+            )
+        }
     }
 }

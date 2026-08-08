@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +57,7 @@ import com.lucasdias.gametrackr.feature.app.addtolibrary.components.SectionLabel
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.fieldBox
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -71,6 +73,7 @@ fun CreateTopicScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var showDiscardConfirm by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     fun requestClose() {
         if (state.hasContent) showDiscardConfirm = true else onBack()
@@ -84,9 +87,11 @@ fun CreateTopicScreen(
             canSubmit = state.canSubmit,
             onClose = { requestClose() },
             onPost = {
-                val post = viewModel.onSubmit() ?: return@Header
-                onPost(post)
-                onBack()
+                scope.launch {
+                    val post = viewModel.submitPost() ?: return@launch
+                    onPost(post)
+                    onBack()
+                }
             },
         )
 

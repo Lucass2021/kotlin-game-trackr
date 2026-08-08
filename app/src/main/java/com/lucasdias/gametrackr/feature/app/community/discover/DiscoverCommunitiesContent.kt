@@ -38,7 +38,8 @@ fun DiscoverCommunitiesContent(
     category: String,
     onCategorySelect: (String) -> Unit,
     communities: SnapshotStateList<Community>,
-    onCommunitySelect: () -> Unit,
+    onCommunitySelect: (Community) -> Unit,
+    onJoin: (Community) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var query by remember { mutableStateOf("") }
@@ -78,11 +79,11 @@ fun DiscoverCommunitiesContent(
                     contentPadding = PaddingValues(horizontal = 20.dp),
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
-                    items(CommunityMockData.featured, key = { it.id }) { community ->
+                    items(communities.take(3), key = { it.id }) { community ->
                         FeaturedCommunityCard(
                             community = community,
-                            onSelect = onCommunitySelect,
-                            onJoin = { toggleJoin(communities, community) },
+                            onSelect = { onCommunitySelect(community) },
+                            onJoin = { onJoin(community) },
                         )
                     }
                 }
@@ -94,12 +95,7 @@ fun DiscoverCommunitiesContent(
                 CommunityEmptyState(
                     icon = AppIcon.SEARCH,
                     title = "No communities found",
-                    message = "Try a different name or clear the filters to see everything.",
-                    actionTitle = "Clear filters",
-                    onAction = {
-                        query = ""
-                        onCategorySelect("All")
-                    },
+                    message = "Try a different search or category.",
                 )
             }
         } else {
@@ -116,8 +112,8 @@ fun DiscoverCommunitiesContent(
                 Column {
                     CommunityRow(
                         community = community,
-                        onSelect = onCommunitySelect,
-                        onJoin = { toggleJoin(communities, community) },
+                        onSelect = { onCommunitySelect(community) },
+                        onJoin = { onJoin(community) },
                     )
                     if (community.id != filtered.last().id) {
                         HorizontalDivider(
@@ -149,15 +145,5 @@ private fun SectionHeader(title: String) {
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
         )
-    }
-}
-
-private fun toggleJoin(
-    communities: SnapshotStateList<Community>,
-    community: Community,
-) {
-    val index = communities.indexOfFirst { it.id == community.id }
-    if (index >= 0) {
-        communities[index] = communities[index].copy(isJoined = !communities[index].isJoined)
     }
 }

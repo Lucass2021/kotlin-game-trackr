@@ -23,11 +23,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.format.abbreviated
+import com.lucasdias.gametrackr.core.network.CommunityApi
+import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -50,9 +55,11 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
+import com.lucasdias.gametrackr.feature.app.community.PostComment
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun PostDetailScreen(
@@ -61,12 +68,30 @@ fun PostDetailScreen(
     onCommunityClick: () -> Unit,
     onAuthorClick: () -> Unit,
     modifier: Modifier = Modifier,
+    api: CommunityApi = koinInject(),
 ) {
     var isLiked by remember { mutableStateOf(post.isLiked) }
     var likes by remember { mutableIntStateOf(post.likes) }
     var isBookmarked by remember { mutableStateOf(post.isBookmarked) }
     var isFollowing by remember { mutableStateOf(false) }
     var showComments by remember { mutableStateOf(false) }
+    val comments = remember { mutableListOf<PostComment>() }
+    var commentsLoaded by remember { mutableStateOf(false) }
+    var commentsError by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(post.id) {
+        commentsError = false
+        try {
+            val detail = api.getPost(post.id)
+            val apiComments = detail.comments?.map { it.toDomain() }.orEmpty()
+            comments.clear()
+            comments.addAll(apiComments)
+        } catch (_: Exception) {
+            commentsError = true
+        }
+        commentsLoaded = true
+    }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         TopBar(onBack = onBack)
@@ -98,7 +123,6 @@ fun PostDetailScreen(
                 style = AppType.body(16.sp),
                 lineHeight = 24.sp,
             )
-            Highlights()
             if (post.hasMedia) {
                 Media(post = post)
             }
@@ -108,8 +132,20 @@ fun PostDetailScreen(
                 comments = post.comments,
                 isBookmarked = isBookmarked,
                 onLike = {
-                    isLiked = !isLiked
-                    likes += if (isLiked) 1 else -1
+                    val wasLiked = isLiked
+                    val oldLikes = likes
+                    isLiked = !wasLiked
+                    likes += if (wasLiked) -1 else 1
+                    scope.launch {
+                        try {
+                            val response = api.toggleLike(post.id)
+                            isLiked = response.isLiked
+                            likes = response.likes
+                        } catch (_: Exception) {
+                            isLiked = wasLiked
+                            likes = oldLikes
+                        }
+                    }
                 },
                 onComment = { showComments = true },
                 onBookmark = { isBookmarked = !isBookmarked },
@@ -117,9 +153,10 @@ fun PostDetailScreen(
         }
     }
 
-    if (showComments) {
+    if (showComments && commentsLoaded) {
         PostCommentsSheet(
-            comments = CommunityMockData.comments,
+            postId = post.id,
+            comments = comments,
             onDismiss = { showComments = false },
         )
     }
@@ -273,30 +310,6 @@ private fun CommunityChip(
             color = AppTextSecondary,
             style = AppType.label(13.sp),
         )
-    }
-}
-
-@Composable
-private fun Highlights() {
-    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        CommunityMockData.detailPostHighlights.forEach { highlight ->
-            Row(verticalAlignment = Alignment.Top) {
-                Box(
-                    modifier =
-                        Modifier
-                            .padding(top = 8.dp, end = 12.dp)
-                            .size(6.dp)
-                            .clip(CircleShape)
-                            .background(AppPrimary),
-                )
-                Text(
-                    text = highlight,
-                    color = AppTextSecondary,
-                    style = AppType.body(15.sp),
-                    lineHeight = 22.sp,
-                )
-            }
-        }
     }
 }
 

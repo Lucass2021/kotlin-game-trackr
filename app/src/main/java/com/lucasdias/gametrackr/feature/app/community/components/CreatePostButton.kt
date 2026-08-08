@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
@@ -32,6 +33,7 @@ fun CreatePostButton(
             modifier
                 .pressScale(interactionSource)
                 .size(58.dp)
+                .glow(color = AppPrimary, cornerRadius = 29.dp)
                 .clip(CircleShape)
                 .background(AppPrimary)
                 .clickable(

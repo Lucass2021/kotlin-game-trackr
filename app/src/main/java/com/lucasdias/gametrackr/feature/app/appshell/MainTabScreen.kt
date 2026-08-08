@@ -11,8 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
@@ -31,9 +29,10 @@ import com.lucasdias.gametrackr.feature.app.achievements.AchievementsScreen
 import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsScreen
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
-import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
+import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
+import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicScreen
 import com.lucasdias.gametrackr.feature.app.community.detail.CommunityDetailScreen
 import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScreen
@@ -55,6 +54,7 @@ import com.lucasdias.gametrackr.feature.app.search.SearchScreen
 import com.lucasdias.gametrackr.feature.app.settings.ChangePasswordScreen
 import com.lucasdias.gametrackr.feature.app.settings.SettingsScreen
 import com.lucasdias.gametrackr.feature.app.stats.StatsScreen
+import org.koin.androidx.compose.koinViewModel
 
 private object ShellRoutes {
     const val TABS = "tabs"
@@ -116,8 +116,9 @@ fun MainTabScreen(
 ) {
     val navController = rememberNavController()
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
-    val feed = remember { CommunityMockData.feed.toMutableStateList() }
-    val communityPosts = remember { CommunityMockData.communityPosts.toMutableStateList() }
+    val communityViewModel: CommunityViewModel = koinViewModel()
+    var selectedCommunity by remember { mutableStateOf<Community?>(null) }
+    var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
     var libraryFilter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
     var profile by remember { mutableStateOf(ProfileMockData.profile) }
 
@@ -127,7 +128,7 @@ fun MainTabScreen(
                 isGuest = isGuest,
                 selected = selectedTab,
                 onSelect = { selectedTab = it },
-                feed = feed,
+                communityViewModel = communityViewModel,
                 libraryFilter = libraryFilter,
                 onLibraryFilterChange = { libraryFilter = it },
                 onStatusClick = { status ->
@@ -140,8 +141,14 @@ fun MainTabScreen(
                 onViewAll = { navController.navigate(ShellRoutes.search(it)) },
                 onMenu = { navController.navigate(ShellRoutes.MENU) },
                 onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
-                onPostClick = { navController.navigate(ShellRoutes.POST_DETAIL) },
-                onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
+                onPostClick = { post ->
+                    selectedPost = post
+                    navController.navigate(ShellRoutes.POST_DETAIL)
+                },
+                onCommunityClick = { community ->
+                    selectedCommunity = community
+                    navController.navigate(ShellRoutes.COMMUNITY_DETAIL)
+                },
                 onCreatePost = { navController.navigate(ShellRoutes.createTopic()) },
                 onViewStats = { navController.navigate(ShellRoutes.stats()) },
                 profile = profile,
@@ -190,13 +197,16 @@ fun MainTabScreen(
             )
         }
         composable(ShellRoutes.COMMUNITY_DETAIL) {
+            val community = selectedCommunity ?: return@composable
             CommunityDetailScreen(
-                community = CommunityMockData.detailCommunity,
-                posts = communityPosts,
+                community = community,
                 onBack = { navController.popBackStackIfResumed() },
-                onPostClick = { navController.navigate(ShellRoutes.POST_DETAIL) },
+                onPostClick = { post ->
+                    selectedPost = post
+                    navController.navigate(ShellRoutes.POST_DETAIL)
+                },
                 onCreatePost = {
-                    navController.navigate(ShellRoutes.createTopic(CommunityMockData.detailCommunity.name))
+                    navController.navigate(ShellRoutes.createTopic(community.name))
                 },
                 onMemberClick = { member ->
                     navController.navigate(ShellRoutes.userProfile(member.author))
@@ -221,17 +231,18 @@ fun MainTabScreen(
                 onBack = { navController.popBackStackIfResumed() },
                 onCreateAccount = onLogout,
                 onPost = { post ->
-                    if (communityName.isBlank()) feed.add(0, post) else communityPosts.add(0, post)
+                    communityViewModel.feed.add(0, post)
                 },
             )
         }
         composable(ShellRoutes.POST_DETAIL) {
+            val post = selectedPost ?: return@composable
             PostDetailScreen(
-                post = CommunityMockData.detailPost,
+                post = post,
                 onBack = { navController.popBackStackIfResumed() },
                 onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
                 onAuthorClick = {
-                    navController.navigate(ShellRoutes.userProfile(CommunityMockData.detailPost.author))
+                    navController.navigate(ShellRoutes.userProfile(post.author))
                 },
             )
         }
@@ -362,7 +373,7 @@ private fun TabShell(
     isGuest: Boolean,
     selected: AppTab,
     onSelect: (AppTab) -> Unit,
-    feed: SnapshotStateList<CommunityPost>,
+    communityViewModel: CommunityViewModel,
     libraryFilter: LibraryStatus?,
     onLibraryFilterChange: (LibraryStatus?) -> Unit,
     onNotifications: () -> Unit,
@@ -370,8 +381,8 @@ private fun TabShell(
     onViewAll: (SearchScope) -> Unit,
     onMenu: () -> Unit,
     onGameClick: () -> Unit,
-    onPostClick: () -> Unit,
-    onCommunityClick: () -> Unit,
+    onPostClick: (CommunityPost) -> Unit,
+    onCommunityClick: (Community) -> Unit,
     onCreatePost: () -> Unit,
     onStatusClick: (LibraryStatus) -> Unit,
     onCreateAccount: () -> Unit,
@@ -403,7 +414,7 @@ private fun TabShell(
 
                 AppTab.COMMUNITY -> {
                     CommunityScreen(
-                        feed = feed,
+                        viewModel = communityViewModel,
                         onPostClick = onPostClick,
                         onCommunityClick = onCommunityClick,
                         onCreatePost = onCreatePost,

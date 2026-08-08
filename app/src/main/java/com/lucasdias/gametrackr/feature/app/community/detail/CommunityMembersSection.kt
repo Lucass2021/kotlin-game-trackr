@@ -24,16 +24,16 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.community.CommunityMember
-import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
 
 @Composable
 fun CommunityMembersSection(
+    members: List<CommunityMember>,
     modifier: Modifier = Modifier,
     onMemberClick: (CommunityMember) -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        CommunityMockData.members.forEachIndexed { index, member ->
+        members.forEachIndexed { index, member ->
             val interactionSource = remember { MutableInteractionSource() }
             Row(
                 modifier =
@@ -69,7 +69,7 @@ fun CommunityMembersSection(
                     modifier = Modifier.size(16.dp),
                 )
             }
-            if (index != CommunityMockData.members.lastIndex) {
+            if (index != members.lastIndex) {
                 HorizontalDivider(
                     thickness = 1.dp,
                     color = AppOutline,

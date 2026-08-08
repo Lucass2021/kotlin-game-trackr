@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
@@ -46,6 +47,7 @@ fun JoinButton(
             modifier
                 .then(if (expanded) Modifier.fillMaxWidth() else Modifier)
                 .pressScale(interactionSource)
+                .then(if (isJoined) Modifier else Modifier.glow(color = AppPrimary, cornerRadius = 24.dp, alpha = 0.35f))
                 .clip(shape)
                 .background(background)
                 .then(if (isJoined) Modifier.border(BorderStroke(1.dp, AppOutline), shape) else Modifier)
