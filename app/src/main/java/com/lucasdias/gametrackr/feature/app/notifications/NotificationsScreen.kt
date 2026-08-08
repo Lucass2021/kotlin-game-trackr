@@ -52,7 +52,10 @@ fun NotificationsScreen(
         NotificationsTopBar(
             onBack = onBack,
             onMarkAllRead = { markedAllRead = true },
-            showMarkAllRead = !isGuest,
+            onClearAll = {
+                pagination.items.forEach { removedIds.add(it.id) }
+            },
+            showActions = !isGuest,
         )
 
         if (isGuest) {

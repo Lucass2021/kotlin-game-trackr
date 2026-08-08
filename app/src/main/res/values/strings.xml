@@ -183,6 +183,8 @@
     <string name="notifications_section_this_week">This week</string>
     <string name="notifications_accept">Accept</string>
     <string name="notifications_decline">Decline</string>
+    <string name="notifications_clear_all">Clear all</string>
+    <string name="notifications_delete">Delete</string>
     <string name="notifications_empty_title">You\'re all caught up</string>
     <string name="notifications_empty_subtitle">New notifications will show up here.</string>
     <string name="notifications_guest_title">Notifications need an account</string>

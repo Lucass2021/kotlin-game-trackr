@@ -117,6 +117,33 @@ messaging, and collection.
 
 ## Progress log
 
+### 2026-08-08 — Notification deletion, infinite scroll, share buttons, game detail cleanup
+
+Batch of cross-platform feature work aligned with backend discussions.
+
+- **Notification deletion** — **Clear all** via the top-bar overflow menu. The top bar now shows a
+  three-dot overflow `DropdownMenu` with "Mark all read" + "Clear all" (destructive, red label +
+  trash icon). Adds all IDs to the existing `removedIds` list.
+- **New icon:** `AppIcon.TRASH` (Phosphor `Trash` / `TrashFill`) added to the shared icon enum.
+- **Infinite scroll** on all 8 vertical lists (4 API-backed, 4 mock). New pagination infrastructure
+  in `core/pagination/`: `PaginationState<T>` (real API), `MockPaginationState<T>` (sliced pages
+  with 600ms delay), `LoadingMoreIndicator`, `InfiniteScrollEffect` / `InfiniteGridScrollEffect`
+  (`derivedStateOf` to detect scroll near end, threshold=3). API lists (`CommunityScreen`,
+  `CommunityDetailScreen`, `DiscoverCommunitiesContent`) track `currentPage`/`lastPage` from
+  `PaginatedResponse`; mock lists (`SearchScreen`, `LibraryScreen`, `NotificationsScreen`,
+  `AchievementsScreen`) use `MockPaginationState` with first page preloaded synchronously in
+  `init` block. Network layer (`CommunityApi`) gained `@Query("page")` parameters.
+  `CommunityViewModel` refactored to use `PaginationState` with backward-compatible computed
+  properties (`val feed get()`, `val communities get()`).
+- **Share buttons** across the app: `Context.shareText()` extension on game detail hero, profile
+  (own + other user), stats top bar, community detail, and post detail. All share text-only messages.
+  Fixed a double-tap bug by adding `navigateOnce()` guard to the share intent.
+- **Game detail cleanup:** removed `GameCommunitySection` from game detail (community section
+  doesn't belong on game pages per backend discussion).
+- **Bug fix:** mock-paginated screens showed loading + empty state simultaneously — fixed by
+  preloading the first page synchronously in `MockPaginationState`'s `init` block instead of
+  async `LaunchedEffect`.
+
 ### 2026-06-29 — Password-reset wired to the real OTP backend + Remember-me removed
 
 The backend shipped a real **3-step OTP** password reset (mobile branch). Replaced the

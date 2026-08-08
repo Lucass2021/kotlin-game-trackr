@@ -36,6 +36,7 @@ import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.adamglin.phosphoricons.regular.SquaresFour
 import com.adamglin.phosphoricons.regular.Stack
+import com.adamglin.phosphoricons.regular.Trash
 import com.adamglin.phosphoricons.regular.Trophy
 import com.adamglin.phosphoricons.regular.User
 import com.adamglin.phosphoricons.regular.UserCircle
@@ -74,6 +75,7 @@ import com.adamglin.phosphoricons.fill.ShareNetwork as ShareNetworkFill
 import com.adamglin.phosphoricons.fill.ShieldCheck as ShieldCheckFill
 import com.adamglin.phosphoricons.fill.SquaresFour as SquaresFourFill
 import com.adamglin.phosphoricons.fill.Stack as StackFill
+import com.adamglin.phosphoricons.fill.Trash as TrashFill
 import com.adamglin.phosphoricons.fill.Trophy as TrophyFill
 import com.adamglin.phosphoricons.fill.User as UserFill
 import com.adamglin.phosphoricons.fill.UserCircle as UserCircleFill
@@ -124,6 +126,7 @@ enum class AppIcon(
     SEND(PhosphorIcons.Regular.PaperPlaneTilt, PhosphorIcons.Fill.PaperPlaneTiltFill),
     PLUS(PhosphorIcons.Regular.Plus, PhosphorIcons.Fill.PlusFill),
     CLOSE(PhosphorIcons.Regular.X, PhosphorIcons.Fill.XFill),
+    TRASH(PhosphorIcons.Regular.Trash, PhosphorIcons.Fill.TrashFill),
     ;
 
     fun image(filled: Boolean = false): ImageVector = if (filled) this.filled else regular
