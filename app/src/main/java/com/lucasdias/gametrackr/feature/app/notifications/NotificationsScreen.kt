@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
@@ -23,12 +25,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
+import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
+import com.lucasdias.gametrackr.core.pagination.MockPaginationState
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationFilterTabs
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationRow
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationsEmptyState
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationsTopBar
+import kotlinx.coroutines.launch
 
 @Composable
 fun NotificationsScreen(
@@ -39,6 +45,8 @@ fun NotificationsScreen(
     var filter by rememberSaveable { mutableStateOf(NotificationFilter.ALL) }
     var markedAllRead by rememberSaveable { mutableStateOf(false) }
     val removedIds = remember { mutableListOf<Int>().toMutableStateList() }
+    val pagination = remember { MockPaginationState(NotificationsMockData.items, pageSize = 4) }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         NotificationsTopBar(
@@ -56,7 +64,7 @@ fun NotificationsScreen(
             )
         } else {
             val visible =
-                NotificationsMockData.items.filter { item ->
+                pagination.items.filter { item ->
                     if (item.id in removedIds) {
                         false
                     } else {
@@ -80,7 +88,16 @@ fun NotificationsScreen(
                     subtitle = stringResource(R.string.notifications_empty_subtitle),
                 )
             } else {
+                val listState = rememberLazyListState()
+
+                InfiniteScrollEffect(
+                    listState = listState,
+                    canLoadMore = pagination.canLoadMore,
+                    onLoadMore = { coroutineScope.launch { pagination.loadNextPage() } },
+                )
+
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -107,6 +124,10 @@ fun NotificationsScreen(
                                 )
                             }
                         }
+                    }
+
+                    if (pagination.isLoadingMore) {
+                        item { LoadingMoreIndicator() }
                     }
                 }
             }

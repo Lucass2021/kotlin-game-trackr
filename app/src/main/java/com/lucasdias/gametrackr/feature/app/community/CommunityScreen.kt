@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -22,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
+import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityChipRow
@@ -67,6 +70,8 @@ fun CommunityScreen(
                         feedFilter = feedFilter,
                         feedError = feedError,
                         isRefreshing = isLoadingFeed,
+                        isLoadingMore = viewModel.feedPagination.isLoadingMore,
+                        canLoadMore = viewModel.feedPagination.canLoadMore,
                         onFilterSelect = { feedFilter = it },
                         onPostSelect = onPostClick,
                         onLike = { viewModel.toggleLike(it) },
@@ -76,9 +81,10 @@ fun CommunityScreen(
                         onJoinSuggested = { viewModel.toggleJoin(it) },
                         onDiscover = { segment = CommunitySegment.DISCOVER },
                         onRetry = {
-                            viewModel.loadFeed()
-                            viewModel.loadCommunities()
+                            viewModel.loadFeed(reset = true)
+                            viewModel.loadCommunities(reset = true)
                         },
+                        onLoadMore = { viewModel.loadMoreFeed() },
                     )
                 }
 
@@ -87,8 +93,11 @@ fun CommunityScreen(
                         category = category,
                         onCategorySelect = { category = it },
                         communities = viewModel.communities,
+                        isLoadingMore = viewModel.communitiesPagination.isLoadingMore,
+                        canLoadMore = viewModel.communitiesPagination.canLoadMore,
                         onCommunitySelect = onCommunityClick,
                         onJoin = { viewModel.toggleJoin(it) },
+                        onLoadMore = { viewModel.loadMoreCommunities() },
                     )
                 }
             }
@@ -110,6 +119,8 @@ private fun FeedContent(
     feedFilter: String,
     feedError: Boolean,
     isRefreshing: Boolean,
+    isLoadingMore: Boolean,
+    canLoadMore: Boolean,
     onFilterSelect: (String) -> Unit,
     onPostSelect: (CommunityPost) -> Unit,
     onLike: (CommunityPost) -> Unit,
@@ -119,6 +130,7 @@ private fun FeedContent(
     onJoinSuggested: (Community) -> Unit,
     onDiscover: () -> Unit,
     onRetry: () -> Unit,
+    onLoadMore: () -> Unit,
 ) {
     if (feed.isEmpty()) {
         Box(
@@ -150,7 +162,16 @@ private fun FeedContent(
         isRefreshing = isRefreshing,
         onRefresh = onRetry,
     ) {
+        val listState = rememberLazyListState()
+
+        InfiniteScrollEffect(
+            listState = listState,
+            canLoadMore = canLoadMore,
+            onLoadMore = onLoadMore,
+        )
+
         LazyColumn(
+            state = listState,
             contentPadding = PaddingValues(bottom = 96.dp),
         ) {
             item {
@@ -182,6 +203,10 @@ private fun FeedContent(
                     )
                 }
                 Spacer(Modifier.height(16.dp))
+            }
+
+            if (isLoadingMore) {
+                item { LoadingMoreIndicator() }
             }
         }
     }

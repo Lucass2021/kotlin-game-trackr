@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.feature.app.gamedetail
 
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,12 +24,12 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.addtolibrary.AddToLibrarySheet
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameAboutSection
-import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameCommunitySection
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameDetailHero
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameGenreChip
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameInfoChip
@@ -41,7 +40,6 @@ import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameSpecificat
 @Composable
 fun GameDetailScreen(
     onBack: () -> Unit,
-    onExploreCommunity: () -> Unit,
     game: GameDetail = GameDetailMockData.game,
 ) {
     var showAddToLibrary by remember { mutableStateOf(false) }
@@ -58,14 +56,7 @@ fun GameDetailScreen(
         GameDetailHero(
             game = game,
             onBack = onBack,
-            onShare = {
-                val sendIntent =
-                    Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, "Check out ${game.title} on GameTrackr!")
-                    }
-                context.startActivity(Intent.createChooser(sendIntent, null))
-            },
+            onShare = { context.shareText("I found ${game.title} on GameTrackr") },
         )
 
         Column(
@@ -105,8 +96,6 @@ fun GameDetailScreen(
         GameScreenshotsSection(screenshots = game.screenshots)
 
         GameAboutSection(about = game.about)
-
-        GameCommunitySection(discussions = game.discussions, onSeeAll = onExploreCommunity)
 
         GameSpecificationsSection(
             specs = game.specs,

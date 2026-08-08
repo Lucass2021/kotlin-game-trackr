@@ -1,13 +1,11 @@
 package com.lucasdias.gametrackr.feature.app.community
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.core.network.dto.CommentBody
 import com.lucasdias.gametrackr.core.network.dto.CreatePostRequest
 import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.core.pagination.PaginationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,8 +14,11 @@ import kotlinx.coroutines.launch
 class CommunityViewModel(
     private val api: CommunityApi,
 ) : ViewModel() {
-    val feed: SnapshotStateList<CommunityPost> = mutableStateListOf()
-    val communities: SnapshotStateList<Community> = mutableStateListOf()
+    val feedPagination = PaginationState<CommunityPost>()
+    val communitiesPagination = PaginationState<Community>()
+
+    val feed get() = feedPagination.items
+    val communities get() = communitiesPagination.items
 
     private val _isLoadingFeed = MutableStateFlow(false)
     val isLoadingFeed: StateFlow<Boolean> = _isLoadingFeed.asStateFlow()
@@ -31,39 +32,62 @@ class CommunityViewModel(
     private val _communitiesError = MutableStateFlow(false)
     val communitiesError: StateFlow<Boolean> = _communitiesError.asStateFlow()
 
-    fun loadFeed() {
-        if (_isLoadingFeed.value) return
-        _isLoadingFeed.value = true
-        _feedError.value = false
+    fun loadFeed(reset: Boolean = true) {
+        if (reset) {
+            if (_isLoadingFeed.value) return
+            _isLoadingFeed.value = true
+            _feedError.value = false
+            feedPagination.reset()
+        } else {
+            if (!feedPagination.canLoadMore) return
+            feedPagination.setLoading(true)
+        }
+
+        val nextPage = feedPagination.currentPage + 1
 
         viewModelScope.launch {
             try {
-                val response = api.getPosts(perPage = 20)
-                feed.clear()
-                feed.addAll(response.data.map { it.toDomain() })
+                val response = api.getPosts(perPage = 20, page = nextPage)
+                feedPagination.append(response, response.data.map { it.toDomain() })
             } catch (_: Exception) {
-                _feedError.value = true
+                if (reset) _feedError.value = true
             }
-            _isLoadingFeed.value = false
+            if (reset) _isLoadingFeed.value = false
+            feedPagination.setLoading(false)
         }
     }
 
-    fun loadCommunities(search: String? = null) {
-        if (_isLoadingCommunities.value) return
-        _isLoadingCommunities.value = true
-        _communitiesError.value = false
+    fun loadMoreFeed() = loadFeed(reset = false)
+
+    fun loadCommunities(
+        search: String? = null,
+        reset: Boolean = true,
+    ) {
+        if (reset) {
+            if (_isLoadingCommunities.value) return
+            _isLoadingCommunities.value = true
+            _communitiesError.value = false
+            communitiesPagination.reset()
+        } else {
+            if (!communitiesPagination.canLoadMore) return
+            communitiesPagination.setLoading(true)
+        }
+
+        val nextPage = communitiesPagination.currentPage + 1
 
         viewModelScope.launch {
             try {
-                val response = api.getCommunities(search = search, perPage = 30)
-                communities.clear()
-                communities.addAll(response.data.map { it.toDomain() })
+                val response = api.getCommunities(search = search, perPage = 30, page = nextPage)
+                communitiesPagination.append(response, response.data.map { it.toDomain() })
             } catch (_: Exception) {
-                _communitiesError.value = true
+                if (reset) _communitiesError.value = true
             }
-            _isLoadingCommunities.value = false
+            if (reset) _isLoadingCommunities.value = false
+            communitiesPagination.setLoading(false)
         }
     }
+
+    fun loadMoreCommunities(search: String? = null) = loadCommunities(search = search, reset = false)
 
     fun toggleLike(post: CommunityPost) {
         val index = feed.indexOfFirst { it.id == post.id }

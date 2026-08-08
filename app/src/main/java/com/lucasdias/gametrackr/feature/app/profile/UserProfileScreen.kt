@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
@@ -75,10 +77,11 @@ fun UserProfileScreen(
 
             LazyColumn(contentPadding = PaddingValues(bottom = 32.dp)) {
                 item {
+                    val context = LocalContext.current
                     ProfileHeader(
                         profile = profile,
                         mode = ProfileHeaderMode.Other(isFriend = isFriend),
-                        onShare = {},
+                        onShare = { context.shareText("Check out ${user.name}'s gaming profile on GameTrackr!") },
                         onAddFriend = onFriendAction,
                         onMessage = onMessage,
                     )

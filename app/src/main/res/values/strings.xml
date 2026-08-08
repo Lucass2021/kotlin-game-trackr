@@ -221,8 +221,6 @@
     <string name="game_detail_about">About</string>
     <string name="game_detail_read_more">Read more</string>
     <string name="game_detail_read_less">Read less</string>
-    <string name="game_detail_community">Community</string>
-    <string name="game_detail_see_all">See all discussions</string>
     <string name="game_detail_specifications">Specifications</string>
     <string name="game_detail_system_requirements">System Requirements</string>
 

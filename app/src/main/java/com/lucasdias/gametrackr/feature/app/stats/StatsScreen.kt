@@ -9,10 +9,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.stats.components.AchievementSpotlightCard
 import com.lucasdias.gametrackr.feature.app.stats.components.StatBarList
@@ -30,15 +32,27 @@ fun StatsScreen(
     stats: UserStats = StatsMockData.stats,
     ownerName: String? = null,
 ) {
+    val context = LocalContext.current
     val title =
         if (ownerName == null) {
             stringResource(R.string.stats_title_own)
         } else {
             stringResource(R.string.stats_title)
         }
+    val shareMessage =
+        if (ownerName == null) {
+            "Check out my gaming stats on GameTrackr!"
+        } else {
+            "Check out $ownerName's gaming stats on GameTrackr!"
+        }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
-        StatsTopBar(title = title, subtitle = ownerName, onBack = onBack, onShare = {})
+        StatsTopBar(
+            title = title,
+            subtitle = ownerName,
+            onBack = onBack,
+            onShare = { context.shareText(shareMessage) },
+        )
 
         LazyColumn(
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),

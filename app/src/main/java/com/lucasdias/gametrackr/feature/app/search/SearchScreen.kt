@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -27,6 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.pagination.InfiniteGridScrollEffect
+import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
+import com.lucasdias.gametrackr.core.pagination.MockPaginationState
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
@@ -36,6 +41,7 @@ import com.lucasdias.gametrackr.feature.app.search.components.SearchFilterChips
 import com.lucasdias.gametrackr.feature.app.search.components.SearchResultCard
 import com.lucasdias.gametrackr.feature.app.search.components.SearchResultsEmptyState
 import com.lucasdias.gametrackr.feature.app.search.components.SearchTopBar
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(
@@ -46,10 +52,12 @@ fun SearchScreen(
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var platform by rememberSaveable { mutableStateOf<GamePlatform?>(null) }
+    val pagination = remember { MockPaginationState(SearchMockData.games, pageSize = 4) }
+    val coroutineScope = rememberCoroutineScope()
 
     val games =
-        remember(query, platform) {
-            SearchMockData.games.filter { game ->
+        remember(query, platform, pagination.items.size) {
+            pagination.items.filter { game ->
                 val matchesPlatform = platform == null || game.platforms.contains(platform)
                 val matchesQuery = query.isBlank() || game.title.contains(query.trim(), ignoreCase = true)
                 matchesPlatform && matchesQuery
@@ -65,8 +73,17 @@ fun SearchScreen(
             modifier = Modifier.padding(top = 2.dp, bottom = 14.dp),
         )
 
+        val gridState = rememberLazyGridState()
+
+        InfiniteGridScrollEffect(
+            gridState = gridState,
+            canLoadMore = pagination.canLoadMore,
+            onLoadMore = { coroutineScope.launch { pagination.loadNextPage() } },
+        )
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
+            state = gridState,
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 28.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -91,6 +108,12 @@ fun SearchScreen(
                         game = games[index],
                         modifier = Modifier.clickable(onClick = onGameClick),
                     )
+                }
+            }
+
+            if (pagination.isLoadingMore) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    LoadingMoreIndicator()
                 }
             }
 

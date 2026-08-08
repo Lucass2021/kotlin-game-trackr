@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,6 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
+import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
+import com.lucasdias.gametrackr.core.pagination.MockPaginationState
 import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
 import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
@@ -44,17 +49,20 @@ import com.lucasdias.gametrackr.feature.app.achievements.components.AchievementF
 import com.lucasdias.gametrackr.feature.app.achievements.components.AchievementsSummaryCard
 import com.lucasdias.gametrackr.feature.app.achievements.components.GameAchievementsRow
 import com.lucasdias.gametrackr.feature.app.stats.components.StatsTopBar
+import kotlinx.coroutines.launch
 
 @Composable
 fun AchievementsScreen(
     onBack: () -> Unit,
     onGameClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
-    games: List<GameAchievements> = AchievementsMockData.games,
     ownerName: String? = null,
 ) {
     var filter by rememberSaveable { mutableStateOf(AchievementFilter.ALL) }
-    val visible = remember(games, filter) { games.filter(filter::matches) }
+    val pagination = remember { MockPaginationState(AchievementsMockData.games, pageSize = 3) }
+    val coroutineScope = rememberCoroutineScope()
+
+    val visible = remember(pagination.items.size, filter) { pagination.items.filter(filter::matches) }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
         StatsTopBar(
@@ -74,13 +82,22 @@ fun AchievementsScreen(
             return@Column
         }
 
+        val listState = rememberLazyListState()
+
+        InfiniteScrollEffect(
+            listState = listState,
+            canLoadMore = pagination.canLoadMore,
+            onLoadMore = { coroutineScope.launch { pagination.loadNextPage() } },
+        )
+
         LazyColumn(
+            state = listState,
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             if (filter == AchievementFilter.ALL) {
                 item {
-                    AchievementsSummaryCard(games = games, modifier = Modifier.padding(bottom = 6.dp))
+                    AchievementsSummaryCard(games = pagination.items, modifier = Modifier.padding(bottom = 6.dp))
                 }
             }
 
@@ -99,6 +116,10 @@ fun AchievementsScreen(
                                 onClick = { onGameClick(game.id) },
                             ),
                 )
+            }
+
+            if (pagination.isLoadingMore) {
+                item { LoadingMoreIndicator() }
             }
         }
     }

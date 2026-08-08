@@ -190,10 +190,6 @@ fun MainTabScreen(
         composable(ShellRoutes.GAME_DETAIL) {
             GameDetailScreen(
                 onBack = { navController.popBackStackIfResumed() },
-                onExploreCommunity = {
-                    selectedTab = AppTab.COMMUNITY
-                    navController.popBackStack(ShellRoutes.TABS, inclusive = false)
-                },
             )
         }
         composable(ShellRoutes.COMMUNITY_DETAIL) {

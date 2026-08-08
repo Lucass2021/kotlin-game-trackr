@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
@@ -70,7 +72,12 @@ fun ProfileScreen(
         contentPadding = PaddingValues(bottom = 32.dp),
     ) {
         item {
-            ProfileHeader(profile = profile, onEdit = onEditProfile, onShare = {})
+            val context = LocalContext.current
+            ProfileHeader(
+                profile = profile,
+                onEdit = onEditProfile,
+                onShare = { context.shareText("Check out my gaming profile on GameTrackr!") },
+            )
             Spacer(Modifier.height(26.dp))
         }
 

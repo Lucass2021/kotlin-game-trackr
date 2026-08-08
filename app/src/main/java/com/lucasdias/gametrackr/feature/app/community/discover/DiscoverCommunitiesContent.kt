@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
+import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -38,8 +41,11 @@ fun DiscoverCommunitiesContent(
     category: String,
     onCategorySelect: (String) -> Unit,
     communities: SnapshotStateList<Community>,
+    isLoadingMore: Boolean = false,
+    canLoadMore: Boolean = false,
     onCommunitySelect: (Community) -> Unit,
     onJoin: (Community) -> Unit,
+    onLoadMore: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var query by remember { mutableStateOf("") }
@@ -51,7 +57,16 @@ fun DiscoverCommunitiesContent(
             matchesCategory && matchesQuery
         }
 
+    val listState = rememberLazyListState()
+
+    InfiniteScrollEffect(
+        listState = listState,
+        canLoadMore = canLoadMore,
+        onLoadMore = onLoadMore,
+    )
+
     LazyColumn(
+        state = listState,
         modifier = modifier,
         contentPadding = PaddingValues(bottom = 28.dp),
         verticalArrangement = Arrangement.spacedBy(22.dp),
@@ -123,6 +138,10 @@ fun DiscoverCommunitiesContent(
                         )
                     }
                 }
+            }
+
+            if (isLoadingMore) {
+                item { LoadingMoreIndicator() }
             }
         }
     }

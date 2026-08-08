@@ -1,7 +1,5 @@
 package com.lucasdias.gametrackr.feature.app.gamedetail
 
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
@@ -10,8 +8,6 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 
@@ -37,29 +33,6 @@ object GameDetailMockData {
                     "the sprawling vertical megacity of Aethelgard, players take on the role of a " +
                     "rogue netrunner untangling a conspiracy that reaches from the neon-drenched " +
                     "undercity to the corporate spires above.",
-            discussions =
-                listOf(
-                    GameDiscussion(
-                        author = "Kaelen_Vox",
-                        timeAgo = "2h ago",
-                        title = "Best builds for early game?",
-                        preview = "Just started my playthrough on PS5. Should I focus on the tech tree or go full stealth?",
-                        comments = 24,
-                        likes = 142,
-                        avatarStart = CoverPineStart,
-                        avatarEnd = CoverPineEnd,
-                    ),
-                    GameDiscussion(
-                        author = "CyberDrifter_99",
-                        timeAgo = "5h ago",
-                        title = "The level design is insane!",
-                        preview = "The verticality in the Upper District is unlike anything I've seen in an open world.",
-                        comments = 86,
-                        likes = 856,
-                        avatarStart = CoverAzureStart,
-                        avatarEnd = CoverAzureEnd,
-                    ),
-                ),
             specs =
                 listOf(
                     GameSpec("Developer", "Void Interactive"),

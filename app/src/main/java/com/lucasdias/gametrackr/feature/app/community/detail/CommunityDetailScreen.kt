@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,8 +43,12 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.CommunityApi
 import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
+import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
+import com.lucasdias.gametrackr.core.pagination.PaginationState
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
@@ -71,21 +77,33 @@ fun CommunityDetailScreen(
 ) {
     var isJoined by remember { mutableStateOf(community.isJoined) }
     var tab by remember { mutableStateOf(CommunityDetailTab.POSTS) }
-    val posts = remember { mutableStateListOf<CommunityPost>() }
+    val postsPagination = remember { PaginationState<CommunityPost>() }
+    val posts = postsPagination.items
     val members = remember { mutableStateListOf<CommunityMember>() }
     var postsError by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    suspend fun loadData() {
-        postsError = false
-        try {
-            val response = api.getPosts(communityId = community.id, perPage = 30)
-            posts.clear()
-            posts.addAll(response.data.map { it.toDomain() })
-        } catch (_: Exception) {
-            postsError = true
+    suspend fun loadPosts(reset: Boolean = true) {
+        if (reset) {
+            postsError = false
+            postsPagination.reset()
+        } else {
+            if (!postsPagination.canLoadMore) return
+            postsPagination.setLoading(true)
         }
 
+        val nextPage = postsPagination.currentPage + 1
+
+        try {
+            val response = api.getPosts(communityId = community.id, perPage = 30, page = nextPage)
+            postsPagination.append(response, response.data.map { it.toDomain() })
+        } catch (_: Exception) {
+            if (reset) postsError = true
+        }
+        postsPagination.setLoading(false)
+    }
+
+    suspend fun loadMembers() {
         try {
             val detail = api.getCommunity(community.id)
             val apiMembers = detail.members?.map { it.toDomain() }.orEmpty()
@@ -95,10 +113,21 @@ fun CommunityDetailScreen(
         }
     }
 
-    LaunchedEffect(community.id) { loadData() }
+    LaunchedEffect(community.id) {
+        loadPosts()
+        loadMembers()
+    }
 
     Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
-        LazyColumn(contentPadding = PaddingValues(bottom = 96.dp)) {
+        val listState = rememberLazyListState()
+
+        InfiniteScrollEffect(
+            listState = listState,
+            canLoadMore = postsPagination.canLoadMore,
+            onLoadMore = { scope.launch { loadPosts(reset = false) } },
+        )
+
+        LazyColumn(state = listState, contentPadding = PaddingValues(bottom = 96.dp)) {
             item { CommunityDetailHeader(community = community) }
 
             item {
@@ -111,6 +140,7 @@ fun CommunityDetailScreen(
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
                 )
                 Spacer(Modifier.height(20.dp))
+                val context = LocalContext.current
                 ActionRow(
                     isJoined = isJoined,
                     onJoin = {
@@ -128,6 +158,7 @@ fun CommunityDetailScreen(
                             }
                         }
                     },
+                    onShare = { context.shareText("Join the ${community.name} community on GameTrackr!") },
                     modifier = Modifier.padding(horizontal = 20.dp),
                 )
                 Spacer(Modifier.height(20.dp))
@@ -146,7 +177,12 @@ fun CommunityDetailScreen(
                                 title = "Couldn't load posts",
                                 message = "Check your connection\nand try again.",
                                 actionTitle = "Try again",
-                                onAction = { scope.launch { loadData() } },
+                                onAction = {
+                                    scope.launch {
+                                        loadPosts()
+                                        loadMembers()
+                                    }
+                                },
                             )
                         }
                     } else if (posts.isEmpty()) {
@@ -208,6 +244,10 @@ fun CommunityDetailScreen(
                             )
                             Spacer(Modifier.height(16.dp))
                         }
+
+                        if (postsPagination.isLoadingMore) {
+                            item { LoadingMoreIndicator() }
+                        }
                     }
                 }
 
@@ -239,6 +279,7 @@ fun CommunityDetailScreen(
 private fun ActionRow(
     isJoined: Boolean,
     onJoin: () -> Unit,
+    onShare: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -250,6 +291,7 @@ private fun ActionRow(
         CircleIconButton(
             icon = AppIcon.SHARE,
             label = stringResource(R.string.community_action_share_community),
+            onClick = onShare,
         )
     }
 }
@@ -258,6 +300,7 @@ private fun ActionRow(
 private fun CircleIconButton(
     icon: AppIcon,
     label: String,
+    onClick: () -> Unit = {},
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Box(
@@ -272,7 +315,7 @@ private fun CircleIconButton(
                     indication = null,
                     onClickLabel = label,
                     role = Role.Button,
-                    onClick = {},
+                    onClick = onClick,
                 ),
         contentAlignment = Alignment.Center,
     ) {

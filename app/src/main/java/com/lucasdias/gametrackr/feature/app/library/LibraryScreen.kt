@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -23,6 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
+import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
+import com.lucasdias.gametrackr.core.pagination.MockPaginationState
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
@@ -31,6 +37,7 @@ import com.lucasdias.gametrackr.feature.app.library.components.LibraryEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryFilterChips
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryStatsBar
+import kotlinx.coroutines.launch
 
 @Composable
 fun LibraryScreen(
@@ -40,11 +47,13 @@ fun LibraryScreen(
     onBrowseGames: () -> Unit = {},
     onGameClick: () -> Unit = {},
 ) {
-    val entries = LibraryMockData.entries
-    val filteredEntries = if (filter == null) entries else entries.filter { it.status == filter }
+    val pagination = remember { MockPaginationState(LibraryMockData.entries, pageSize = 3) }
+    val coroutineScope = rememberCoroutineScope()
+
+    val filteredEntries = if (filter == null) pagination.items.toList() else pagination.items.filter { it.status == filter }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
-        if (entries.isNotEmpty()) {
+        if (pagination.items.isNotEmpty()) {
             LibraryStatsBar(
                 stats = LibraryMockData.stats,
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 16.dp),
@@ -54,11 +63,11 @@ fun LibraryScreen(
         LibraryFilterChips(
             selection = filter,
             onSelect = onFilterChange,
-            modifier = Modifier.padding(top = if (entries.isEmpty()) 12.dp else 0.dp, bottom = 14.dp),
+            modifier = Modifier.padding(top = if (pagination.items.isEmpty()) 12.dp else 0.dp, bottom = 14.dp),
         )
 
         when {
-            entries.isEmpty() -> {
+            pagination.items.isEmpty() -> {
                 LibraryEmptyState(onBrowse = onBrowseGames)
             }
 
@@ -67,13 +76,26 @@ fun LibraryScreen(
             }
 
             else -> {
+                val listState = rememberLazyListState()
+
+                InfiniteScrollEffect(
+                    listState = listState,
+                    canLoadMore = pagination.canLoadMore,
+                    onLoadMore = { coroutineScope.launch { pagination.loadNextPage() } },
+                )
+
                 LazyColumn(
+                    state = listState,
                     contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     items(filteredEntries) { entry ->
                         LibraryEntryRow(entry = entry, modifier = Modifier.clickable(onClick = onGameClick))
+                    }
+
+                    if (pagination.isLoadingMore) {
+                        item { LoadingMoreIndicator() }
                     }
                 }
             }

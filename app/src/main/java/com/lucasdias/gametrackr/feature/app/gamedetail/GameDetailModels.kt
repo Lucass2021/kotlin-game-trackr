@@ -7,17 +7,6 @@ data class GameScreenshot(
     val end: Color,
 )
 
-data class GameDiscussion(
-    val author: String,
-    val timeAgo: String,
-    val title: String,
-    val preview: String,
-    val comments: Int,
-    val likes: Int,
-    val avatarStart: Color,
-    val avatarEnd: Color,
-)
-
 data class GameSpec(
     val label: String,
     val value: String,
@@ -38,7 +27,6 @@ data class GameDetail(
     val coverEnd: Color,
     val screenshots: List<GameScreenshot>,
     val about: String,
-    val discussions: List<GameDiscussion>,
     val specs: List<GameSpec>,
     val systemRequirements: List<SystemRequirementTier>,
 ) {
