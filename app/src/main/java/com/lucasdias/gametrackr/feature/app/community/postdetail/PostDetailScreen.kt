@@ -257,11 +257,7 @@ private fun TopBar(
                     }
                 }
             } else {
-                IconButtonGhost(
-                    icon = AppIcon.OVERFLOW,
-                    label = stringResource(R.string.community_action_more),
-                    onClick = {},
-                )
+                Spacer(Modifier.size(40.dp))
             }
         }
         HorizontalDivider(thickness = 1.dp, color = AppOutline)

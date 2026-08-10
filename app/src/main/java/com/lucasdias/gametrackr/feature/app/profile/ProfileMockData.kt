@@ -14,6 +14,7 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import com.lucasdias.gametrackr.feature.app.library.LibraryEntry
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
+import com.lucasdias.gametrackr.feature.app.profile.editprofile.AvatarPalette
 
 object ProfileMockData {
     val profile =
@@ -68,8 +69,20 @@ object ProfileMockData {
 
     val setups =
         listOf(
-            SetupItem("Main Battle Station", "RTX 4090 + i9-14900K, 32\" 4K 144Hz", CoverIndigoStart, CoverIndigoEnd),
-            SetupItem("Retro Corner", "CRT TV + SNES, N64, and PS2", CoverCrimsonStart, CoverCrimsonEnd),
-            SetupItem("Portable Setup", "Steam Deck OLED + Backbone", CoverEmeraldStart, CoverEmeraldEnd),
+            SetupItem(
+                title = "Main Battle Station",
+                description = "RTX 4090 + i9-14900K, 32\" 4K 144Hz",
+                palette = AvatarPalette.INDIGO,
+            ),
+            SetupItem(
+                title = "Retro Corner",
+                description = "CRT TV + SNES, N64, and PS2",
+                palette = AvatarPalette.CRIMSON,
+            ),
+            SetupItem(
+                title = "Portable Setup",
+                description = "Steam Deck OLED + Backbone",
+                palette = AvatarPalette.EMERALD,
+            ),
         )
 }

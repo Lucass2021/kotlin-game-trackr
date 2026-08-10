@@ -269,8 +269,7 @@ fun CommunityDetailScreen(
             }
         }
 
-        BackCircle(icon = AppIcon.BACK, onClick = onBack, modifier = Modifier.align(Alignment.TopStart))
-        BackCircle(icon = AppIcon.OVERFLOW, onClick = {}, modifier = Modifier.align(Alignment.TopEnd))
+        BackCircle(onClick = onBack, modifier = Modifier.align(Alignment.TopStart))
 
         if (tab == CommunityDetailTab.POSTS && isJoined && !isGuest) {
             CreatePostButton(onClick = onCreatePost, modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp))
@@ -335,7 +334,6 @@ private fun CircleIconButton(
 
 @Composable
 private fun BackCircle(
-    icon: AppIcon,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -360,7 +358,7 @@ private fun BackCircle(
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = icon.image(),
+            imageVector = AppIcon.BACK.image(),
             contentDescription = label,
             tint = AppTextPrimary,
             modifier = Modifier.size(20.dp),

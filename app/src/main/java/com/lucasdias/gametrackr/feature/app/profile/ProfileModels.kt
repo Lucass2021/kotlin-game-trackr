@@ -1,5 +1,6 @@
 package com.lucasdias.gametrackr.feature.app.profile
 
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.R
@@ -10,6 +11,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
+import com.lucasdias.gametrackr.feature.app.profile.editprofile.AvatarPalette
+import java.util.UUID
 import kotlin.math.roundToInt
 
 data class Profile(
@@ -103,8 +106,9 @@ data class ActivityEvent(
 )
 
 data class SetupItem(
+    val id: String = UUID.randomUUID().toString(),
     val title: String,
     val description: String,
-    val imageStart: Color,
-    val imageEnd: Color,
+    val photos: List<Uri> = emptyList(),
+    val palette: AvatarPalette = AvatarPalette.INDIGO,
 )

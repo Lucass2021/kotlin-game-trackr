@@ -399,6 +399,30 @@
     <string name="help_faq_4_question">Is my data private?</string>
     <string name="help_faq_4_answer">By default your profile is public, but you can change its visibility in Settings. Your library, stats, and activity respect your privacy preferences.</string>
 
+    <string name="setup_title">My Setup</string>
+    <string name="setup_back">Back</string>
+    <string name="setup_close">Close</string>
+    <string name="setup_save">Save</string>
+    <string name="setup_add">Add setup</string>
+    <string name="setup_new_title">New setup</string>
+    <string name="setup_edit_title">Edit setup</string>
+    <string name="setup_empty_title">No setup yet</string>
+    <string name="setup_empty_message">Add your battle station, retro corner or handheld gear so other players can see how you play.</string>
+    <string name="setup_empty_action">Add your first setup</string>
+    <string name="setup_profile_empty_message">Add photos of your battle station, retro corner or handheld gear.</string>
+    <string name="setup_field_photos">Photos</string>
+    <string name="setup_field_title">Title</string>
+    <string name="setup_field_description">Description</string>
+    <string name="setup_title_placeholder">Main Battle Station</string>
+    <string name="setup_description_placeholder">What\'s in it? Console, monitor, chair, cables…</string>
+    <string name="setup_add_photo">Add photo</string>
+    <string name="setup_remove_photo">Remove photo</string>
+    <string name="setup_delete">Delete setup</string>
+    <string name="setup_delete_title">Delete this setup?</string>
+    <string name="setup_delete_message">The photos you added will be removed too.</string>
+    <string name="setup_delete_confirm">Delete</string>
+    <string name="setup_delete_cancel">Cancel</string>
+
     <plurals name="search_result_count">
         <item quantity="one">%1$d result</item>
         <item quantity="other">%1$d results</item>

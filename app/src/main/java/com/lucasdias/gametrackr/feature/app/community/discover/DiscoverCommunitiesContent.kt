@@ -3,13 +3,8 @@ package com.lucasdias.gametrackr.feature.app.community.discover
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
@@ -21,14 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
-import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.community.Community
@@ -87,24 +80,6 @@ fun DiscoverCommunitiesContent(
             )
         }
 
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                SectionHeader(title = "Featured")
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp),
-                ) {
-                    items(communities.take(3), key = { it.id }) { community ->
-                        FeaturedCommunityCard(
-                            community = community,
-                            onSelect = { onCommunitySelect(community) },
-                            onJoin = { onJoin(community) },
-                        )
-                    }
-                }
-            }
-        }
-
         if (filtered.isEmpty()) {
             item {
                 CommunityEmptyState(
@@ -144,25 +119,5 @@ fun DiscoverCommunitiesContent(
                 item { LoadingMoreIndicator() }
             }
         }
-    }
-}
-
-@Composable
-private fun SectionHeader(title: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            text = title,
-            color = AppTextPrimary,
-            style = AppType.headline(22.sp),
-        )
-        Text(
-            text = "See all",
-            color = AppPrimary,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.SemiBold,
-        )
     }
 }

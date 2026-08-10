@@ -117,6 +117,47 @@ messaging, and collection.
 
 ## Progress log
 
+### 2026-08-10 — My Setup (first real device photos), Discover cleanup, overflow-menu audit
+
+- **My Setup** (`feature/app/profile/setup/`) — the profile's Setup section became a real feature:
+  `MySetupScreen` (list + empty state) → `EditSetupScreen` (add/edit form) → delete with
+  `AlertDialog`. `ProfileSetupRow` now has an inline empty card and an "Add setup" tile at the end
+  of the `LazyRow`. `SetupCover` renders the first photo, falling back to the palette gradient.
+  Routes `MY_SETUP` / `EDIT_SETUP` added to `ShellRoutes`.
+- **First real images in the app — without adding Coil.** `EditSetupScreen` uses
+  `ActivityResultContracts.PickMultipleVisualMedia(6)`, which returns `Uri`s. Rather than pull in
+  Coil (an image *loading* library, built around network fetching) for a handful of local URIs,
+  `SetupPhoto.kt` has a ~20-line `rememberSetupPhoto(uri)`:
+  - `produceState` keyed on the `Uri` + `withContext(Dispatchers.IO)` so decoding never blocks
+    composition.
+  - Two-pass `BitmapFactory`: `inJustDecodeBounds` for the size, then `inSampleSize` doubled until
+    the long edge is under 1200px. Chosen over `ImageDecoder` because **`minSdk = 24`** and
+    `ImageDecoder` is API 28+ — this way there's no version branch.
+  - Reconsider when game covers need real network images; then there'd be one path, not two.
+- **No runtime permission needed.** `PickVisualMedia` uses the system photo picker
+  ("This app can only access the photos you select") — it runs out-of-process, so nothing was added
+  to the manifest. Verified end-to-end on the emulator: pick → decode → thumbnail → counter 1/6.
+- **Persistence: none, deliberately.** `setups` is a `mutableStateListOf` in `MainTabScreen`,
+  mirroring how `profile` already works. Data is lost on restart; that one holder is the swap point
+  when `/me/collection` lands. The profile **starts empty** so the empty state is the default
+  experience — `ProfileMockData.setups` survives for previews only.
+- **`SetupItem` gained `id`/`photos`/`palette`** and dropped `imageStart`/`imageEnd`, reusing
+  `AvatarPalette` (from `editprofile/`) for the placeholder gradient. Its picker was in the form
+  briefly and was **removed** — the palette is assigned automatically, rotating by
+  `AvatarPalette.entries[setups.size % size]`.
+- **Discover:** dropped the "Featured" `LazyRow` and deleted `FeaturedCommunityCard.kt`. It showed
+  `communities.take(3)` — the same three rows already visible below — and ignored the chip filter.
+  Removing an `item {}` block orphaned `LazyRow`/`FontWeight`/`AppPrimary` imports; ktlint's
+  `no-unused-imports` **did not** flag them, so check imports by hand after deleting a block.
+- **Overflow (`…`) audit.** Three dead buttons removed: `UserProfileScreen` top bar,
+  `PostDetailScreen` (non-`isOwnPost` branch, now a `Spacer(Modifier.size(40.dp))` so the centred
+  wordmark stays on-axis), and `CommunityPostCard`. Also removed the one in `CommunityDetailScreen`,
+  which let `BackCircle` lose its `icon` parameter — it had been passing `contentDescription =
+  "Back"` for the overflow button, an accessibility bug that disappeared with it.
+- **Empty-state centring:** `CommunityEmptyState` uses symmetric `padding(vertical = 60.dp)`, so
+  wrapping it in `Box(Modifier.weight(1f), contentAlignment = Alignment.Center)` centres it
+  directly. The iOS twin has asymmetric top-only padding and needs compensation — noted in TODO.MD.
+
 ### 2026-08-08 — Notification deletion, infinite scroll, share buttons, game detail cleanup
 
 Batch of cross-platform feature work aligned with backend discussions.

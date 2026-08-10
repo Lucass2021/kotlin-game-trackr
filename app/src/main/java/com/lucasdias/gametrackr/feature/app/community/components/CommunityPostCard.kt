@@ -111,7 +111,7 @@ private fun Header(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         CommunityAvatar(start = post.avatarStart, end = post.avatarEnd, size = 40.dp)
-        Column(modifier = Modifier.padding(start = 12.dp, end = 32.dp).weight(1f)) {
+        Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
             Text(
                 text = post.author,
                 color = AppPrimary,
@@ -123,12 +123,6 @@ private fun Header(
                 style = AppType.body(13.sp),
             )
         }
-        Icon(
-            imageVector = AppIcon.OVERFLOW.image(),
-            contentDescription = null,
-            tint = AppTextSecondary,
-            modifier = Modifier.size(20.dp),
-        )
     }
 }
 

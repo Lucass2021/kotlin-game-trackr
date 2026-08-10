@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,9 +46,13 @@ import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
 import com.lucasdias.gametrackr.feature.app.profile.Profile
 import com.lucasdias.gametrackr.feature.app.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
+import com.lucasdias.gametrackr.feature.app.profile.SetupItem
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileMockData
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
+import com.lucasdias.gametrackr.feature.app.profile.editprofile.AvatarPalette
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileScreen
+import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupScreen
+import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupScreen
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
@@ -73,6 +78,8 @@ private object ShellRoutes {
     const val USER_PROFILE_ARG_NAME = "name"
     const val USER_PROFILE_ROUTE = "$USER_PROFILE?$USER_PROFILE_ARG_NAME={$USER_PROFILE_ARG_NAME}"
     const val EDIT_PROFILE = "editprofile"
+    const val MY_SETUP = "mysetup"
+    const val EDIT_SETUP = "editsetup"
     const val ACHIEVEMENTS = "achievements"
     const val ACHIEVEMENTS_ARG_OWNER = "owner"
     const val ACHIEVEMENTS_ROUTE = "$ACHIEVEMENTS?$ACHIEVEMENTS_ARG_OWNER={$ACHIEVEMENTS_ARG_OWNER}"
@@ -122,6 +129,8 @@ fun MainTabScreen(
     var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
     var libraryFilter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
     var profile by remember { mutableStateOf(ProfileMockData.profile) }
+    val setups = remember { mutableStateListOf<SetupItem>() }
+    var editingSetup by remember { mutableStateOf<SetupItem?>(null) }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
         composable(ShellRoutes.TABS) {
@@ -154,6 +163,40 @@ fun MainTabScreen(
                 onViewStats = { navController.navigate(ShellRoutes.stats()) },
                 profile = profile,
                 onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
+                setups = setups,
+                onViewSetup = { navController.navigate(ShellRoutes.MY_SETUP) },
+            )
+        }
+        composable(ShellRoutes.MY_SETUP) {
+            MySetupScreen(
+                setups = setups,
+                onBack = { navController.popBackStackIfResumed() },
+                onAdd = {
+                    editingSetup =
+                        SetupItem(
+                            title = "",
+                            description = "",
+                            palette = AvatarPalette.entries[setups.size % AvatarPalette.entries.size],
+                        )
+                    navController.navigate(ShellRoutes.EDIT_SETUP)
+                },
+                onEdit = { setup ->
+                    editingSetup = setup
+                    navController.navigate(ShellRoutes.EDIT_SETUP)
+                },
+            )
+        }
+        composable(ShellRoutes.EDIT_SETUP) {
+            val setup = editingSetup ?: return@composable
+            EditSetupScreen(
+                setup = setup,
+                isNew = setups.none { it.id == setup.id },
+                onBack = { navController.popBackStackIfResumed() },
+                onSave = { updated ->
+                    val index = setups.indexOfFirst { it.id == updated.id }
+                    if (index >= 0) setups[index] = updated else setups.add(updated)
+                },
+                onDelete = { target -> setups.removeAll { it.id == target.id } },
             )
         }
         composable(ShellRoutes.EDIT_PROFILE) {
@@ -394,6 +437,8 @@ private fun TabShell(
     onViewStats: () -> Unit,
     profile: Profile,
     onEditProfile: () -> Unit,
+    setups: List<SetupItem>,
+    onViewSetup: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
@@ -438,6 +483,8 @@ private fun TabShell(
                         onEditProfile = onEditProfile,
                         onCreateAccount = onCreateAccount,
                         onViewStats = onViewStats,
+                        onViewSetup = onViewSetup,
+                        setups = setups,
                         profile = profile,
                     )
                 }

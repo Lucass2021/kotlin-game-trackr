@@ -47,6 +47,16 @@ games. A user can:
 
 The mobile-native clients and the web client are **thin clients** over one backend.
 
+### Guest access
+
+Users can enter the app **without an account** via **"Continue as guest"** on the Login screen.
+A guest reaches the **same app shell and routes** as a signed-in user — there is **no separate
+"visitor" app**. Guests get **read-only discovery**: browse Home / discovery feeds, search, and
+open game/community detail. Any action that writes to a user (add to library, rate/review,
+friend requests, messaging, posting/voting, collection) is **gated**: the client detects the
+guest session at the point of the action and prompts to create an account instead of calling the
+API. Leaving guest mode or tapping a gated CTA returns the user to the Welcome / auth flow.
+
 ---
 
 ## Team & ownership
@@ -81,6 +91,9 @@ and caching that data.
   mobile client opens the provider flow (system browser / ASWebAuthenticationSession /
   Custom Tabs) and receives a GameTrackr token at the end.
 - Whether refresh tokens are used (vs. long-lived Sanctum tokens) is **to be confirmed with backend** — see the open questions section.
+- **Guest sessions are client-only** — no token, no backend call. The client tracks a
+  three-state session (`unauthenticated` / `guest` / `authenticated`) and only guest + authenticated
+  reach the app shell (see *Guest access*). Guests only hit **public read endpoints**.
 
 > ✅ **VERIFIED AGAINST THE RUNNING BACKEND (2026-06-27, updated 2026-06-29).** The text above is
 > the original *proposal*; the points below were confirmed with `curl` against the local backend and
@@ -134,7 +147,7 @@ Channels (proposed):
 | `Friendship` | request → pending → accepted; or block |
 | `Conversation` / `Message` | 1-to-1 chat |
 | `Topic` / `Post` | community forum-lite; topic optionally linked to a `Game` |
-| `CollectionItem` | physical item (console, peripheral, collectible) with image |
+| `CollectionItem` | physical item (console, peripheral, collectible) with image — surfaced on mobile as **"My Setup"**, see below |
 | `Notification` | friend request, reply, message, etc. |
 | `ActivityEvent` | "Lucas completed Elden Ring" — feed item |
 | `GameList` | user-curated list (e.g. "Top 10 RPGs") |
@@ -210,11 +223,26 @@ JSON request/response. Pagination via `?page=` + `?per_page=` returning Laravel-
 - `POST /topics/{id}/posts` — `{ body }`
 - `POST /posts/{id}/vote` — `{ value: 1 | -1 }`
 
-### Collection (physical)
+### Collection (physical) — "My Setup"
+> ⚠️ **Not implemented in the backend.** No route, controller, or model exists yet (verified
+> 2026-08-10 against `game-trackr-api/routes/api.php`). Both mobile clients ship the feature
+> **client-side only** in the meantime — see below.
+
 - `GET    /me/collection`
 - `POST   /me/collection` — multipart: `{ category, name, description?, image? }`
 - `PATCH  /me/collection/{id}`
 - `DELETE /me/collection/{id}`
+
+**How mobile ships it today (2026-08-10).** The Profile tab has a **My Setup** section →
+a **My Setup** list screen → an **add/edit** form. A setup is `{ id, title, description,
+photos[], palette }`, where `photos` are **real images picked from the device** (iOS
+`PhotosPicker`, Android `PickVisualMedia` — neither needs a runtime permission) and `palette`
+only supplies the placeholder gradient when a setup has no photo. **Nothing persists**: the list
+is hoisted UI state (`MainTabView` / `MainTabScreen`) and is lost on app restart, matching how
+the rest of the app fakes data. Max **6 photos** per setup, downsampled to 1200px on import.
+When the endpoints land, the swap points are those two state holders — the screens already take
+a plain list plus callbacks. The category/`CollectionItem` split above is **not** modelled on the
+client yet.
 
 ### Notifications & feed
 - `GET  /notifications` — list
@@ -231,6 +259,42 @@ JSON request/response. Pagination via `?page=` + `?per_page=` returning Laravel-
 
 ---
 
+## App navigation & screen flow
+
+The whole-app flow the team drew (see `agents/app-flow.jpeg`). Applies to every client.
+
+**Auth stack** (unauthenticated):
+
+- **Welcome** → **Login** and **Create account** (Login ↔ Create account cross-link).
+- **Login** → **Forgot password** → **Confirm OTP code** → **New password** → **Home**.
+- **Login** → **Continue as guest** → **Home** (guest session; see *Guest access*).
+- **Login** / **Create account** → **Home** on success.
+
+**App shell** (authenticated *or* guest) — a bottom tab bar with a global header:
+
+- **Tabs:** `Home` · `Library` · `Community` · `Profile`.
+- **Global header** (present across tabs): `Notifications` · `Search` · `Profile menu`.
+- **Home** → `New Releases` and `New Anticipated` (Most Anticipated) screens.
+- **Community** → `My Community` and `Discover new Communities`.
+  - `My Community` → `Post details` → `Community details`.
+  - `Discover new Communities` → `Community details`.
+  - `Discover` is **search field → category chips → All communities**. There is no "Featured"
+    carousel — it was removed 2026-08-10 because it duplicated the first three rows of the list
+    below it and ignored the chip filter.
+- **Profile** → `Stats`, `Edit profile`, and `My Setup` → `New setup` / `Edit setup`.
+
+Guests land on the same shell; write actions inside it are gated (see *Guest access*).
+
+### Overflow (`…`) menus
+
+A three-dot button must always open a menu. Audited 2026-08-10 — the only two that exist are
+**Notifications** (Mark all read / Clear all) and **Post detail on your own post** (Delete post).
+Dead `…` buttons were removed from Community detail, Post detail on someone else's post, the
+User profile top bar, and the community post card. Don't reintroduce one as a placeholder: put
+the affordance in when its menu exists.
+
+---
+
 ## Feature scope by phase (mobile)
 
 Mobile follows the same roadmap as the web app but consumes the shared API. Suggested order:
@@ -241,7 +305,8 @@ Mobile follows the same roadmap as the web app but consumes the shared API. Sugg
 4. **Public profiles + stats + friends**.
 5. **Community** (forum-lite).
 6. **Messaging + realtime** (Reverb) + push notifications.
-7. **Physical collection / setup** (image upload).
+7. **Physical collection / setup** (image upload). *UI shipped 2026-08-10 as **My Setup**, local-only
+   — see the Collection section of the REST contract. Waiting on the backend to persist.*
 
 ---
 

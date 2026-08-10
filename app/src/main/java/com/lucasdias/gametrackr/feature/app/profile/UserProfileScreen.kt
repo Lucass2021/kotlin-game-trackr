@@ -166,9 +166,7 @@ private fun TopBar(
     onBack: () -> Unit,
 ) {
     val backInteraction = remember { MutableInteractionSource() }
-    val overflowInteraction = remember { MutableInteractionSource() }
     val backLabel = stringResource(R.string.user_profile_back)
-    val moreLabel = stringResource(R.string.profile_more_options)
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -203,28 +201,6 @@ private fun TopBar(
             style = AppType.headline(18.sp),
             modifier = Modifier.weight(1f),
         )
-
-        Box(
-            modifier =
-                Modifier
-                    .pressScale(overflowInteraction)
-                    .size(40.dp)
-                    .clickable(
-                        interactionSource = overflowInteraction,
-                        indication = null,
-                        onClickLabel = moreLabel,
-                        role = Role.Button,
-                        onClick = {},
-                    ),
-            contentAlignment = Alignment.CenterEnd,
-        ) {
-            Icon(
-                imageVector = AppIcon.OVERFLOW.image(),
-                contentDescription = moreLabel,
-                tint = AppTextPrimary,
-                modifier = Modifier.size(22.dp),
-            )
-        }
     }
 }
 

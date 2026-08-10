@@ -60,6 +60,8 @@ fun ProfileScreen(
     onEditProfile: () -> Unit,
     onCreateAccount: () -> Unit,
     onViewStats: () -> Unit,
+    onViewSetup: () -> Unit,
+    setups: List<SetupItem>,
     modifier: Modifier = Modifier,
     profile: Profile = ProfileMockData.profile,
 ) {
@@ -144,11 +146,15 @@ fun ProfileScreen(
         item {
             SectionHeader(
                 title = stringResource(R.string.profile_section_setup),
-                actionTitle = stringResource(R.string.profile_section_view_all),
-                onAction = {},
+                actionTitle = stringResource(R.string.profile_section_view_all).takeIf { setups.isNotEmpty() },
+                onAction = onViewSetup,
             )
             Spacer(Modifier.height(14.dp))
-            ProfileSetupRow(setups = ProfileMockData.setups)
+            ProfileSetupRow(
+                setups = setups,
+                onSelect = { onViewSetup() },
+                onAdd = onViewSetup,
+            )
             Spacer(Modifier.height(26.dp))
         }
     }
