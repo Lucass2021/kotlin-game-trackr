@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 enum class CommunitySegment(
     val label: String,
 ) {
-    MY_FEED("My Feed"),
+    MY_FEED("Feed"),
     DISCOVER("Discover"),
 }
 
@@ -36,6 +36,7 @@ data class Community(
 data class CommunityPost(
     val id: Long,
     val author: String,
+    val authorId: Int? = null,
     val timeAgo: String,
     val communityName: String,
     val title: String,
@@ -62,6 +63,7 @@ data class CommunityMember(
 data class PostComment(
     val id: Long,
     val author: String,
+    val authorId: Int? = null,
     val timeAgo: String,
     val content: String,
     val likes: Int,

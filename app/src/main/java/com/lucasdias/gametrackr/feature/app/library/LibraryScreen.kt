@@ -29,10 +29,12 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.pagination.MockPaginationState
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryFilterChips
@@ -43,10 +45,17 @@ import kotlinx.coroutines.launch
 fun LibraryScreen(
     filter: LibraryStatus?,
     onFilterChange: (LibraryStatus?) -> Unit,
+    isGuest: Boolean = false,
+    onCreateAccount: () -> Unit = {},
     modifier: Modifier = Modifier,
     onBrowseGames: () -> Unit = {},
     onGameClick: () -> Unit = {},
 ) {
+    if (isGuest) {
+        LibraryGuestState(onCreateAccount = onCreateAccount)
+        return
+    }
+
     val pagination = remember { MockPaginationState(LibraryMockData.entries, pageSize = 3) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -91,7 +100,16 @@ fun LibraryScreen(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     items(filteredEntries) { entry ->
-                        LibraryEntryRow(entry = entry, modifier = Modifier.clickable(onClick = onGameClick))
+                        LibraryEntryRow(
+                            entry = entry,
+                            onFavorite = {
+                                val index = pagination.items.indexOfFirst { it.title == entry.title }
+                                if (index >= 0) {
+                                    pagination.items[index] = pagination.items[index].copy(isFavorite = !entry.isFavorite)
+                                }
+                            },
+                            modifier = Modifier.clickable(onClick = onGameClick),
+                        )
                     }
 
                     if (pagination.isLoadingMore) {
@@ -101,6 +119,17 @@ fun LibraryScreen(
             }
         }
     }
+}
+
+@Composable
+private fun LibraryGuestState(onCreateAccount: () -> Unit) {
+    CommunityEmptyState(
+        icon = AppIcon.BRAND,
+        title = stringResource(R.string.library_guest_title),
+        message = stringResource(R.string.library_guest_message),
+        actionTitle = stringResource(R.string.library_guest_action),
+        onAction = onCreateAccount,
+    )
 }
 
 @Composable

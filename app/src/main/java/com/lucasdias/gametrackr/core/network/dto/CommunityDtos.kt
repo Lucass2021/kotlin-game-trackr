@@ -173,6 +173,7 @@ fun PostDto.toDomain(): CommunityPost {
     return CommunityPost(
         id = id.toLong(),
         author = "@${author?.name ?: "Unknown"}",
+        authorId = authorId,
         timeAgo = formatTimeAgo(createdAt),
         communityName = community?.title.orEmpty(),
         title = title,
@@ -193,6 +194,7 @@ fun CommentDto.toDomain(): PostComment {
     return PostComment(
         id = id.toLong(),
         author = "@${author?.name ?: "Unknown"}",
+        authorId = authorId,
         timeAgo = formatTimeAgoShort(createdAt),
         content = content,
         likes = likes,

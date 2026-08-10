@@ -49,6 +49,7 @@ import com.lucasdias.gametrackr.feature.app.profile.components.ProfileActivitySe
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileBreakdownSection
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileFavoritesRow
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileHeader
+import com.lucasdias.gametrackr.feature.app.profile.components.ProfileSetupRow
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileStatsBar
 
 @Composable
@@ -102,7 +103,11 @@ fun ProfileScreen(
         }
 
         item {
-            SectionHeader(title = stringResource(R.string.profile_section_favorites))
+            SectionHeader(
+                title = stringResource(R.string.profile_section_favorites),
+                actionTitle = stringResource(R.string.profile_section_view_all),
+                onAction = onGameClick,
+            )
             Spacer(Modifier.height(14.dp))
             ProfileFavoritesRow(favorites = ProfileMockData.favorites, onSelect = { onGameClick() })
             Spacer(Modifier.height(26.dp))
@@ -137,13 +142,14 @@ fun ProfileScreen(
         }
 
         item {
-            Spacer(Modifier.height(12.dp))
-            SectionHeader(title = stringResource(R.string.profile_section_activity))
-            Spacer(Modifier.height(14.dp))
-            ProfileActivitySection(
-                events = ProfileMockData.activity,
-                modifier = Modifier.padding(horizontal = 20.dp),
+            SectionHeader(
+                title = stringResource(R.string.profile_section_setup),
+                actionTitle = stringResource(R.string.profile_section_view_all),
+                onAction = {},
             )
+            Spacer(Modifier.height(14.dp))
+            ProfileSetupRow(setups = ProfileMockData.setups)
+            Spacer(Modifier.height(26.dp))
         }
     }
 }

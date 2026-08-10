@@ -19,9 +19,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,7 +34,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +48,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.format.abbreviated
 import com.lucasdias.gametrackr.core.network.CommunityApi
 import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -52,6 +56,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
+import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
@@ -64,9 +69,13 @@ import org.koin.compose.koinInject
 @Composable
 fun PostDetailScreen(
     post: CommunityPost,
+    isGuest: Boolean = false,
+    currentUserId: Int? = null,
     onBack: () -> Unit,
     onCommunityClick: () -> Unit,
     onAuthorClick: () -> Unit,
+    onCreateAccount: () -> Unit = {},
+    onDelete: () -> Unit = {},
     modifier: Modifier = Modifier,
     api: CommunityApi = koinInject(),
 ) {
@@ -78,7 +87,9 @@ fun PostDetailScreen(
     val comments = remember { mutableListOf<PostComment>() }
     var commentsLoaded by remember { mutableStateOf(false) }
     var commentsError by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val isOwnPost = currentUserId != null && post.authorId == currentUserId
 
     LaunchedEffect(post.id) {
         commentsError = false
@@ -94,7 +105,11 @@ fun PostDetailScreen(
     }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
-        TopBar(onBack = onBack)
+        TopBar(
+            isOwnPost = isOwnPost,
+            onBack = onBack,
+            onDeleteRequest = { showDeleteDialog = true },
+        )
 
         Column(
             modifier =
@@ -108,6 +123,7 @@ fun PostDetailScreen(
             AuthorRow(
                 post = post,
                 isFollowing = isFollowing,
+                showFollow = !isGuest,
                 onFollow = { isFollowing = !isFollowing },
                 onAuthorClick = onAuthorClick,
             )
@@ -131,6 +147,7 @@ fun PostDetailScreen(
                 likes = likes,
                 comments = post.comments,
                 isBookmarked = isBookmarked,
+                isGuest = isGuest,
                 onLike = {
                     val wasLiked = isLiked
                     val oldLikes = likes
@@ -150,6 +167,10 @@ fun PostDetailScreen(
                 onComment = { showComments = true },
                 onBookmark = { isBookmarked = !isBookmarked },
             )
+
+            if (isGuest) {
+                GuestCard(onCreateAccount = onCreateAccount)
+            }
         }
     }
 
@@ -157,13 +178,37 @@ fun PostDetailScreen(
         PostCommentsSheet(
             postId = post.id,
             comments = comments,
+            isGuest = isGuest,
+            currentUserId = currentUserId,
             onDismiss = { showComments = false },
+        )
+    }
+
+    if (showDeleteDialog) {
+        DeletePostDialog(
+            onConfirm = {
+                showDeleteDialog = false
+                scope.launch {
+                    try {
+                        api.deletePost(post.id)
+                        onDelete()
+                        onBack()
+                    } catch (_: Exception) {
+                    }
+                }
+            },
+            onDismiss = { showDeleteDialog = false },
         )
     }
 }
 
 @Composable
-private fun TopBar(onBack: () -> Unit) {
+private fun TopBar(
+    isOwnPost: Boolean = false,
+    onBack: () -> Unit,
+    onDeleteRequest: () -> Unit = {},
+) {
+    var showMenu by remember { mutableStateOf(false) }
     Column {
         Row(
             modifier =
@@ -184,11 +229,40 @@ private fun TopBar(onBack: () -> Unit) {
                 style = AppType.headline(20.sp, FontWeight.ExtraBold),
             )
             Spacer(Modifier.weight(1f))
-            IconButtonGhost(
-                icon = AppIcon.OVERFLOW,
-                label = stringResource(R.string.community_action_more),
-                onClick = {},
-            )
+            if (isOwnPost) {
+                Box {
+                    IconButtonGhost(
+                        icon = AppIcon.OVERFLOW,
+                        label = stringResource(R.string.community_action_more),
+                        onClick = { showMenu = true },
+                    )
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                        containerColor = AppSurfaceCard,
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "Delete post",
+                                    color = AppTertiary,
+                                    style = AppType.label(15.sp),
+                                )
+                            },
+                            onClick = {
+                                showMenu = false
+                                onDeleteRequest()
+                            },
+                        )
+                    }
+                }
+            } else {
+                IconButtonGhost(
+                    icon = AppIcon.OVERFLOW,
+                    label = stringResource(R.string.community_action_more),
+                    onClick = {},
+                )
+            }
         }
         HorizontalDivider(thickness = 1.dp, color = AppOutline)
     }
@@ -229,6 +303,7 @@ private fun IconButtonGhost(
 private fun AuthorRow(
     post: CommunityPost,
     isFollowing: Boolean,
+    showFollow: Boolean = true,
     onFollow: () -> Unit,
     onAuthorClick: () -> Unit,
 ) {
@@ -263,20 +338,22 @@ private fun AuthorRow(
                 )
             }
         }
-        val shape = CircleShape
-        Text(
-            text = if (isFollowing) "Following" else "Follow",
-            color = if (isFollowing) AppOnPrimary else AppTextPrimary,
-            style = AppType.label(14.sp),
-            modifier =
-                Modifier
-                    .pressScale(interactionSource)
-                    .clip(shape)
-                    .background(if (isFollowing) AppPrimary else Color.Transparent)
-                    .then(if (isFollowing) Modifier else Modifier.border(1.dp, AppOutline, shape))
-                    .clickable(interactionSource = interactionSource, indication = null, onClick = onFollow)
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
-        )
+        if (showFollow) {
+            val shape = CircleShape
+            Text(
+                text = if (isFollowing) "Following" else "Follow",
+                color = if (isFollowing) AppOnPrimary else AppTextPrimary,
+                style = AppType.label(14.sp),
+                modifier =
+                    Modifier
+                        .pressScale(interactionSource)
+                        .clip(shape)
+                        .background(if (isFollowing) AppPrimary else Color.Transparent)
+                        .then(if (isFollowing) Modifier else Modifier.border(1.dp, AppOutline, shape))
+                        .clickable(interactionSource = interactionSource, indication = null, onClick = onFollow)
+                        .padding(horizontal = 20.dp, vertical = 10.dp),
+            )
+        }
     }
 }
 
@@ -341,6 +418,7 @@ private fun EngagementBar(
     likes: Int,
     comments: Int,
     isBookmarked: Boolean,
+    isGuest: Boolean = false,
     onLike: () -> Unit,
     onComment: () -> Unit,
     onBookmark: () -> Unit,
@@ -351,35 +429,41 @@ private fun EngagementBar(
             modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Action(
-                icon = AppIcon.LIKE,
-                label = stringResource(if (isLiked) R.string.community_action_unlike else R.string.community_action_like),
-                filled = isLiked,
-                tint = if (isLiked) AppPrimary else AppTextSecondary,
-                value = likes.abbreviated(),
-                onClick = onLike,
-            )
-            Spacer(Modifier.size(22.dp))
+            if (!isGuest) {
+                Action(
+                    icon = AppIcon.LIKE,
+                    label = stringResource(if (isLiked) R.string.community_action_unlike else R.string.community_action_like),
+                    filled = isLiked,
+                    tint = if (isLiked) AppPrimary else AppTextSecondary,
+                    value = likes.abbreviated(),
+                    onClick = onLike,
+                )
+                Spacer(Modifier.size(22.dp))
+            }
             Action(
                 icon = AppIcon.COMMENT,
                 label = stringResource(R.string.community_action_comment),
                 value = comments.abbreviated(),
                 onClick = onComment,
             )
-            Spacer(Modifier.size(22.dp))
-            Action(
-                icon = AppIcon.SHARE,
-                label = stringResource(R.string.community_action_share),
-                onClick = {},
-            )
+            if (!isGuest) {
+                Spacer(Modifier.size(22.dp))
+                Action(
+                    icon = AppIcon.SHARE,
+                    label = stringResource(R.string.community_action_share),
+                    onClick = {},
+                )
+            }
             Spacer(Modifier.weight(1f))
-            Action(
-                icon = AppIcon.BOOKMARK,
-                label = stringResource(if (isBookmarked) R.string.community_action_unbookmark else R.string.community_action_bookmark),
-                filled = isBookmarked,
-                tint = if (isBookmarked) AppPrimary else AppTextSecondary,
-                onClick = onBookmark,
-            )
+            if (!isGuest) {
+                Action(
+                    icon = AppIcon.BOOKMARK,
+                    label = stringResource(if (isBookmarked) R.string.community_action_unbookmark else R.string.community_action_bookmark),
+                    filled = isBookmarked,
+                    tint = if (isBookmarked) AppPrimary else AppTextSecondary,
+                    onClick = onBookmark,
+                )
+            }
         }
         HorizontalDivider(thickness = 1.dp, color = AppOutline)
     }
@@ -422,5 +506,90 @@ private fun Action(
                 modifier = Modifier.padding(start = 7.dp),
             )
         }
+    }
+}
+
+@Composable
+private fun DeletePostDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = AppSurfaceCard,
+        title = {
+            Text(
+                text = "Delete post?",
+                color = AppTextPrimary,
+                style = AppType.headline(20.sp),
+            )
+        },
+        text = {
+            Text(
+                text = "This action cannot be undone. The post and all its comments will be permanently deleted.",
+                color = AppTextSecondary,
+                style = AppType.body(15.sp),
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = "Delete",
+                    color = AppTertiary,
+                    style = AppType.label(15.sp),
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "Cancel",
+                    color = AppTextSecondary,
+                    style = AppType.label(15.sp),
+                )
+            }
+        },
+    )
+}
+
+@Composable
+private fun GuestCard(onCreateAccount: () -> Unit) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val shape = RoundedCornerShape(16.dp)
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(shape)
+                .background(AppSurfaceCard)
+                .border(1.dp, AppOutline, shape)
+                .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = stringResource(R.string.post_detail_guest_title),
+            color = AppTextPrimary,
+            style = AppType.headline(18.sp),
+        )
+        Text(
+            text = stringResource(R.string.post_detail_guest_message),
+            color = AppTextSecondary,
+            style = AppType.body(14.sp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(top = 12.dp),
+        )
+        Text(
+            text = stringResource(R.string.post_detail_guest_action),
+            color = AppOnPrimary,
+            style = AppType.label(14.sp),
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .pressScale(interactionSource)
+                    .clip(CircleShape)
+                    .background(AppPrimary)
+                    .clickable(interactionSource = interactionSource, indication = null, onClick = onCreateAccount)
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+        )
     }
 }

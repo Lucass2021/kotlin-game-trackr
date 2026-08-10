@@ -52,6 +52,7 @@ fun ProfileHeader(
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
     mode: ProfileHeaderMode = ProfileHeaderMode.Own,
+    isGuest: Boolean = false,
     onEdit: () -> Unit = {},
     onAddFriend: () -> Unit = {},
     onMessage: () -> Unit = {},
@@ -105,6 +106,7 @@ fun ProfileHeader(
 
             Actions(
                 mode = mode,
+                isGuest = isGuest,
                 onEdit = onEdit,
                 onShare = onShare,
                 onAddFriend = onAddFriend,
@@ -145,6 +147,7 @@ private fun Banner(profile: Profile) {
 @Composable
 private fun Actions(
     mode: ProfileHeaderMode,
+    isGuest: Boolean,
     onEdit: () -> Unit,
     onShare: () -> Unit,
     onAddFriend: () -> Unit,
@@ -167,26 +170,28 @@ private fun Actions(
             }
 
             is ProfileHeaderMode.Other -> {
-                if (mode.isFriend) {
-                    SecondaryPill(
-                        icon = AppIcon.CHECK,
-                        text = stringResource(R.string.profile_action_friends),
-                        onClick = onAddFriend,
-                        modifier = Modifier.weight(1f),
-                    )
-                } else {
-                    PrimaryPill(
-                        icon = AppIcon.ADD_FRIEND,
-                        text = stringResource(R.string.profile_action_add_friend),
-                        onClick = onAddFriend,
-                        modifier = Modifier.weight(1f),
+                if (!isGuest) {
+                    if (mode.isFriend) {
+                        SecondaryPill(
+                            icon = AppIcon.CHECK,
+                            text = stringResource(R.string.profile_action_friends),
+                            onClick = onAddFriend,
+                            modifier = Modifier.weight(1f),
+                        )
+                    } else {
+                        PrimaryPill(
+                            icon = AppIcon.ADD_FRIEND,
+                            text = stringResource(R.string.profile_action_add_friend),
+                            onClick = onAddFriend,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    CircleAction(
+                        icon = AppIcon.ENVELOPE,
+                        label = stringResource(R.string.profile_action_message),
+                        onClick = onMessage,
                     )
                 }
-                CircleAction(
-                    icon = AppIcon.ENVELOPE,
-                    label = stringResource(R.string.profile_action_message),
-                    onClick = onMessage,
-                )
                 CircleAction(
                     icon = AppIcon.SHARE,
                     label = stringResource(R.string.profile_action_share),

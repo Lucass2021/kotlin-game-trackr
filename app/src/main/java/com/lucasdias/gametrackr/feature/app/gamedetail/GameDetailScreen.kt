@@ -40,6 +40,7 @@ import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameSpecificat
 @Composable
 fun GameDetailScreen(
     onBack: () -> Unit,
+    isGuest: Boolean = false,
     game: GameDetail = GameDetailMockData.game,
 ) {
     var showAddToLibrary by remember { mutableStateOf(false) }
@@ -86,11 +87,13 @@ fun GameDetailScreen(
                 game.genres.forEach { GameGenreChip(text = it) }
             }
 
-            PrimaryButton(
-                text = stringResource(R.string.game_detail_add_to_library),
-                onClick = { showAddToLibrary = true },
-                icon = AppIcon.ADD_TO_LIBRARY,
-            )
+            if (!isGuest) {
+                PrimaryButton(
+                    text = stringResource(R.string.game_detail_add_to_library),
+                    onClick = { showAddToLibrary = true },
+                    icon = AppIcon.ADD_TO_LIBRARY,
+                )
+            }
         }
 
         GameScreenshotsSection(screenshots = game.screenshots)

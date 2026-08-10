@@ -75,6 +75,7 @@ fun RootScreen(authViewModel: AuthViewModel = koinViewModel()) {
                     isGuest = false,
                     userName = current.user?.name,
                     email = current.user?.email,
+                    currentUserId = current.user?.id,
                     onLogout = authViewModel::logout,
                 )
             }

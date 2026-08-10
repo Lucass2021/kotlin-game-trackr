@@ -154,6 +154,7 @@
     <string name="profile_section_favorites">Favorites</string>
     <string name="profile_section_currently_playing">Currently playing</string>
     <string name="profile_section_activity">Recent activity</string>
+    <string name="profile_section_setup">My Setup</string>
     <string name="profile_section_view_all">View all</string>
     <string name="profile_activity_platinum">Platinum on</string>
     <string name="profile_activity_completed">Completed</string>
@@ -269,6 +270,18 @@
     <string name="create_topic_guest_title">Posting needs an account</string>
     <string name="create_topic_guest_message">You\'re browsing as a guest. Create an account to start discussions in your communities.</string>
     <string name="create_topic_guest_action">Create an account</string>
+
+    <string name="library_guest_title">Library needs an account</string>
+    <string name="library_guest_message">Create an account to track your games, log hours, and build your collection.</string>
+    <string name="library_guest_action">Create an account</string>
+
+    <string name="discover_guest_title">Account required</string>
+    <string name="discover_guest_message">Create an account to discover\nand join communities.</string>
+    <string name="discover_guest_action">Create an account</string>
+
+    <string name="post_detail_guest_title">Want to join the conversation?</string>
+    <string name="post_detail_guest_message">Create an account to like, comment, share, and follow other players.</string>
+    <string name="post_detail_guest_action">Create an account</string>
 
     <string name="validation_community_required">Pick a community</string>
     <string name="validation_topic_title_required">Title is required</string>

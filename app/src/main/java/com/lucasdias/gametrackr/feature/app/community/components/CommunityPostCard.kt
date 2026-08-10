@@ -44,6 +44,7 @@ import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 fun CommunityPostCard(
     post: CommunityPost,
     modifier: Modifier = Modifier,
+    isGuest: Boolean = false,
     showsCommunityName: Boolean = true,
     onSelect: () -> Unit = {},
     onLike: () -> Unit = {},
@@ -94,6 +95,7 @@ fun CommunityPostCard(
 
         Actions(
             post = post,
+            isGuest = isGuest,
             onLike = onLike,
             onComment = onComment,
             onShare = onShare,
@@ -155,41 +157,48 @@ private fun Media(post: CommunityPost) {
 @Composable
 private fun Actions(
     post: CommunityPost,
+    isGuest: Boolean,
     onLike: () -> Unit,
     onComment: () -> Unit,
     onShare: () -> Unit,
     onBookmark: () -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        ActionButton(
-            icon = AppIcon.LIKE,
-            label = stringResource(if (post.isLiked) R.string.community_action_unlike else R.string.community_action_like),
-            filled = post.isLiked,
-            tint = if (post.isLiked) AppPrimary else AppTextSecondary,
-            value = post.likes.abbreviated(),
-            onClick = onLike,
-        )
-        Spacer(Modifier.size(20.dp))
+        if (!isGuest) {
+            ActionButton(
+                icon = AppIcon.LIKE,
+                label = stringResource(if (post.isLiked) R.string.community_action_unlike else R.string.community_action_like),
+                filled = post.isLiked,
+                tint = if (post.isLiked) AppPrimary else AppTextSecondary,
+                value = post.likes.abbreviated(),
+                onClick = onLike,
+            )
+            Spacer(Modifier.size(20.dp))
+        }
         ActionButton(
             icon = AppIcon.COMMENT,
             label = stringResource(R.string.community_action_comment),
             value = post.comments.abbreviated(),
             onClick = onComment,
         )
-        Spacer(Modifier.size(20.dp))
-        ActionButton(
-            icon = AppIcon.SHARE,
-            label = stringResource(R.string.community_action_share),
-            onClick = onShare,
-        )
+        if (!isGuest) {
+            Spacer(Modifier.size(20.dp))
+            ActionButton(
+                icon = AppIcon.SHARE,
+                label = stringResource(R.string.community_action_share),
+                onClick = onShare,
+            )
+        }
         Spacer(Modifier.weight(1f))
-        ActionButton(
-            icon = AppIcon.BOOKMARK,
-            label = stringResource(if (post.isBookmarked) R.string.community_action_unbookmark else R.string.community_action_bookmark),
-            filled = post.isBookmarked,
-            tint = if (post.isBookmarked) AppPrimary else AppTextSecondary,
-            onClick = onBookmark,
-        )
+        if (!isGuest) {
+            ActionButton(
+                icon = AppIcon.BOOKMARK,
+                label = stringResource(if (post.isBookmarked) R.string.community_action_unbookmark else R.string.community_action_bookmark),
+                filled = post.isBookmarked,
+                tint = if (post.isBookmarked) AppPrimary else AppTextSecondary,
+                onClick = onBookmark,
+            )
+        }
     }
 }
 

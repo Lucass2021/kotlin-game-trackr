@@ -21,6 +21,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
+import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
@@ -33,6 +34,10 @@ fun CommentRow(
     onLike: () -> Unit,
     modifier: Modifier = Modifier,
     isReply: Boolean = false,
+    isGuest: Boolean = false,
+    currentUserId: Int? = null,
+    onReply: () -> Unit = {},
+    onDelete: () -> Unit = {},
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val avatarSize = if (isReply) 28.dp else 36.dp
@@ -62,31 +67,83 @@ fun CommentRow(
                 color = AppTextPrimary,
                 style = AppType.body(14.sp),
             )
-            Text(
-                text = "${comment.likes} likes · Reply",
-                color = AppTextSecondary,
-                style = AppType.label(12.sp),
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(0.dp),
+            ) {
+                Text(
+                    text = "${comment.likes} likes",
+                    color = AppTextSecondary,
+                    style = AppType.label(12.sp),
+                )
+                if (!isGuest) {
+                    val replyInteraction = remember { MutableInteractionSource() }
+                    Text(
+                        text = " · ",
+                        color = AppTextSecondary,
+                        style = AppType.label(12.sp),
+                    )
+                    Text(
+                        text = "Reply",
+                        color = AppTextSecondary,
+                        style = AppType.label(12.sp),
+                        modifier =
+                            Modifier
+                                .pressScale(replyInteraction)
+                                .clickable(
+                                    interactionSource = replyInteraction,
+                                    indication = null,
+                                    role = Role.Button,
+                                    onClick = onReply,
+                                ),
+                    )
+                }
+            }
         }
-        val likeLabel =
-            stringResource(
-                if (comment.isLiked) R.string.community_action_unlike_comment else R.string.community_action_like_comment,
-            )
-        Icon(
-            imageVector = AppIcon.LIKE.image(filled = comment.isLiked),
-            contentDescription = likeLabel,
-            tint = if (comment.isLiked) AppPrimary else AppTextSecondary,
-            modifier =
-                Modifier
-                    .padding(start = 8.dp)
-                    .pressScale(interactionSource)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClickLabel = likeLabel,
-                        role = Role.Button,
-                        onClick = onLike,
-                    ).size(16.dp),
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (!isGuest) {
+                val likeLabel =
+                    stringResource(
+                        if (comment.isLiked) R.string.community_action_unlike_comment else R.string.community_action_like_comment,
+                    )
+                Icon(
+                    imageVector = AppIcon.LIKE.image(filled = comment.isLiked),
+                    contentDescription = likeLabel,
+                    tint = if (comment.isLiked) AppPrimary else AppTextSecondary,
+                    modifier =
+                        Modifier
+                            .padding(start = 8.dp)
+                            .pressScale(interactionSource)
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null,
+                                onClickLabel = likeLabel,
+                                role = Role.Button,
+                                onClick = onLike,
+                            ).size(16.dp),
+                )
+            }
+            if (comment.authorId == currentUserId && currentUserId != null && !isGuest) {
+                val deleteInteraction = remember { MutableInteractionSource() }
+                Icon(
+                    imageVector = AppIcon.TRASH.image(),
+                    contentDescription = "Delete comment",
+                    tint = AppTertiary,
+                    modifier =
+                        Modifier
+                            .padding(start = 8.dp, top = 4.dp)
+                            .pressScale(deleteInteraction)
+                            .clickable(
+                                interactionSource = deleteInteraction,
+                                indication = null,
+                                role = Role.Button,
+                                onClick = onDelete,
+                            ).size(14.dp),
+                )
+            }
+        }
     }
 }

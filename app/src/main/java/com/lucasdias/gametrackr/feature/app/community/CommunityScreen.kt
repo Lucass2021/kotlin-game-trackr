@@ -21,8 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -39,9 +41,11 @@ import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommuniti
 @Composable
 fun CommunityScreen(
     viewModel: CommunityViewModel,
+    isGuest: Boolean,
     onPostClick: (CommunityPost) -> Unit,
     onCommunityClick: (Community) -> Unit,
     onCreatePost: () -> Unit,
+    onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var segment by remember { mutableStateOf(CommunitySegment.MY_FEED) }
@@ -69,6 +73,7 @@ fun CommunityScreen(
                         feed = viewModel.feed,
                         feedFilter = feedFilter,
                         feedError = feedError,
+                        isGuest = isGuest,
                         isRefreshing = isLoadingFeed,
                         isLoadingMore = viewModel.feedPagination.isLoadingMore,
                         canLoadMore = viewModel.feedPagination.canLoadMore,
@@ -76,7 +81,7 @@ fun CommunityScreen(
                         onPostSelect = onPostClick,
                         onLike = { viewModel.toggleLike(it) },
                         onBookmark = { viewModel.toggleBookmark(it) },
-                        suggestedCommunity = viewModel.communities.firstOrNull { !it.isJoined },
+                        suggestedCommunity = if (isGuest) null else viewModel.communities.firstOrNull { !it.isJoined },
                         onCommunitySelect = onCommunityClick,
                         onJoinSuggested = { viewModel.toggleJoin(it) },
                         onDiscover = { segment = CommunitySegment.DISCOVER },
@@ -89,21 +94,36 @@ fun CommunityScreen(
                 }
 
                 CommunitySegment.DISCOVER -> {
-                    DiscoverCommunitiesContent(
-                        category = category,
-                        onCategorySelect = { category = it },
-                        communities = viewModel.communities,
-                        isLoadingMore = viewModel.communitiesPagination.isLoadingMore,
-                        canLoadMore = viewModel.communitiesPagination.canLoadMore,
-                        onCommunitySelect = onCommunityClick,
-                        onJoin = { viewModel.toggleJoin(it) },
-                        onLoadMore = { viewModel.loadMoreCommunities() },
-                    )
+                    if (isGuest) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CommunityEmptyState(
+                                icon = AppIcon.COMMUNITY,
+                                title = stringResource(R.string.discover_guest_title),
+                                message = stringResource(R.string.discover_guest_message),
+                                actionTitle = stringResource(R.string.discover_guest_action),
+                                onAction = onCreateAccount,
+                            )
+                        }
+                    } else {
+                        DiscoverCommunitiesContent(
+                            category = category,
+                            onCategorySelect = { category = it },
+                            communities = viewModel.communities,
+                            isLoadingMore = viewModel.communitiesPagination.isLoadingMore,
+                            canLoadMore = viewModel.communitiesPagination.canLoadMore,
+                            onCommunitySelect = onCommunityClick,
+                            onJoin = { viewModel.toggleJoin(it) },
+                            onLoadMore = { viewModel.loadMoreCommunities() },
+                        )
+                    }
                 }
             }
         }
 
-        if (segment == CommunitySegment.MY_FEED) {
+        if (segment == CommunitySegment.MY_FEED && !isGuest) {
             CreatePostButton(
                 onClick = onCreatePost,
                 modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
@@ -118,6 +138,7 @@ private fun FeedContent(
     feed: List<CommunityPost>,
     feedFilter: String,
     feedError: Boolean,
+    isGuest: Boolean,
     isRefreshing: Boolean,
     isLoadingMore: Boolean,
     canLoadMore: Boolean,
@@ -186,22 +207,13 @@ private fun FeedContent(
             itemsIndexed(feed, key = { _, post -> post.id }) { index, post ->
                 CommunityPostCard(
                     post = post,
+                    isGuest = isGuest,
                     onSelect = { onPostSelect(post) },
                     onLike = { onLike(post) },
                     onComment = { onPostSelect(post) },
                     onBookmark = { onBookmark(post) },
                     modifier = Modifier.padding(horizontal = 20.dp),
                 )
-
-                if (index == 0 && suggestedCommunity != null) {
-                    Spacer(Modifier.height(16.dp))
-                    SuggestedCommunityCard(
-                        community = suggestedCommunity,
-                        onSelect = { onCommunitySelect(suggestedCommunity) },
-                        onJoin = { onJoinSuggested(suggestedCommunity) },
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                    )
-                }
                 Spacer(Modifier.height(16.dp))
             }
 

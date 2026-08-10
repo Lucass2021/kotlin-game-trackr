@@ -65,4 +65,11 @@ object ProfileMockData {
             ActivityEvent(4, ActivityKind.STARTED, "Final Fantasy VII Rebirth", timeAgo = "2w"),
             ActivityEvent(5, ActivityKind.ADDED, "Silksong", timeAgo = "3w"),
         )
+
+    val setups =
+        listOf(
+            SetupItem("Main Battle Station", "RTX 4090 + i9-14900K, 32\" 4K 144Hz", CoverIndigoStart, CoverIndigoEnd),
+            SetupItem("Retro Corner", "CRT TV + SNES, N64, and PS2", CoverCrimsonStart, CoverCrimsonEnd),
+            SetupItem("Portable Setup", "Steam Deck OLED + Backbone", CoverEmeraldStart, CoverEmeraldEnd),
+        )
 }

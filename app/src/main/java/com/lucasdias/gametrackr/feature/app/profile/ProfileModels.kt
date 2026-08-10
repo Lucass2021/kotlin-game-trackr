@@ -101,3 +101,10 @@ data class ActivityEvent(
     val detail: String? = null,
     val timeAgo: String,
 )
+
+data class SetupItem(
+    val title: String,
+    val description: String,
+    val imageStart: Color,
+    val imageEnd: Color,
+)

@@ -57,6 +57,8 @@ import org.koin.compose.koinInject
 fun PostCommentsSheet(
     postId: Long,
     comments: List<PostComment>,
+    isGuest: Boolean = false,
+    currentUserId: Int? = null,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     api: CommunityApi = koinInject(),
@@ -64,6 +66,7 @@ fun PostCommentsSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state = remember { comments.toMutableStateList() }
     var draft by remember { mutableStateOf("") }
+    var replyingTo by remember { mutableStateOf<PostComment?>(null) }
     val scope = rememberCoroutineScope()
 
     val total = state.sumOf { 1 + it.replies.size + it.hiddenReplies }
@@ -93,6 +96,10 @@ fun PostCommentsSheet(
                                     onLike = {
                                         toggleLikeWithApi(state, index, postId, comment.id, api, scope)
                                     },
+                                    isGuest = isGuest,
+                                    currentUserId = currentUserId,
+                                    onReply = { replyingTo = comment },
+                                    onDelete = { state.removeAt(index) },
                                 )
 
                                 comment.replies.forEachIndexed { replyIndex, reply ->
@@ -100,6 +107,15 @@ fun PostCommentsSheet(
                                         comment = reply,
                                         isReply = true,
                                         onLike = { toggleReplyLike(state, index, replyIndex) },
+                                        isGuest = isGuest,
+                                        currentUserId = currentUserId,
+                                        onReply = { replyingTo = reply },
+                                        onDelete = {
+                                            val parent = state[index]
+                                            val updatedReplies = parent.replies.toMutableList()
+                                            updatedReplies.removeAt(replyIndex)
+                                            state[index] = parent.copy(replies = updatedReplies)
+                                        },
                                     )
                                 }
 
@@ -117,22 +133,42 @@ fun PostCommentsSheet(
                 }
             }
 
-            CommentComposer(
-                draft = draft,
-                onDraftChange = { draft = it },
-                onSend = {
-                    val text = draft.trim()
-                    if (text.isBlank()) return@CommentComposer
-                    draft = ""
-                    scope.launch {
-                        try {
-                            val response = api.addComment(postId, CommentBody(comment = text))
-                            state.add(response.comment.toDomain())
-                        } catch (_: Exception) {
+            if (!isGuest) {
+                if (replyingTo != null) {
+                    ReplyIndicator(
+                        authorName = replyingTo!!.author,
+                        onClose = { replyingTo = null },
+                    )
+                }
+                CommentComposer(
+                    draft = draft,
+                    onDraftChange = { draft = it },
+                    onSend = {
+                        val text = draft.trim()
+                        if (text.isBlank()) return@CommentComposer
+                        draft = ""
+                        val target = replyingTo
+                        replyingTo = null
+                        scope.launch {
+                            try {
+                                if (target != null) {
+                                    val response = api.replyToComment(postId, target.id, CommentBody(comment = text))
+                                    val newReply = response.reply.toDomain()
+                                    val parentIndex = state.indexOfFirst { it.id == target.id || it.replies.any { r -> r.id == target.id } }
+                                    if (parentIndex >= 0) {
+                                        val parent = state[parentIndex]
+                                        state[parentIndex] = parent.copy(replies = parent.replies + newReply)
+                                    }
+                                } else {
+                                    val response = api.addComment(postId, CommentBody(comment = text))
+                                    state.add(response.comment.toDomain())
+                                }
+                            } catch (_: Exception) {
+                            }
                         }
-                    }
-                },
-            )
+                    },
+                )
+            }
         }
     }
 }
@@ -254,4 +290,37 @@ private fun toggleReplyLike(
     val r = replies[replyIndex]
     replies[replyIndex] = r.copy(isLiked = !r.isLiked, likes = r.likes + if (r.isLiked) -1 else 1)
     state[index] = parent.copy(replies = replies)
+}
+
+@Composable
+private fun ReplyIndicator(
+    authorName: String,
+    onClose: () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Row(
+        modifier = Modifier.fillMaxWidth().background(AppSurfaceCard).padding(horizontal = 20.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Replying to $authorName",
+            color = AppTextSecondary,
+            style = AppType.body(13.sp),
+            modifier = Modifier.weight(1f),
+        )
+        Icon(
+            imageVector = AppIcon.CLOSE.image(),
+            contentDescription = stringResource(R.string.community_action_close),
+            tint = AppTextSecondary,
+            modifier =
+                Modifier
+                    .pressScale(interactionSource)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        role = Role.Button,
+                        onClick = onClose,
+                    ).size(16.dp),
+        )
+    }
 }

@@ -11,6 +11,7 @@ import com.lucasdias.gametrackr.core.network.dto.PaginatedResponse
 import com.lucasdias.gametrackr.core.network.dto.PostDto
 import com.lucasdias.gametrackr.core.network.dto.ReplyResponse
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -59,6 +60,11 @@ interface CommunityApi {
     suspend fun createPost(
         @Body body: CreatePostRequest,
     ): CreatePostResponse
+
+    @DELETE("posts/{id}")
+    suspend fun deletePost(
+        @Path("id") id: Long,
+    ): MessageResponse
 
     @POST("posts/{id}/like")
     suspend fun toggleLike(

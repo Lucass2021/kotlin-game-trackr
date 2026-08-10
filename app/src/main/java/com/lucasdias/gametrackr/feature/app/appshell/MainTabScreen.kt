@@ -112,6 +112,7 @@ fun MainTabScreen(
     isGuest: Boolean,
     userName: String?,
     email: String?,
+    currentUserId: Int? = null,
     onLogout: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -190,12 +191,14 @@ fun MainTabScreen(
         composable(ShellRoutes.GAME_DETAIL) {
             GameDetailScreen(
                 onBack = { navController.popBackStackIfResumed() },
+                isGuest = isGuest,
             )
         }
         composable(ShellRoutes.COMMUNITY_DETAIL) {
             val community = selectedCommunity ?: return@composable
             CommunityDetailScreen(
                 community = community,
+                isGuest = isGuest,
                 onBack = { navController.popBackStackIfResumed() },
                 onPostClick = { post ->
                     selectedPost = post
@@ -235,10 +238,16 @@ fun MainTabScreen(
             val post = selectedPost ?: return@composable
             PostDetailScreen(
                 post = post,
+                isGuest = isGuest,
+                currentUserId = currentUserId,
                 onBack = { navController.popBackStackIfResumed() },
                 onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
                 onAuthorClick = {
                     navController.navigate(ShellRoutes.userProfile(post.author))
+                },
+                onCreateAccount = onLogout,
+                onDelete = {
+                    communityViewModel.feed.removeAll { it.id == post.id }
                 },
             )
         }
@@ -403,6 +412,8 @@ private fun TabShell(
                     LibraryScreen(
                         filter = libraryFilter,
                         onFilterChange = onLibraryFilterChange,
+                        isGuest = isGuest,
+                        onCreateAccount = onCreateAccount,
                         onBrowseGames = onSearch,
                         onGameClick = onGameClick,
                     )
@@ -411,9 +422,11 @@ private fun TabShell(
                 AppTab.COMMUNITY -> {
                     CommunityScreen(
                         viewModel = communityViewModel,
+                        isGuest = isGuest,
                         onPostClick = onPostClick,
                         onCommunityClick = onCommunityClick,
                         onCreatePost = onCreatePost,
+                        onCreateAccount = onCreateAccount,
                     )
                 }
 

@@ -81,6 +81,7 @@ fun UserProfileScreen(
                     ProfileHeader(
                         profile = profile,
                         mode = ProfileHeaderMode.Other(isFriend = isFriend),
+                        isGuest = isGuest,
                         onShare = { context.shareText("Check out ${user.name}'s gaming profile on GameTrackr!") },
                         onAddFriend = onFriendAction,
                         onMessage = onMessage,

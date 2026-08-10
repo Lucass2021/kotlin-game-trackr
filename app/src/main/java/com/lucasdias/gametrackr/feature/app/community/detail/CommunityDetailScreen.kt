@@ -68,6 +68,7 @@ import org.koin.compose.koinInject
 @Composable
 fun CommunityDetailScreen(
     community: Community,
+    isGuest: Boolean = false,
     onBack: () -> Unit,
     onPostClick: (CommunityPost) -> Unit,
     onCreatePost: () -> Unit,
@@ -143,6 +144,7 @@ fun CommunityDetailScreen(
                 val context = LocalContext.current
                 ActionRow(
                     isJoined = isJoined,
+                    isGuest = isGuest,
                     onJoin = {
                         val wasJoined = isJoined
                         isJoined = !wasJoined
@@ -204,6 +206,7 @@ fun CommunityDetailScreen(
                         itemsIndexed(posts, key = { _, post -> post.id }) { index, post ->
                             CommunityPostCard(
                                 post = post,
+                                isGuest = isGuest,
                                 showsCommunityName = false,
                                 onSelect = { onPostClick(post) },
                                 onLike = {
@@ -269,7 +272,7 @@ fun CommunityDetailScreen(
         BackCircle(icon = AppIcon.BACK, onClick = onBack, modifier = Modifier.align(Alignment.TopStart))
         BackCircle(icon = AppIcon.OVERFLOW, onClick = {}, modifier = Modifier.align(Alignment.TopEnd))
 
-        if (tab == CommunityDetailTab.POSTS && isJoined) {
+        if (tab == CommunityDetailTab.POSTS && isJoined && !isGuest) {
             CreatePostButton(onClick = onCreatePost, modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp))
         }
     }
@@ -278,10 +281,12 @@ fun CommunityDetailScreen(
 @Composable
 private fun ActionRow(
     isJoined: Boolean,
+    isGuest: Boolean = false,
     onJoin: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (isGuest) return
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         JoinButton(isJoined = isJoined, onClick = onJoin, expanded = true, modifier = Modifier.weight(1f))
         CircleIconButton(

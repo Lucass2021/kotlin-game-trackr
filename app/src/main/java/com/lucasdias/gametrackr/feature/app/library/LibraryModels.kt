@@ -48,6 +48,7 @@ data class LibraryEntry(
     val hours: Int,
     val coverStart: Color,
     val coverEnd: Color,
+    val isFavorite: Boolean = false,
 )
 
 data class LibraryStats(
