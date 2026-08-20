@@ -35,9 +35,11 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 
 @Composable
 fun SearchResultsEmptyState(
-    query: String,
-    onClear: () -> Unit,
     modifier: Modifier = Modifier,
+    query: String = "",
+    title: String = stringResource(R.string.search_empty_title),
+    message: String? = null,
+    onClear: (() -> Unit)? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Column(
@@ -63,7 +65,7 @@ fun SearchResultsEmptyState(
         }
 
         Text(
-            text = stringResource(R.string.search_empty_title),
+            text = title,
             color = AppTextPrimary,
             style = AppType.headline(24.sp, FontWeight.ExtraBold),
             textAlign = TextAlign.Center,
@@ -72,7 +74,7 @@ fun SearchResultsEmptyState(
 
         Text(
             text =
-                if (query.isBlank()) {
+                message ?: if (query.isBlank()) {
                     stringResource(R.string.search_empty_filter)
                 } else {
                     stringResource(R.string.search_empty_query, query)
@@ -83,20 +85,22 @@ fun SearchResultsEmptyState(
             modifier = Modifier.padding(top = 10.dp),
         )
 
-        Text(
-            text = stringResource(R.string.search_clear),
-            color = AppPrimary,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier =
-                Modifier
-                    .padding(top = 22.dp)
-                    .pressScale(interactionSource)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = onClear,
-                    ),
-        )
+        if (onClear != null) {
+            Text(
+                text = stringResource(R.string.search_clear),
+                color = AppPrimary,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier =
+                    Modifier
+                        .padding(top = 22.dp)
+                        .pressScale(interactionSource)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null,
+                            onClick = onClear,
+                        ),
+            )
+        }
     }
 }

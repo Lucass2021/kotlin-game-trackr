@@ -8,12 +8,15 @@ import com.lucasdias.gametrackr.core.auth.TokenStore
 import com.lucasdias.gametrackr.core.network.AuthApi
 import com.lucasdias.gametrackr.core.network.AuthInterceptor
 import com.lucasdias.gametrackr.core.network.CommunityApi
+import com.lucasdias.gametrackr.core.network.GameApi
 import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
+import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
 import com.lucasdias.gametrackr.feature.app.profile.Profile
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
+import com.lucasdias.gametrackr.feature.app.search.SearchViewModel
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
 import com.lucasdias.gametrackr.feature.auth.forgotpassword.ForgotPasswordViewModel
 import com.lucasdias.gametrackr.feature.auth.login.LoginViewModel
@@ -99,10 +102,15 @@ val appModule =
         single<CommunityApi> {
             retrofit(get(named(AUTH_CLIENT)), get()).create(CommunityApi::class.java)
         }
+        single<GameApi> {
+            retrofit(get(named(AUTH_CLIENT)), get()).create(GameApi::class.java)
+        }
 
         single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(), get()) }
 
         viewModel { CommunityViewModel(get()) }
+        viewModel { HomeViewModel(get()) }
+        viewModel { SearchViewModel(get()) }
         viewModel { AuthViewModel(get(), get()) }
         viewModel { LoginViewModel(get(), androidContext()) }
         viewModel { RegisterViewModel(get(), androidContext()) }

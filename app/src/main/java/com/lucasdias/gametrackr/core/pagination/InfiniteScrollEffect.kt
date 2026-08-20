@@ -18,11 +18,13 @@ fun InfiniteScrollEffect(
         remember(canLoadMore) {
             derivedStateOf {
                 if (!canLoadMore) return@derivedStateOf false
+                val total = listState.layoutInfo.totalItemsCount
+                if (total == 0) return@derivedStateOf false
                 val lastVisible =
                     listState.layoutInfo.visibleItemsInfo
                         .lastOrNull()
-                        ?.index ?: 0
-                lastVisible >= listState.layoutInfo.totalItemsCount - threshold
+                        ?.index ?: return@derivedStateOf false
+                lastVisible >= total - threshold
             }
         }
     LaunchedEffect(shouldLoad.value) {
@@ -41,11 +43,13 @@ fun InfiniteGridScrollEffect(
         remember(canLoadMore) {
             derivedStateOf {
                 if (!canLoadMore) return@derivedStateOf false
+                val total = gridState.layoutInfo.totalItemsCount
+                if (total == 0) return@derivedStateOf false
                 val lastVisible =
                     gridState.layoutInfo.visibleItemsInfo
                         .lastOrNull()
-                        ?.index ?: 0
-                lastVisible >= gridState.layoutInfo.totalItemsCount - threshold
+                        ?.index ?: return@derivedStateOf false
+                lastVisible >= total - threshold
             }
         }
     LaunchedEffect(shouldLoad.value) {

@@ -223,10 +223,6 @@ fun MainTabScreen(
                     ?: SearchScope.ALL
             SearchScreen(
                 onBack = { navController.popBackStackIfResumed() },
-                onExploreCommunity = {
-                    selectedTab = AppTab.COMMUNITY
-                    navController.popBackStackIfResumed()
-                },
                 onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
                 scope = scope,
             )

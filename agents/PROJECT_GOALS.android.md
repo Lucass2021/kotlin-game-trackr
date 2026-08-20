@@ -107,7 +107,7 @@ messaging, and collection.
 | 5 | Library: list with status filter, add game, edit entry | + 1 day |
 | 6 | Game search + detail → add to library | + 1 day |
 | 7 | Profile + stats + sign out | + half a day |
-| 8 | Discovery feeds (releases / upcoming / trending) | + 1 day |
+| 8 | Discovery feeds (releases / upcoming / trending) | + 1 day — **releases done 2026-08-19**; upcoming/trending blocked on the API |
 | 9 | Friends + public profiles | + 1 day |
 | 10 | Realtime messaging via Reverb + push notifications | + 2 days |
 | 11 | Community + physical collection (image upload) | + 2 days |
@@ -116,6 +116,46 @@ messaging, and collection.
 ---
 
 ## Progress log
+
+### 2026-08-19 — New Releases wired to the real IGDB feed (first discovery data)
+
+- **The first non-auth, non-community feature to leave mock data.** `GET /home/new-releases`
+  drives the Home row and `GET /home/new-releases/all` drives the "View all" grid with real
+  pagination. Both routes are **public**, so a guest session sees real games — `AuthInterceptor`
+  simply finds no token and sends none.
+- **New data layer:** `core/network/dto/GameDtos.kt`, `core/model/Game.kt` (domain),
+  `core/network/GameApi.kt` registered in `AppModule`, plus `HomeViewModel` and `SearchViewModel`
+  (both `koinViewModel()`).
+- **`PaginatedGamesResponse.toPaginated()`** is the seam that matters: it maps IGDB's nested
+  `meta { page, per_page, total, last_page, has_more }` onto the flat `PaginatedResponse` the
+  community endpoints return, so `PaginationState` powers both feeds unchanged.
+- **Coil 3 added** (`io.coil-kt.coil3:coil-compose` + `coil-network-okhttp`) — the app's first
+  remote-image loader. Import is `coil3.compose.AsyncImage`, **not** `coil.compose`. `GameCoverArt`
+  gained a `url:`; because the `Box` already clips, `ContentScale.Crop` + `fillMaxSize()` is all it
+  takes (iOS needed an overlay trick for the same result). The gradient stays as the placeholder.
+- **One model for every game surface.** `NewRelease` and `SearchGame` collapsed into `Game`;
+  `SearchMockData` was deleted. `GamePlatform` moved from the Search feature to `core/model`.
+- **A guessed contract bit me.** IGDB's platform slugs are `ps4--1`, `switch-2` and `series-x-s`,
+  not the obvious spellings. The abbreviation map silently fell back to the full platform name, so
+  nothing failed — it just rendered "PlayStation 4" instead of "PS4". Only the real response caught
+  it. Fallbacks hide contract bugs from builds *and* from tests.
+- **Search screen reworked (same day).** The "Can't find a game?" banner is gone (a dead end under
+  an infinite list), and the platform chips no longer flash "No games found": filtering only sees
+  the pages already downloaded, so when a filter empties the result the screen pulls up to 5 extra
+  pages behind a spinner before admitting a real miss.
+- **`LaunchedEffect` key foot-gun.** The auto-fetch keys first included `pagination.isLoadingMore`;
+  that flag flips the instant a fetch starts, so the effect relaunched against a request already in
+  flight. Never key an effect on state the effect itself mutates.
+- **`InfiniteGridScrollEffect` fired before any scroll, and it was NOT harmless.** On first
+  composition `layoutInfo` is empty, so `0 >= 0 - threshold` was true. It raced the initial
+  `loadNewReleases(reset = true)`, which sets `_isLoading` but never `pagination.setLoading(true)` —
+  so `canLoadMore` still read `true`, `nextPage` was still `currentPage + 1 = 1`, and **page 1 was
+  fetched twice and appended twice**. Every item appeared duplicated; the same Xbox filter showed 13
+  results on Android against 6 on iOS. iOS escaped only by accident: its load-more lives in the
+  cards' `onAppear`, which cannot fire before the first page exists.
+  Fixed on both sides: the shared effects bail out when `totalItemsCount == 0` or there are no
+  visible items, and the reset path now marks the pagination busy. The same race existed in
+  Community (`CommunityViewModel` has the identical reset path) and the shared fix covers it.
 
 ### 2026-08-10 — My Setup (first real device photos), Discover cleanup, overflow-menu audit
 
