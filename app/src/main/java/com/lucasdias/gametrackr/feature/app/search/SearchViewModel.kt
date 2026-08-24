@@ -6,6 +6,8 @@ import com.lucasdias.gametrackr.core.model.Game
 import com.lucasdias.gametrackr.core.model.GamePlatform
 import com.lucasdias.gametrackr.core.network.GameApi
 import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.core.pagination.FeedCache
+import com.lucasdias.gametrackr.core.pagination.FeedKey
 import com.lucasdias.gametrackr.core.pagination.PaginationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,16 +30,36 @@ class SearchViewModel(
     private val _hasError = MutableStateFlow(false)
     val hasError: StateFlow<Boolean> = _hasError.asStateFlow()
 
-    private var search: String? = null
+    private val _appliedSearch = MutableStateFlow("")
+    val appliedSearch: StateFlow<String> = _appliedSearch.asStateFlow()
+
+    private val cache = FeedCache()
+    private var scope: SearchScope = SearchScope.ALL
     private var platform: GamePlatform? = null
     private var generation = 0
 
+    private val key get() = FeedKey(scope, _appliedSearch.value.ifEmpty { null }, platform)
+
     fun applyFilters(
+        scope: SearchScope,
         search: String,
         platform: GamePlatform?,
     ) {
-        this.search = search.ifEmpty { null }
+        this.scope = scope
         this.platform = platform
+        _appliedSearch.value = search
+        generation += 1
+
+        val cached = cache.snapshot(key)
+        if (cached != null) {
+            pagination.restore(cached)
+            pagination.setLoading(false)
+            _isLoading.value = false
+            _hasError.value = false
+            _hasLoaded.value = true
+            return
+        }
+
         load(reset = true)
     }
 
@@ -45,7 +67,6 @@ class SearchViewModel(
 
     private fun load(reset: Boolean) {
         if (reset) {
-            generation += 1
             _isLoading.value = true
             _hasError.value = false
             pagination.reset()
@@ -56,18 +77,19 @@ class SearchViewModel(
 
         val requestGeneration = generation
         val nextPage = pagination.currentPage + 1
+        val search = _appliedSearch.value.ifEmpty { null }
 
         viewModelScope.launch {
             try {
                 val response =
-                    api.getAllNewReleases(
-                        page = nextPage,
-                        perPage = PER_PAGE,
-                        search = search,
-                        platforms = platform?.igdbSlugs,
-                    )
+                    if (scope == SearchScope.MOST_ANTICIPATED) {
+                        api.getAllMostAnticipated(nextPage, PER_PAGE, search, platform?.igdbSlugs)
+                    } else {
+                        api.getAllNewReleases(nextPage, PER_PAGE, search, platform?.igdbSlugs)
+                    }
                 if (requestGeneration != generation) return@launch
                 pagination.append(response.toPaginated(), response.data.map { it.toDomain() })
+                cache.store(key, pagination.snapshot())
             } catch (_: Exception) {
                 if (requestGeneration != generation) return@launch
                 if (reset) _hasError.value = true

@@ -57,20 +57,19 @@ fun SearchScreen(
     var query by rememberSaveable { mutableStateOf("") }
     var platform by rememberSaveable { mutableStateOf<GamePlatform?>(null) }
 
-    val hasFeed = scope != SearchScope.MOST_ANTICIPATED
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
+    val appliedSearch by viewModel.appliedSearch.collectAsStateWithLifecycle()
 
     val trimmedQuery = query.trim()
     var hasPendingFilter by remember { mutableStateOf(false) }
 
-    LaunchedEffect(hasFeed, platform, trimmedQuery) {
-        if (!hasFeed) return@LaunchedEffect
-        if (hasLoaded) {
+    LaunchedEffect(platform, trimmedQuery) {
+        if (hasLoaded && trimmedQuery != appliedSearch) {
             hasPendingFilter = true
             delay(SEARCH_DEBOUNCE_MILLIS)
         }
-        viewModel.applyFilters(trimmedQuery, platform)
+        viewModel.applyFilters(scope, trimmedQuery, platform)
         hasPendingFilter = false
     }
 
@@ -90,12 +89,12 @@ fun SearchScreen(
 
         InfiniteGridScrollEffect(
             gridState = gridState,
-            canLoadMore = hasFeed && viewModel.pagination.canLoadMore,
+            canLoadMore = viewModel.pagination.canLoadMore,
             onLoadMore = { viewModel.loadMore() },
         )
 
         Box(modifier = Modifier.fillMaxSize()) {
-            if (hasFeed && games.isEmpty() && isStillSearching) {
+            if (games.isEmpty() && isStillSearching) {
                 CircularProgressIndicator(
                     color = AppPrimary,
                     modifier = Modifier.align(Alignment.Center),
@@ -110,15 +109,6 @@ fun SearchScreen(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     when {
-                        !hasFeed -> {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                SearchResultsEmptyState(
-                                    title = stringResource(R.string.search_unavailable_title),
-                                    message = stringResource(R.string.search_unavailable_message),
-                                )
-                            }
-                        }
-
                         games.isEmpty() -> {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 SearchResultsEmptyState(

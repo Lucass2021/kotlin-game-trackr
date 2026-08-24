@@ -37,7 +37,24 @@ class PaginationState<T> {
         total = response.total
     }
 
+    fun snapshot(): PaginationSnapshot<T> = PaginationSnapshot(items.toList(), currentPage, lastPage, total)
+
+    fun restore(snapshot: PaginationSnapshot<T>) {
+        items.clear()
+        items.addAll(snapshot.items)
+        currentPage = snapshot.currentPage
+        lastPage = snapshot.lastPage
+        total = snapshot.total
+    }
+
     fun setLoading(value: Boolean) {
         isLoadingMore = value
     }
 }
+
+data class PaginationSnapshot<T>(
+    val items: List<T>,
+    val currentPage: Int,
+    val lastPage: Int,
+    val total: Int,
+)

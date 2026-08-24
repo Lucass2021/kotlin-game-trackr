@@ -49,11 +49,9 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val newReleases by viewModel.newReleases.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-    val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
-    val hasError by viewModel.hasError.collectAsStateWithLifecycle()
+    val mostAnticipated by viewModel.mostAnticipated.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) { viewModel.loadNewReleases() }
+    LaunchedEffect(Unit) { viewModel.load() }
 
     Column(
         modifier =
@@ -64,39 +62,47 @@ fun HomeScreen(
                 .padding(top = 12.dp, bottom = 28.dp),
         verticalArrangement = Arrangement.spacedBy(28.dp),
     ) {
-        NewReleasesSection(
-            games = newReleases,
-            isLoading = isLoading || !hasLoaded,
-            hasError = hasError,
+        FeedSection(
+            title = stringResource(R.string.home_new_releases),
+            feed = newReleases,
             onViewAll = { onViewAll(SearchScope.NEW_RELEASES) },
-            onGameClick = onGameClick,
-            onRetry = { viewModel.loadNewReleases() },
-        )
-        MostAnticipatedSection(onViewAll = { onViewAll(SearchScope.MOST_ANTICIPATED) }, onGameClick = onGameClick)
+            onRetry = { viewModel.load(force = true) },
+        ) { game ->
+            NewReleaseCard(game = game, modifier = Modifier.clickable { onGameClick(game.slug) })
+        }
+
+        FeedSection(
+            title = stringResource(R.string.home_most_anticipated),
+            feed = mostAnticipated,
+            onViewAll = { onViewAll(SearchScope.MOST_ANTICIPATED) },
+            onRetry = { viewModel.load(force = true) },
+        ) { game ->
+            AnticipatedCard(game = game, modifier = Modifier.clickable { onGameClick(game.slug) })
+        }
     }
 }
 
 @Composable
-private fun NewReleasesSection(
-    games: List<Game>,
-    isLoading: Boolean,
-    hasError: Boolean,
+private fun FeedSection(
+    title: String,
+    feed: HomeFeed,
     onViewAll: () -> Unit,
-    onGameClick: (String?) -> Unit,
     onRetry: () -> Unit,
+    card: @Composable (Game) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        HomeSectionHeader(title = stringResource(R.string.home_new_releases), onViewAll = onViewAll)
+        HomeSectionHeader(title = title, onViewAll = onViewAll)
         when {
-            games.isEmpty() && isLoading -> {
+            feed.games.isEmpty() && (feed.isLoading || !feed.hasLoaded) -> {
                 SectionLoading()
             }
 
-            games.isEmpty() -> {
+            feed.games.isEmpty() -> {
                 SectionRetry(
                     message =
                         stringResource(
-                            if (hasError) R.string.home_new_releases_error else R.string.home_new_releases_empty,
+                            if (feed.hasError) R.string.home_feed_error else R.string.home_feed_empty,
+                            title,
                         ),
                     onRetry = onRetry,
                 )
@@ -107,9 +113,7 @@ private fun NewReleasesSection(
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                     contentPadding = PaddingValues(horizontal = 20.dp),
                 ) {
-                    items(games) { game ->
-                        NewReleaseCard(game = game, modifier = Modifier.clickable { onGameClick(game.slug) })
-                    }
+                    items(feed.games) { game -> card(game) }
                 }
             }
         }
@@ -148,24 +152,6 @@ private fun SectionRetry(
                 color = AppPrimary,
                 style = AppType.label(14.sp),
             )
-        }
-    }
-}
-
-@Composable
-private fun MostAnticipatedSection(
-    onViewAll: () -> Unit,
-    onGameClick: (String?) -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        HomeSectionHeader(title = stringResource(R.string.home_most_anticipated), onViewAll = onViewAll)
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            contentPadding = PaddingValues(horizontal = 20.dp),
-        ) {
-            items(HomeMockData.mostAnticipated) { game ->
-                AnticipatedCard(game = game, modifier = Modifier.clickable { onGameClick(null) })
-            }
         }
     }
 }

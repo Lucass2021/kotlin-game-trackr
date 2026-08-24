@@ -110,8 +110,8 @@
     <string name="header_menu">Menu</string>
 
     <string name="home_new_releases">New Releases</string>
-    <string name="home_new_releases_error">Couldn\'t load new releases.</string>
-    <string name="home_new_releases_empty">No new releases right now.</string>
+    <string name="home_feed_error">Couldn\'t load %1$s.</string>
+    <string name="home_feed_empty">Nothing in %1$s right now.</string>
     <string name="home_try_again">Try again</string>
     <string name="home_most_anticipated">Most Anticipated</string>
     <string name="home_view_all">View All</string>
@@ -173,8 +173,6 @@
     <string name="search_empty_filter">No games match this filter. Try a different platform.</string>
     <string name="search_empty_query">No results for \"%1$s\". Try another title or platform.</string>
     <string name="search_clear">Clear search</string>
-    <string name="search_unavailable_title">Not available yet</string>
-    <string name="search_unavailable_message">The most anticipated feed is still waiting on the backend.</string>
 
     <string name="notifications_title">Notifications</string>
     <string name="notifications_mark_all_read">Mark all read</string>
@@ -426,7 +424,7 @@
     <string name="setup_delete_cancel">Cancel</string>
 
     <plurals name="search_result_count">
-        <item quantity="one">%1$d result</item>
-        <item quantity="other">%1$d results</item>
+        <item quantity="one">%1$,d result</item>
+        <item quantity="other">%1$,d results</item>
     </plurals>
 </resources>

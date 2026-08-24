@@ -37,8 +37,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 fun SearchResultsEmptyState(
     modifier: Modifier = Modifier,
     query: String = "",
-    title: String = stringResource(R.string.search_empty_title),
-    message: String? = null,
     onClear: (() -> Unit)? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -65,7 +63,7 @@ fun SearchResultsEmptyState(
         }
 
         Text(
-            text = title,
+            text = stringResource(R.string.search_empty_title),
             color = AppTextPrimary,
             style = AppType.headline(24.sp, FontWeight.ExtraBold),
             textAlign = TextAlign.Center,
@@ -74,7 +72,7 @@ fun SearchResultsEmptyState(
 
         Text(
             text =
-                message ?: if (query.isBlank()) {
+                if (query.isBlank()) {
                     stringResource(R.string.search_empty_filter)
                 } else {
                     stringResource(R.string.search_empty_query, query)

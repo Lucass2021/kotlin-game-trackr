@@ -21,6 +21,19 @@ interface GameApi {
         @Query("platform[]") platforms: List<String>? = null,
     ): PaginatedGamesResponse
 
+    @GET("home/most-anticipated")
+    suspend fun getMostAnticipated(
+        @Query("limit") limit: Int? = null,
+    ): GamesResponse
+
+    @GET("home/most-anticipated/all")
+    suspend fun getAllMostAnticipated(
+        @Query("page") page: Int? = null,
+        @Query("per_page") perPage: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("platform[]") platforms: List<String>? = null,
+    ): PaginatedGamesResponse
+
     @GET("games/{slug}")
     suspend fun getGame(
         @Path("slug") slug: String,
