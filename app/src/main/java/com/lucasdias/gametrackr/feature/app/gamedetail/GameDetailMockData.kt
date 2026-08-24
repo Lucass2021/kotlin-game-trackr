@@ -21,6 +21,7 @@ object GameDetailMockData {
             genres = listOf("Action RPG", "Open World", "Cyberpunk"),
             coverStart = CoverVioletStart,
             coverEnd = CoverVioletEnd,
+            heroUrl = null,
             screenshots =
                 listOf(
                     GameScreenshot(CoverIndigoStart, CoverIndigoEnd),
@@ -37,31 +38,8 @@ object GameDetailMockData {
                 listOf(
                     GameSpec("Developer", "Void Interactive"),
                     GameSpec("Publisher", "Nova Games"),
-                    GameSpec("Storage", "85.4 GB"),
-                    GameSpec("Language", "English, +12 more"),
-                ),
-            systemRequirements =
-                listOf(
-                    SystemRequirementTier(
-                        name = "Minimum",
-                        items =
-                            listOf(
-                                GameSpec("OS", "Windows 10 64-bit"),
-                                GameSpec("CPU", "Intel Core i5-8400"),
-                                GameSpec("GPU", "NVIDIA GTX 1060 6GB"),
-                                GameSpec("Memory", "12 GB RAM"),
-                            ),
-                    ),
-                    SystemRequirementTier(
-                        name = "Recommended",
-                        items =
-                            listOf(
-                                GameSpec("OS", "Windows 11 64-bit"),
-                                GameSpec("CPU", "Intel Core i7-12700K"),
-                                GameSpec("GPU", "NVIDIA RTX 3070 8GB"),
-                                GameSpec("Memory", "16 GB RAM"),
-                            ),
-                    ),
+                    GameSpec("Released", "Mar 14, 2024"),
+                    GameSpec("Modes", "Single player, Co-operative"),
                 ),
         )
 }

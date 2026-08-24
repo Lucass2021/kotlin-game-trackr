@@ -13,6 +13,8 @@ class PaginationState<T> {
         private set
     var lastPage by mutableIntStateOf(1)
         private set
+    var total by mutableIntStateOf(0)
+        private set
     var isLoadingMore by mutableStateOf(false)
         private set
 
@@ -22,6 +24,7 @@ class PaginationState<T> {
         items.clear()
         currentPage = 0
         lastPage = 1
+        total = 0
     }
 
     fun append(
@@ -31,6 +34,7 @@ class PaginationState<T> {
         items.addAll(newItems)
         currentPage = response.currentPage
         lastPage = response.lastPage
+        total = response.total
     }
 
     fun setLoading(value: Boolean) {

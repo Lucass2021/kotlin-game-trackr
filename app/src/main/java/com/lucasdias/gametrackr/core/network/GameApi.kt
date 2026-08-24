@@ -1,8 +1,10 @@
 package com.lucasdias.gametrackr.core.network
 
+import com.lucasdias.gametrackr.core.network.dto.GameDetailResponse
 import com.lucasdias.gametrackr.core.network.dto.GamesResponse
 import com.lucasdias.gametrackr.core.network.dto.PaginatedGamesResponse
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface GameApi {
@@ -15,5 +17,12 @@ interface GameApi {
     suspend fun getAllNewReleases(
         @Query("page") page: Int? = null,
         @Query("per_page") perPage: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("platform[]") platforms: List<String>? = null,
     ): PaginatedGamesResponse
+
+    @GET("games/{slug}")
+    suspend fun getGame(
+        @Path("slug") slug: String,
+    ): GameDetailResponse
 }

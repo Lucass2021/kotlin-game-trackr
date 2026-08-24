@@ -45,7 +45,7 @@ private val SectionHeight = 240.dp
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onViewAll: (SearchScope) -> Unit = {},
-    onGameClick: () -> Unit = {},
+    onGameClick: (String?) -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val newReleases by viewModel.newReleases.collectAsStateWithLifecycle()
@@ -82,7 +82,7 @@ private fun NewReleasesSection(
     isLoading: Boolean,
     hasError: Boolean,
     onViewAll: () -> Unit,
-    onGameClick: () -> Unit,
+    onGameClick: (String?) -> Unit,
     onRetry: () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -108,7 +108,7 @@ private fun NewReleasesSection(
                     contentPadding = PaddingValues(horizontal = 20.dp),
                 ) {
                     items(games) { game ->
-                        NewReleaseCard(game = game, modifier = Modifier.clickable(onClick = onGameClick))
+                        NewReleaseCard(game = game, modifier = Modifier.clickable { onGameClick(game.slug) })
                     }
                 }
             }
@@ -155,7 +155,7 @@ private fun SectionRetry(
 @Composable
 private fun MostAnticipatedSection(
     onViewAll: () -> Unit,
-    onGameClick: () -> Unit,
+    onGameClick: (String?) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         HomeSectionHeader(title = stringResource(R.string.home_most_anticipated), onViewAll = onViewAll)
@@ -164,7 +164,7 @@ private fun MostAnticipatedSection(
             contentPadding = PaddingValues(horizontal = 20.dp),
         ) {
             items(HomeMockData.mostAnticipated) { game ->
-                AnticipatedCard(game = game, modifier = Modifier.clickable(onClick = onGameClick))
+                AnticipatedCard(game = game, modifier = Modifier.clickable { onGameClick(null) })
             }
         }
     }

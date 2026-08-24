@@ -44,12 +44,13 @@ import com.lucasdias.gametrackr.feature.app.search.components.SearchFilterChips
 import com.lucasdias.gametrackr.feature.app.search.components.SearchResultCard
 import com.lucasdias.gametrackr.feature.app.search.components.SearchResultsEmptyState
 import com.lucasdias.gametrackr.feature.app.search.components.SearchTopBar
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SearchScreen(
     onBack: () -> Unit,
-    onGameClick: () -> Unit,
+    onGameClick: (String?) -> Unit,
     scope: SearchScope = SearchScope.ALL,
     viewModel: SearchViewModel = koinViewModel(),
 ) {
@@ -61,32 +62,20 @@ fun SearchScreen(
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
 
     val trimmedQuery = query.trim()
-    val isFiltering = platform != null || trimmedQuery.isNotEmpty()
+    var hasPendingFilter by remember { mutableStateOf(false) }
 
-    LaunchedEffect(hasFeed) {
-        if (hasFeed) viewModel.loadNewReleases()
-    }
-
-    LaunchedEffect(platform, trimmedQuery) {
-        viewModel.resetFilterBudget()
-    }
-
-    val games =
-        remember(trimmedQuery, platform, viewModel.games.size) {
-            viewModel.games.filter { game ->
-                val matchesPlatform = platform == null || game.platforms.contains(platform)
-                val matchesQuery = trimmedQuery.isEmpty() || game.name.contains(trimmedQuery, ignoreCase = true)
-                matchesPlatform && matchesQuery
-            }
+    LaunchedEffect(hasFeed, platform, trimmedQuery) {
+        if (!hasFeed) return@LaunchedEffect
+        if (hasLoaded) {
+            hasPendingFilter = true
+            delay(SEARCH_DEBOUNCE_MILLIS)
         }
-
-    LaunchedEffect(games.size, platform, trimmedQuery) {
-        if (!hasFeed || !isFiltering || games.isNotEmpty()) return@LaunchedEffect
-        if (!viewModel.canFetchMoreForFilter || viewModel.pagination.isLoadingMore) return@LaunchedEffect
-        viewModel.loadMoreForFilter()
+        viewModel.applyFilters(trimmedQuery, platform)
+        hasPendingFilter = false
     }
 
-    val isStillSearching = !hasLoaded || isLoading || (isFiltering && viewModel.canFetchMoreForFilter)
+    val games = viewModel.games
+    val isStillSearching = !hasLoaded || isLoading || hasPendingFilter
 
     Column(modifier = Modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         SearchTopBar(query = query, onQueryChange = { query = it }, onBack = onBack)
@@ -102,63 +91,65 @@ fun SearchScreen(
         InfiniteGridScrollEffect(
             gridState = gridState,
             canLoadMore = hasFeed && viewModel.pagination.canLoadMore,
-            onLoadMore = { viewModel.loadMoreNewReleases() },
+            onLoadMore = { viewModel.loadMore() },
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            state = gridState,
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 28.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            when {
-                !hasFeed -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        SearchResultsEmptyState(
-                            title = stringResource(R.string.search_unavailable_title),
-                            message = stringResource(R.string.search_unavailable_message),
-                        )
-                    }
-                }
-
-                games.isEmpty() && isStillSearching -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().padding(top = 60.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CircularProgressIndicator(color = AppPrimary)
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (hasFeed && games.isEmpty() && isStillSearching) {
+                CircularProgressIndicator(
+                    color = AppPrimary,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    state = gridState,
+                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 28.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    when {
+                        !hasFeed -> {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                SearchResultsEmptyState(
+                                    title = stringResource(R.string.search_unavailable_title),
+                                    message = stringResource(R.string.search_unavailable_message),
+                                )
+                            }
                         }
-                    }
-                }
 
-                games.isEmpty() -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        SearchResultsEmptyState(
-                            query = query,
-                            onClear = {
-                                query = ""
-                                platform = null
-                            },
-                        )
-                    }
-                }
+                        games.isEmpty() -> {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                SearchResultsEmptyState(
+                                    query = query,
+                                    onClear = {
+                                        query = ""
+                                        platform = null
+                                    },
+                                )
+                            }
+                        }
 
-                else -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        SectionHeader(scope = scope, isSearching = trimmedQuery.isNotEmpty(), count = games.size)
-                    }
-                    items(games.size) { index ->
-                        SearchResultCard(
-                            game = games[index],
-                            modifier = Modifier.clickable(onClick = onGameClick),
-                        )
-                    }
-                    if (viewModel.pagination.isLoadingMore) {
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            LoadingMoreIndicator()
+                        else -> {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                SectionHeader(
+                                    scope = scope,
+                                    isSearching = trimmedQuery.isNotEmpty(),
+                                    count = viewModel.pagination.total,
+                                )
+                            }
+                            items(games.size) { index ->
+                                SearchResultCard(
+                                    game = games[index],
+                                    modifier = Modifier.clickable { onGameClick(games[index].slug) },
+                                )
+                            }
+                            if (viewModel.pagination.isLoadingMore) {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    LoadingMoreIndicator()
+                                }
+                            }
                         }
                     }
                 }
@@ -195,3 +186,5 @@ private fun SectionHeader(
         )
     }
 }
+
+private const val SEARCH_DEBOUNCE_MILLIS = 300L

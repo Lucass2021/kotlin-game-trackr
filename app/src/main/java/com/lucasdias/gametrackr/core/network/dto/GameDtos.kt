@@ -1,7 +1,6 @@
 package com.lucasdias.gametrackr.core.network.dto
 
 import com.lucasdias.gametrackr.core.model.Game
-import com.lucasdias.gametrackr.core.model.GamePlatform
 import com.lucasdias.gametrackr.core.model.PlatformLabel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -79,6 +78,5 @@ fun GameDto.toDomain(): Game {
         rating = totalRating ?: rating,
         coverUrl = cover?.url,
         platformNames = dtoPlatforms.mapNotNull { PlatformLabel.short(it.slug, it.name) }.distinct(),
-        platforms = dtoPlatforms.mapNotNull { platform -> platform.slug?.let { GamePlatform.fromIgdbSlug(it) } }.toSet(),
     )
 }

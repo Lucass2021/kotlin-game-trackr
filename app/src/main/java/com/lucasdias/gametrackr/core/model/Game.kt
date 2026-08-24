@@ -6,26 +6,15 @@ import java.time.LocalDate
 
 enum class GamePlatform(
     val label: String,
+    val igdbSlugs: List<String>,
 ) {
-    PC("PC"),
-    PLAYSTATION("PlayStation"),
-    XBOX("Xbox"),
-    NINTENDO("Nintendo"),
-    ;
-
-    companion object {
-        private val NINTENDO_PREFIXES = listOf("switch", "wii", "n64", "3ds", "nds", "nes", "snes", "gb", "gamecube")
-        private val PC_SLUGS = setOf("win", "linux", "mac", "dos", "browser")
-
-        fun fromIgdbSlug(slug: String): GamePlatform? =
-            when {
-                slug.startsWith("ps") -> PLAYSTATION
-                slug.startsWith("xbox") || slug.startsWith("series") -> XBOX
-                NINTENDO_PREFIXES.any { slug.startsWith(it) } -> NINTENDO
-                slug in PC_SLUGS -> PC
-                else -> null
-            }
-    }
+    PC("PC", listOf("win", "linux", "mac", "dos", "browser")),
+    PLAYSTATION("PlayStation", listOf("ps", "ps2", "ps3", "ps4--1", "ps5", "psp", "psvita", "psvr", "psvr2")),
+    XBOX("Xbox", listOf("xbox", "xbox360", "xboxone", "series-x-s")),
+    NINTENDO(
+        "Nintendo",
+        listOf("nes", "snes", "n64", "ngc", "wii", "wiiu", "gb", "gbc", "gba", "nds", "3ds", "switch", "switch-2"),
+    ),
 }
 
 object PlatformLabel {
@@ -67,7 +56,6 @@ data class Game(
     val rating: Double? = null,
     val coverUrl: String? = null,
     val platformNames: List<String> = emptyList(),
-    val platforms: Set<GamePlatform> = emptySet(),
 ) {
     private val colors: Pair<Color, Color> = GradientPalette.pair(id)
 

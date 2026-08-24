@@ -227,7 +227,7 @@
     <string name="game_detail_read_more">Read more</string>
     <string name="game_detail_read_less">Read less</string>
     <string name="game_detail_specifications">Specifications</string>
-    <string name="game_detail_system_requirements">System Requirements</string>
+    <string name="game_detail_load_error">Couldn\'t load this game.</string>
 
     <string name="add_library_title">Add to Library</string>
     <string name="add_library_status">Playing status</string>

@@ -13,6 +13,7 @@ import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
+import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailViewModel
 import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
 import com.lucasdias.gametrackr.feature.app.profile.Profile
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
@@ -111,6 +112,7 @@ val appModule =
         viewModel { CommunityViewModel(get()) }
         viewModel { HomeViewModel(get()) }
         viewModel { SearchViewModel(get()) }
+        viewModel { (slug: String) -> GameDetailViewModel(get(), slug) }
         viewModel { AuthViewModel(get(), get()) }
         viewModel { LoginViewModel(get(), androidContext()) }
         viewModel { RegisterViewModel(get(), androidContext()) }

@@ -69,6 +69,8 @@ private object ShellRoutes {
     const val NOTIFICATIONS = "notifications"
     const val MENU = "menu"
     const val GAME_DETAIL = "gamedetail"
+    const val GAME_DETAIL_ARG_SLUG = "slug"
+    const val GAME_DETAIL_ROUTE = "$GAME_DETAIL?$GAME_DETAIL_ARG_SLUG={$GAME_DETAIL_ARG_SLUG}"
     const val COMMUNITY_DETAIL = "communitydetail"
     const val POST_DETAIL = "postdetail"
     const val STATS = "stats"
@@ -102,6 +104,8 @@ private object ShellRoutes {
     fun achievements(ownerName: String = "") = "$ACHIEVEMENTS?$ACHIEVEMENTS_ARG_OWNER=${Uri.encode(ownerName)}"
 
     fun gameAchievements(gameId: Long) = "$GAME_ACHIEVEMENTS/$gameId"
+
+    fun gameDetail(slug: String? = null) = "$GAME_DETAIL?$GAME_DETAIL_ARG_SLUG=${Uri.encode(slug.orEmpty())}"
 
     fun userProfile(name: String) = "$USER_PROFILE?$USER_PROFILE_ARG_NAME=${Uri.encode(name)}"
 
@@ -150,7 +154,7 @@ fun MainTabScreen(
                 onSearch = { navController.navigate(ShellRoutes.search(SearchScope.ALL)) },
                 onViewAll = { navController.navigate(ShellRoutes.search(it)) },
                 onMenu = { navController.navigate(ShellRoutes.MENU) },
-                onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
+                onGameClick = { navController.navigate(ShellRoutes.gameDetail(it)) },
                 onPostClick = { post ->
                     selectedPost = post
                     navController.navigate(ShellRoutes.POST_DETAIL)
@@ -223,14 +227,24 @@ fun MainTabScreen(
                     ?: SearchScope.ALL
             SearchScreen(
                 onBack = { navController.popBackStackIfResumed() },
-                onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
+                onGameClick = { navController.navigate(ShellRoutes.gameDetail(it)) },
                 scope = scope,
             )
         }
-        composable(ShellRoutes.GAME_DETAIL) {
+        composable(
+            route = ShellRoutes.GAME_DETAIL_ROUTE,
+            arguments =
+                listOf(
+                    navArgument(ShellRoutes.GAME_DETAIL_ARG_SLUG) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    },
+                ),
+        ) { backStackEntry ->
             GameDetailScreen(
                 onBack = { navController.popBackStackIfResumed() },
                 isGuest = isGuest,
+                slug = backStackEntry.arguments?.getString(ShellRoutes.GAME_DETAIL_ARG_SLUG)?.ifEmpty { null },
             )
         }
         composable(ShellRoutes.COMMUNITY_DETAIL) {
@@ -405,7 +419,7 @@ fun MainTabScreen(
                 user = UserProfileMockData.forName(name),
                 isGuest = isGuest,
                 onBack = { navController.popBackStackIfResumed() },
-                onGameClick = { navController.navigate(ShellRoutes.GAME_DETAIL) },
+                onGameClick = { navController.navigate(ShellRoutes.gameDetail()) },
                 onViewStats = { navController.navigate(ShellRoutes.stats(name)) },
             )
         }
@@ -424,7 +438,7 @@ private fun TabShell(
     onSearch: () -> Unit,
     onViewAll: (SearchScope) -> Unit,
     onMenu: () -> Unit,
-    onGameClick: () -> Unit,
+    onGameClick: (String?) -> Unit,
     onPostClick: (CommunityPost) -> Unit,
     onCommunityClick: (Community) -> Unit,
     onCreatePost: () -> Unit,
@@ -456,7 +470,7 @@ private fun TabShell(
                         isGuest = isGuest,
                         onCreateAccount = onCreateAccount,
                         onBrowseGames = onSearch,
-                        onGameClick = onGameClick,
+                        onGameClick = { onGameClick(null) },
                     )
                 }
 
@@ -474,7 +488,7 @@ private fun TabShell(
                 AppTab.PROFILE -> {
                     ProfileScreen(
                         isGuest = isGuest,
-                        onGameClick = onGameClick,
+                        onGameClick = { onGameClick(null) },
                         onStatusClick = onStatusClick,
                         onEditProfile = onEditProfile,
                         onCreateAccount = onCreateAccount,
