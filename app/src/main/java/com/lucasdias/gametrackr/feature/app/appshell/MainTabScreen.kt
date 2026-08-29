@@ -34,6 +34,7 @@ import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
+import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityScreen
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicScreen
 import com.lucasdias.gametrackr.feature.app.community.detail.CommunityDetailScreen
 import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScreen
@@ -93,6 +94,7 @@ private object ShellRoutes {
     const val CHANGE_PASSWORD_SUCCESS = "changepasswordsuccess"
     const val ABOUT = "about"
     const val HELP = "help"
+    const val CREATE_COMMUNITY = "createcommunity"
     const val CREATE_TOPIC = "createtopic"
     const val CREATE_TOPIC_ARG_COMMUNITY = "community"
     const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
@@ -164,11 +166,13 @@ fun MainTabScreen(
                     navController.navigate(ShellRoutes.COMMUNITY_DETAIL)
                 },
                 onCreatePost = { navController.navigate(ShellRoutes.createTopic()) },
+                onCreateCommunity = { navController.navigate(ShellRoutes.CREATE_COMMUNITY) },
                 onViewStats = { navController.navigate(ShellRoutes.stats()) },
                 profile = profile,
                 onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
                 setups = setups,
                 onViewSetup = { navController.navigate(ShellRoutes.MY_SETUP) },
+                currentUserId = currentUserId,
             )
         }
         composable(ShellRoutes.MY_SETUP) {
@@ -247,12 +251,26 @@ fun MainTabScreen(
                 slug = backStackEntry.arguments?.getString(ShellRoutes.GAME_DETAIL_ARG_SLUG)?.ifEmpty { null },
             )
         }
+        composable(ShellRoutes.CREATE_COMMUNITY) {
+            CreateCommunityScreen(
+                onBack = { navController.popBackStackIfResumed() },
+                onCreated = { community ->
+                    communityViewModel.addCommunity(community)
+                    selectedCommunity = community
+                    navController.navigate(ShellRoutes.COMMUNITY_DETAIL) {
+                        popUpTo(ShellRoutes.CREATE_COMMUNITY) { inclusive = true }
+                    }
+                },
+            )
+        }
         composable(ShellRoutes.COMMUNITY_DETAIL) {
             val community = selectedCommunity ?: return@composable
             CommunityDetailScreen(
                 community = community,
                 isGuest = isGuest,
+                currentUserId = currentUserId,
                 onBack = { navController.popBackStackIfResumed() },
+                onDeleted = { communityViewModel.removeCommunity(community.id) },
                 onPostClick = { post ->
                     selectedPost = post
                     navController.navigate(ShellRoutes.POST_DETAIL)
@@ -442,6 +460,7 @@ private fun TabShell(
     onPostClick: (CommunityPost) -> Unit,
     onCommunityClick: (Community) -> Unit,
     onCreatePost: () -> Unit,
+    onCreateCommunity: () -> Unit,
     onStatusClick: (LibraryStatus) -> Unit,
     onCreateAccount: () -> Unit,
     onViewStats: () -> Unit,
@@ -449,6 +468,7 @@ private fun TabShell(
     onEditProfile: () -> Unit,
     setups: List<SetupItem>,
     onViewSetup: () -> Unit,
+    currentUserId: Int? = null,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(
@@ -481,7 +501,9 @@ private fun TabShell(
                         onPostClick = onPostClick,
                         onCommunityClick = onCommunityClick,
                         onCreatePost = onCreatePost,
+                        onCreateCommunity = onCreateCommunity,
                         onCreateAccount = onCreateAccount,
+                        currentUserId = currentUserId,
                     )
                 }
 

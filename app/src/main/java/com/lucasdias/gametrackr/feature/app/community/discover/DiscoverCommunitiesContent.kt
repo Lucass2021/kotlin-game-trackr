@@ -40,6 +40,7 @@ fun DiscoverCommunitiesContent(
     onJoin: (Community) -> Unit,
     onLoadMore: () -> Unit = {},
     modifier: Modifier = Modifier,
+    currentUserId: Int? = null,
 ) {
     var query by remember { mutableStateOf("") }
 
@@ -104,6 +105,7 @@ fun DiscoverCommunitiesContent(
                         community = community,
                         onSelect = { onCommunitySelect(community) },
                         onJoin = { onJoin(community) },
+                        isOwner = currentUserId != null && community.authorId == currentUserId,
                     )
                     if (community.id != filtered.last().id) {
                         HorizontalDivider(

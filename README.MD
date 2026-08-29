@@ -17,8 +17,6 @@ business logic.
 | `agents/PROJECT_GOALS.android.md` | Android stack, architecture, milestones, and the progress log |
 | `TODO.MD` | Android-specific backlog (the cross-platform one lives in the iOS repo) |
 
-The iOS repo also holds the shared status docs: `agents/api-integration-status.md`,
-`agents/missing-screens.md`, and `agents/testing-community-integration.md`.
 
 ## Stack
 
@@ -58,6 +56,8 @@ base URL. On a physical device, point `API_BASE_URL` at your Mac's LAN IP instea
 
 ## Current state
 
-Auth and Community/Posts talk to the real API. Everything else — Home/discovery, Library, Stats,
-Notifications, Achievements, My Setup — renders from **mock data**, because those endpoints don't
-exist yet. The iOS repo's `agents/api-integration-status.md` is the authority on which is which.
+Auth, **Home/discovery** (New Releases, Most Anticipated, server-side search + platform filters,
+game detail) and **Community/Posts** — including creating and deleting a community — talk to the
+real API. Library, Stats, Notifications, Achievements and My Setup still render from **mock data**,
+because those endpoints don't exist yet: there is no `/me/library` route at all, and `/me/collection`
+was never built. `CLAUDE.MD` marks each route with its real status.

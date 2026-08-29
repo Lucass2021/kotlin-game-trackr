@@ -59,7 +59,7 @@ class AuthRepositoryImpl(
     override suspend fun validate(): Result<User> =
         apiCall {
             api
-                .validate()
+                .me()
                 .user
                 .toDomain()
                 .also(sessionManager::setAuthenticated)

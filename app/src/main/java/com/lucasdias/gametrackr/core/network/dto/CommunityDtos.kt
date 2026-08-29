@@ -115,6 +115,18 @@ data class ReplyResponse(
 )
 
 @Serializable
+data class CreateCommunityRequest(
+    val title: String,
+    val description: String,
+)
+
+@Serializable
+data class CreateCommunityResponse(
+    val message: String,
+    val community: CommunityDto,
+)
+
+@Serializable
 data class CreatePostRequest(
     val title: String,
     val description: String?,
@@ -155,6 +167,7 @@ fun CommunityDto.toDomain(): Community {
     return Community(
         id = id.toLong(),
         name = title,
+        authorId = authorId,
         category = "General",
         members = memberCount.abbreviatedCompact(),
         posts = "0",
@@ -176,6 +189,7 @@ fun PostDto.toDomain(): CommunityPost {
         authorId = authorId,
         timeAgo = formatTimeAgo(createdAt),
         communityName = community?.title.orEmpty(),
+        communityId = communityId.toLong(),
         title = title,
         preview = description.orEmpty(),
         likes = likes,

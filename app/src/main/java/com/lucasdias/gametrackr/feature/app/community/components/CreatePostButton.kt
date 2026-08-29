@@ -26,6 +26,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 fun CreatePostButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    label: String = stringResource(R.string.community_action_create_post),
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Box(
@@ -39,7 +40,7 @@ fun CreatePostButton(
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
-                    onClickLabel = stringResource(R.string.community_action_create_post),
+                    onClickLabel = label,
                     role = Role.Button,
                     onClick = onClick,
                 ),
@@ -47,7 +48,7 @@ fun CreatePostButton(
     ) {
         Icon(
             imageVector = AppIcon.PLUS.image(),
-            contentDescription = stringResource(R.string.community_action_create_post),
+            contentDescription = label,
             tint = AppOnPrimary,
             modifier = Modifier.size(26.dp),
         )

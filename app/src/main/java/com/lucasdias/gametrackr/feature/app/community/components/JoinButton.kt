@@ -36,6 +36,7 @@ fun JoinButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     expanded: Boolean = false,
+    enabled: Boolean = true,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val shape = CircleShape
@@ -51,7 +52,7 @@ fun JoinButton(
                 .clip(shape)
                 .background(background)
                 .then(if (isJoined) Modifier.border(BorderStroke(1.dp, AppOutline), shape) else Modifier)
-                .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
+                .clickable(interactionSource = interactionSource, indication = null, enabled = enabled, onClick = onClick)
                 .padding(
                     horizontal = if (expanded) 28.dp else 20.dp,
                     vertical = if (expanded) 15.dp else 10.dp,

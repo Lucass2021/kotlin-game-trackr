@@ -125,26 +125,41 @@ class CommunityViewModel(
         feed[index] = feed[index].copy(isBookmarked = !feed[index].isBookmarked)
     }
 
-    fun toggleJoin(community: Community) {
+    fun joinCommunity(community: Community) = setJoined(community, true)
+
+    fun leaveCommunity(community: Community) = setJoined(community, false)
+
+    private fun setJoined(
+        community: Community,
+        joined: Boolean,
+    ) {
         val index = communities.indexOfFirst { it.id == community.id }
         if (index < 0) return
-        val wasJoined = community.isJoined
-        communities[index] = community.copy(isJoined = !wasJoined)
+        communities[index] = community.copy(isJoined = joined)
 
         viewModelScope.launch {
             try {
-                if (wasJoined) {
-                    api.leaveCommunity(community.id)
-                } else {
+                if (joined) {
                     api.joinCommunity(community.id)
+                } else {
+                    api.leaveCommunity(community.id)
                 }
             } catch (_: Exception) {
                 val i = communities.indexOfFirst { it.id == community.id }
                 if (i >= 0) {
-                    communities[i] = communities[i].copy(isJoined = wasJoined)
+                    communities[i] = communities[i].copy(isJoined = !joined)
                 }
             }
         }
+    }
+
+    fun addCommunity(community: Community) {
+        communities.add(0, community)
+    }
+
+    fun removeCommunity(id: Long) {
+        communities.removeAll { it.id == id }
+        feed.removeAll { it.communityId == id }
     }
 
     fun createPost(

@@ -92,6 +92,7 @@
 
     <string name="error_network">No internet connection. Please try again.</string>
     <string name="error_invalid_credentials">Invalid email or password.</string>
+    <string name="error_forbidden">You don\'t have permission to do that.</string>
     <string name="error_not_found">We couldn\'t find an account with that email.</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
 
@@ -255,6 +256,20 @@
     <string name="community_action_create_post">Create post</string>
     <string name="community_action_notifications">Community notifications</string>
     <string name="community_action_share_community">Share community</string>
+    <string name="community_action_create_community">Create community</string>
+    <string name="community_leave_title">Leave this community?</string>
+    <string name="community_leave_message">You\'ll stop seeing its posts in your feed. You can join again anytime.</string>
+    <string name="community_leave_confirm">Leave</string>
+    <string name="community_leave_cancel">Cancel</string>
+    <string name="community_delete_title">Delete this community?</string>
+    <string name="community_delete_message">This removes the community and every post inside it. This can\'t be undone.</string>
+    <string name="community_delete_confirm">Delete</string>
+    <string name="community_delete_cancel">Cancel</string>
+    <string name="community_delete_action">Delete community</string>
+    <string name="community_delete_forbidden">Only the community owner can delete it.</string>
+    <string name="community_delete_failed_title">Couldn\'t delete</string>
+    <string name="community_delete_failed_confirm">OK</string>
+    <string name="community_delete_owner_note">Only you can see this — you created this community.</string>
 
     <string name="create_topic_title">New post</string>
     <string name="create_topic_submit">Post</string>
@@ -270,6 +285,18 @@
     <string name="create_topic_guest_title">Posting needs an account</string>
     <string name="create_topic_guest_message">You\'re browsing as a guest. Create an account to start discussions in your communities.</string>
     <string name="create_topic_guest_action">Create an account</string>
+
+    <string name="create_community_title">New community</string>
+    <string name="create_community_submit">Create</string>
+    <string name="create_community_submitting">Creating…</string>
+    <string name="create_community_field_name">Name</string>
+    <string name="create_community_field_description">Description</string>
+    <string name="create_community_name_placeholder">RetroCollectors</string>
+    <string name="create_community_name_hint">No spaces — this is how the community is listed.</string>
+    <string name="create_community_name_renamed">Listed as %1$s — spaces are removed.</string>
+    <string name="create_community_description_placeholder">What is this community about?</string>
+    <string name="create_community_discard_title">Discard this community?</string>
+    <string name="create_community_name_taken">Couldn\'t create the community. That name may already be taken.</string>
 
     <string name="library_guest_title">Library needs an account</string>
     <string name="library_guest_message">Create an account to track your games, log hours, and build your collection.</string>
@@ -290,6 +317,12 @@
     <string name="validation_topic_body_required">Body is required</string>
     <string name="validation_topic_body_too_short">At least 10 characters</string>
     <string name="validation_topic_body_too_long">Body is too long</string>
+    <string name="validation_community_name_required">Name is required</string>
+    <string name="validation_community_name_too_short">At least 3 characters</string>
+    <string name="validation_community_name_too_long">Name is too long</string>
+    <string name="validation_community_description_required">Description is required</string>
+    <string name="validation_community_description_too_short">At least 10 characters</string>
+    <string name="validation_community_description_too_long">Description is too long</string>
     <string name="validation_name_too_long">Name is too long</string>
     <string name="validation_username_required">Username is required</string>
     <string name="validation_username_too_short">At least 3 characters</string>

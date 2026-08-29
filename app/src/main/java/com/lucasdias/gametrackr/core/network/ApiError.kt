@@ -6,6 +6,10 @@ sealed class ApiError(
 ) : Exception(message, cause) {
     data object Unauthorized : ApiError("Unauthorized")
 
+    data class Forbidden(
+        val errorMessage: String,
+    ) : ApiError(errorMessage)
+
     data object NotFound : ApiError("Not found")
 
     data class BadRequest(

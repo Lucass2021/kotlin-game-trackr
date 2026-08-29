@@ -3,6 +3,8 @@ package com.lucasdias.gametrackr.core.network
 import com.lucasdias.gametrackr.core.network.dto.CommentBody
 import com.lucasdias.gametrackr.core.network.dto.CommentResponse
 import com.lucasdias.gametrackr.core.network.dto.CommunityDto
+import com.lucasdias.gametrackr.core.network.dto.CreateCommunityRequest
+import com.lucasdias.gametrackr.core.network.dto.CreateCommunityResponse
 import com.lucasdias.gametrackr.core.network.dto.CreatePostRequest
 import com.lucasdias.gametrackr.core.network.dto.CreatePostResponse
 import com.lucasdias.gametrackr.core.network.dto.LikeResponse
@@ -32,6 +34,16 @@ interface CommunityApi {
     suspend fun getCommunity(
         @Path("id") id: Long,
     ): CommunityDto
+
+    @POST("communities")
+    suspend fun createCommunity(
+        @Body body: CreateCommunityRequest,
+    ): CreateCommunityResponse
+
+    @DELETE("communities/{id}")
+    suspend fun deleteCommunity(
+        @Path("id") id: Long,
+    ): MessageResponse
 
     @POST("communities/join/{id}")
     suspend fun joinCommunity(

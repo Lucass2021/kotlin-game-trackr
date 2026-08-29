@@ -28,6 +28,7 @@ fun CommunityRow(
     onSelect: () -> Unit,
     onJoin: () -> Unit,
     modifier: Modifier = Modifier,
+    isOwner: Boolean = false,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Row(
@@ -66,6 +67,11 @@ fun CommunityRow(
             }
         }
 
-        JoinButton(isJoined = community.isJoined, onClick = onJoin, modifier = Modifier.padding(start = 12.dp))
+        JoinButton(
+            isJoined = community.isJoined,
+            onClick = onJoin,
+            modifier = Modifier.padding(start = 12.dp),
+            enabled = !isOwner,
+        )
     }
 }

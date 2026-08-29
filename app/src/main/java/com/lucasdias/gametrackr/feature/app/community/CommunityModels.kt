@@ -20,6 +20,7 @@ enum class CommunityDetailTab(
 data class Community(
     val id: Long,
     val name: String,
+    val authorId: Int? = null,
     val category: String,
     val members: String,
     val posts: String,
@@ -39,6 +40,7 @@ data class CommunityPost(
     val authorId: Int? = null,
     val timeAgo: String,
     val communityName: String,
+    val communityId: Long? = null,
     val title: String,
     val preview: String,
     val likes: Int,

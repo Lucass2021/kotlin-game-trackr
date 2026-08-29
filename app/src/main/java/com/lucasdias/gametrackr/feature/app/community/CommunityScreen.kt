@@ -33,6 +33,7 @@ import com.lucasdias.gametrackr.feature.app.community.components.CommunityChipRo
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityPostCard
 import com.lucasdias.gametrackr.feature.app.community.components.CommunitySegmentControl
+import com.lucasdias.gametrackr.feature.app.community.components.ConfirmDialog
 import com.lucasdias.gametrackr.feature.app.community.components.CreatePostButton
 import com.lucasdias.gametrackr.feature.app.community.components.SuggestedCommunityCard
 import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesContent
@@ -45,12 +46,15 @@ fun CommunityScreen(
     onPostClick: (CommunityPost) -> Unit,
     onCommunityClick: (Community) -> Unit,
     onCreatePost: () -> Unit,
+    onCreateCommunity: () -> Unit,
     onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier,
+    currentUserId: Int? = null,
 ) {
     var segment by remember { mutableStateOf(CommunitySegment.MY_FEED) }
     var feedFilter by remember { mutableStateOf(CommunityMockData.feedFilters.first()) }
     var category by remember { mutableStateOf("All") }
+    var communityToLeave by remember { mutableStateOf<Community?>(null) }
     val feedError by viewModel.feedError.collectAsStateWithLifecycle()
     val isLoadingFeed by viewModel.isLoadingFeed.collectAsStateWithLifecycle()
 
@@ -83,7 +87,7 @@ fun CommunityScreen(
                         onBookmark = { viewModel.toggleBookmark(it) },
                         suggestedCommunity = if (isGuest) null else viewModel.communities.firstOrNull { !it.isJoined },
                         onCommunitySelect = onCommunityClick,
-                        onJoinSuggested = { viewModel.toggleJoin(it) },
+                        onJoinSuggested = { viewModel.joinCommunity(it) },
                         onDiscover = { segment = CommunitySegment.DISCOVER },
                         onRetry = {
                             viewModel.loadFeed(reset = true)
@@ -115,20 +119,53 @@ fun CommunityScreen(
                             isLoadingMore = viewModel.communitiesPagination.isLoadingMore,
                             canLoadMore = viewModel.communitiesPagination.canLoadMore,
                             onCommunitySelect = onCommunityClick,
-                            onJoin = { viewModel.toggleJoin(it) },
+                            onJoin = { community ->
+                                if (community.isJoined) {
+                                    communityToLeave = community
+                                } else {
+                                    viewModel.joinCommunity(community)
+                                }
+                            },
                             onLoadMore = { viewModel.loadMoreCommunities() },
+                            currentUserId = currentUserId,
                         )
                     }
                 }
             }
         }
 
-        if (segment == CommunitySegment.MY_FEED && !isGuest) {
-            CreatePostButton(
-                onClick = onCreatePost,
-                modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
-            )
+        if (!isGuest) {
+            when (segment) {
+                CommunitySegment.MY_FEED -> {
+                    CreatePostButton(
+                        onClick = onCreatePost,
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
+                    )
+                }
+
+                CommunitySegment.DISCOVER -> {
+                    CreatePostButton(
+                        onClick = onCreateCommunity,
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
+                        label = stringResource(R.string.community_action_create_community),
+                    )
+                }
+            }
         }
+    }
+
+    communityToLeave?.let { community ->
+        ConfirmDialog(
+            title = stringResource(R.string.community_leave_title),
+            message = stringResource(R.string.community_leave_message),
+            confirmLabel = stringResource(R.string.community_leave_confirm),
+            dismissLabel = stringResource(R.string.community_leave_cancel),
+            onConfirm = {
+                communityToLeave = null
+                viewModel.leaveCommunity(community)
+            },
+            onDismiss = { communityToLeave = null },
+        )
     }
 }
 

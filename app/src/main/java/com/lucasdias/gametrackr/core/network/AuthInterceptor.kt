@@ -7,12 +7,14 @@ import okhttp3.Response
 
 class AuthInterceptor(
     private val tokenStore: TokenStore,
+    private val tokenRefresher: TokenRefresher,
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         if (request.header(HEADER) != null) return chain.proceed(request)
 
-        val token = runBlocking { tokenStore.get() } ?: return chain.proceed(request)
+        val stored = runBlocking { tokenStore.get() } ?: return chain.proceed(request)
+        val token = if (stored.isJwtExpired()) tokenRefresher.refresh(stored) ?: stored else stored
 
         val authenticated =
             request

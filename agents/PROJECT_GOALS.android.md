@@ -56,13 +56,27 @@ messaging, and collection.
   the original plan, but the Jetpack Security Crypto lib is deprecated — see Stack note.)
 
 ### Auth interceptor
-- OkHttp `Interceptor` attaches the Bearer token; OkHttp `Authenticator` handles `401`.
+- OkHttp `Interceptor` attaches the Bearer token; OkHttp `Authenticator` handles `401`. Both share
+  one `TokenRefresher` so the proactive and reactive paths can't drift.
 - **Verified backend behaviour:** auth is **JWT (tymon/jwt-auth), not Sanctum**, using
   **single-token rotation** — on `401`, call `POST /auth/refresh` with the *current* token in
   the header (no body); it returns a new token and blacklists the old one. There is **no separate
   refresh token**. The `Authenticator` does: retry-once + concurrent-refresh **dedup**
   (single-flight) + **network-failure ≠ auth-failure** (no logout when offline; only logout when
   refresh genuinely fails / token is dead).
+- **Reacting to `401` is not enough on this backend** (learned 2026-08-25). Two traps:
+  - *Public routes personalise from the token and answer `200`.* `GET /communities` fills
+    `is_member` from `auth()->id()` while sitting outside `auth:api`, so an expired token yields
+    `is_member: false` for everything — a joined community renders as "Join" and no `401` ever
+    arrives to trigger a refresh. `AuthInterceptor` therefore checks `isJwtExpired()` and refreshes
+    **before** sending, not only after failing.
+  - *Not every `401` is about the token.* A controller denying an action answers
+    `401 { error: … }` while the auth middleware answers `401 { message: "Unauthenticated." }`.
+    `ErrorMapper` branches on the body into `ApiError.Forbidden` vs `ApiError.Unauthorized`, and
+    `TokenAuthenticator` peeks the body to skip a refresh that can never help.
+- Bootstrap the session with **`GET /profile/me`**, never `POST /auth/validate` — the latter is
+  outside `auth:api` and hands an expired token `200 { "user": null }`, which the repository turned
+  into a failure and the ViewModel into a **random logout**.
 
 ### Networking
 - Centralized API layer (Retrofit service interfaces per feature: `AuthApi`, `LibraryApi`, …).
@@ -110,12 +124,72 @@ messaging, and collection.
 | 8 | Discovery feeds (releases / upcoming / trending) | + 1 day — **releases done 2026-08-19**; upcoming/trending blocked on the API |
 | 9 | Friends + public profiles | + 1 day |
 | 10 | Realtime messaging via Reverb + push notifications | + 2 days |
-| 11 | Community + physical collection (image upload) | + 2 days |
+| 11 | Community + physical collection (image upload) | + 2 days — **community create/delete done 2026-08-25**; collection still local-only |
 | 12 | Polish: states, animations, app icon, CI | + 1 day |
 
 ---
 
 ## Progress log
+
+### 2026-08-25 — Create/delete community, and the two `401` traps behind it
+
+**Feature.** The last two unwired community routes shipped: `POST /communities` and
+`DELETE /communities/{id}`.
+
+- New `feature/app/community/createcommunity/` — `CreateCommunityScreen` +
+  `CreateCommunityViewModel` + `CreateCommunityUiState`, reached through a new
+  `ShellRoutes.CREATE_COMMUNITY`. The `+` FAB now lives on **both** segments and changes intent with
+  the segment (`Feed` → New post, `Discover` → New community); `CreatePostButton` took a `label`
+  parameter for that. Creating one adds it to the list and navigates straight into its detail
+  (`popUpTo(CREATE_COMMUNITY) { inclusive = true }`), already joined.
+- Delete lives on `CommunityDetailScreen`, owner-only (`community.authorId == currentUserId`).
+  `Community` gained `authorId`, and `CommunityPost` gained `communityId` (the DTO always had it;
+  `toDomain()` was dropping it) so the feed can be pruned when a community goes away.
+- `CommunityApi` gained `createCommunity` / `deleteCommunity`; `CommunityDtos` a
+  `CreateCommunityRequest` / `CreateCommunityResponse`.
+
+**Backend quirks that shaped the UI.** `store` runs `str_replace(' ', '', $title)` but computes the
+`slug` from the raw text *first* — which makes the slug a perfect probe for what the client actually
+sent. So the client sends a **handle** (typed name minus whitespace) and shows it live under the
+field: "Listed as `RetroShmupClub`". And `CommunityRequest` has no `unique` rule though the column
+does, so a duplicate name is a **500 with raw SQL**, mapped to "That name may already be taken."
+
+Compose has no trouble filtering text in `onValueChange`, but both clients use the handle approach so
+they behave identically — on iOS a `TextField` keeps input the binding rejects, which made live
+filtering unusable there.
+
+**UX correction.** The overflow `…` was too hard to find: it reused the outlined `CircleIconButton`
+while the Back button beside it is a filled translucent circle, so it disappeared into the banner
+gradient. Both now share one `FloatingCircle`, and the real affordance is a labelled
+**"Delete community"** row at the bottom of the **About** tab (`CommunityAboutSection`, owner-only,
+with "Only you can see this"). A bare glyph is not an affordance for a destructive action.
+
+**The bug under the bug.** Chasing "the delete button never appears" led to
+`AuthRepositoryImpl.validate()` calling `POST /auth/validate` — a route outside `auth:api` that
+answers an expired token with `200 { "user": null }`. Deserialisation failed, the ViewModel read that
+as a dead session and called `setUnauthenticated()`: the **random logouts** seen all session.
+Switched to `GET /profile/me`, and added the proactive-refresh and `Forbidden`-vs-`Unauthorized`
+rules described under *Auth interceptor*. New `core/network/Jwt.kt` decodes `exp` client-side and
+`core/network/TokenRefresher.kt` is now the single place a spent token is swapped.
+
+**Verified** end-to-end on the emulator against the local API, including with a deliberately expired
+token: the Discover list keeps the right `Joined` state, the owner controls appear, and deleting
+refreshes and succeeds instead of reporting a permission error. Note `JWT_TTL` is **1 minute**
+locally (`config/jwt.php` defaults to 1, `.env` doesn't set it), which is why these traps fire
+constantly here.
+
+### 2026-08-24 — Game detail, Most Anticipated, server-side search and the feed cache
+
+Shipped in `f84276f` and `2635686`. `GET /games/{slug}` fills the whole detail screen from one
+request (hero picks screenshot → artwork → cover, since artworks are sometimes solid black), and the
+Specifications list renders one full-width card per row. `GET /home/most-anticipated` (+ `/all`)
+reuses the Search screen with a scope, with a landscape card and a year badge. Search and the
+platform chips now filter **server-side** via `?search=` and repeated `?platform[]=`, debounced
+300 ms only when the typed text changed, with a generation counter dropping stale responses. Feeds
+are cached in memory per `FeedKey(scope, search, platform)` for 5 minutes (`FeedCache` +
+`PaginationSnapshot`), so re-tapping a chip or coming back from a detail screen is instant. The
+System Requirements section was deleted — IGDB has no such data and it was invention.
+
 
 ### 2026-08-19 — New Releases wired to the real IGDB feed (first discovery data)
 

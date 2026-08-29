@@ -11,7 +11,9 @@ import com.lucasdias.gametrackr.core.network.CommunityApi
 import com.lucasdias.gametrackr.core.network.GameApi
 import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
+import com.lucasdias.gametrackr.core.network.TokenRefresher
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
+import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailViewModel
 import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
@@ -75,8 +77,9 @@ val appModule =
         single { TokenStore(androidContext()) }
         single { SessionManager() }
 
-        single { AuthInterceptor(get()) }
-        single { TokenAuthenticator(get(), get(), get()) }
+        single { TokenRefresher(get(), get(), get()) }
+        single { AuthInterceptor(get(), get()) }
+        single { TokenAuthenticator(get()) }
 
         single(named(REFRESH_CLIENT)) {
             OkHttpClient
@@ -122,5 +125,6 @@ val appModule =
             ResetPasswordViewModel(get(), androidContext(), email, code)
         }
         viewModel { (communityName: String) -> CreateTopicViewModel(communityName, get()) }
+        viewModel { CreateCommunityViewModel(get(), get(), androidContext()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile) }
     }

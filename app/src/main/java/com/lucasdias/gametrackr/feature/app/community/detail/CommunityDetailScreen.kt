@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,8 +43,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.network.CommunityApi
 import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.core.network.toApiError
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.pagination.PaginationState
@@ -51,6 +55,8 @@ import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
+import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
+import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
@@ -60,23 +66,34 @@ import com.lucasdias.gametrackr.feature.app.community.CommunityMember
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityPostCard
+import com.lucasdias.gametrackr.feature.app.community.components.ConfirmDialog
 import com.lucasdias.gametrackr.feature.app.community.components.CreatePostButton
 import com.lucasdias.gametrackr.feature.app.community.components.JoinButton
+import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
 
 @Composable
 fun CommunityDetailScreen(
     community: Community,
     isGuest: Boolean = false,
+    currentUserId: Int? = null,
     onBack: () -> Unit,
     onPostClick: (CommunityPost) -> Unit,
     onCreatePost: () -> Unit,
     onMemberClick: (CommunityMember) -> Unit,
+    onDeleted: () -> Unit = {},
     modifier: Modifier = Modifier,
     api: CommunityApi = koinInject(),
+    json: Json = koinInject(),
 ) {
     var isJoined by remember { mutableStateOf(community.isJoined) }
+    val isOwner = currentUserId != null && community.authorId == currentUserId
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showLeaveDialog by remember { mutableStateOf(false) }
+    var deleteError by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
     var tab by remember { mutableStateOf(CommunityDetailTab.POSTS) }
     val postsPagination = remember { PaginationState<CommunityPost>() }
     val posts = postsPagination.items
@@ -144,19 +161,19 @@ fun CommunityDetailScreen(
                 val context = LocalContext.current
                 ActionRow(
                     isJoined = isJoined,
+                    isOwner = isOwner,
                     isGuest = isGuest,
                     onJoin = {
-                        val wasJoined = isJoined
-                        isJoined = !wasJoined
-                        scope.launch {
-                            try {
-                                if (wasJoined) {
-                                    api.leaveCommunity(community.id)
-                                } else {
+                        if (isJoined) {
+                            showLeaveDialog = true
+                        } else {
+                            isJoined = true
+                            scope.launch {
+                                try {
                                     api.joinCommunity(community.id)
+                                } catch (_: Exception) {
+                                    isJoined = false
                                 }
-                            } catch (_: Exception) {
-                                isJoined = wasJoined
                             }
                         }
                     },
@@ -255,7 +272,13 @@ fun CommunityDetailScreen(
                 }
 
                 CommunityDetailTab.ABOUT -> {
-                    item { CommunityAboutSection(community = community) }
+                    item {
+                        CommunityAboutSection(
+                            community = community,
+                            isOwner = isOwner,
+                            onDelete = { showDeleteDialog = true },
+                        )
+                    }
                 }
 
                 CommunityDetailTab.MEMBERS -> {
@@ -271,8 +294,107 @@ fun CommunityDetailScreen(
 
         BackCircle(onClick = onBack, modifier = Modifier.align(Alignment.TopStart))
 
+        if (isOwner) {
+            OwnerMenu(
+                onDeleteRequest = { showDeleteDialog = true },
+                modifier = Modifier.align(Alignment.TopEnd),
+            )
+        }
+
         if (tab == CommunityDetailTab.POSTS && isJoined && !isGuest) {
             CreatePostButton(onClick = onCreatePost, modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp))
+        }
+    }
+
+    if (showLeaveDialog) {
+        ConfirmDialog(
+            title = stringResource(R.string.community_leave_title),
+            message = stringResource(R.string.community_leave_message),
+            confirmLabel = stringResource(R.string.community_leave_confirm),
+            dismissLabel = stringResource(R.string.community_leave_cancel),
+            onConfirm = {
+                showLeaveDialog = false
+                isJoined = false
+                scope.launch {
+                    try {
+                        api.leaveCommunity(community.id)
+                    } catch (_: Exception) {
+                        isJoined = true
+                    }
+                }
+            },
+            onDismiss = { showLeaveDialog = false },
+        )
+    }
+
+    if (showDeleteDialog) {
+        ConfirmDialog(
+            title = stringResource(R.string.community_delete_title),
+            message = stringResource(R.string.community_delete_message),
+            confirmLabel = stringResource(R.string.community_delete_confirm),
+            dismissLabel = stringResource(R.string.community_delete_cancel),
+            onConfirm = {
+                showDeleteDialog = false
+                scope.launch {
+                    try {
+                        api.deleteCommunity(community.id)
+                        onDeleted()
+                        onBack()
+                    } catch (throwable: Exception) {
+                        deleteError =
+                            when (val error = throwable.toApiError(json)) {
+                                is ApiError.Forbidden -> context.getString(R.string.community_delete_forbidden)
+                                else -> error.toMessage(context)
+                            }
+                    }
+                }
+            },
+            onDismiss = { showDeleteDialog = false },
+        )
+    }
+
+    deleteError?.let { message ->
+        ConfirmDialog(
+            title = stringResource(R.string.community_delete_failed_title),
+            message = message,
+            confirmLabel = stringResource(R.string.community_delete_failed_confirm),
+            onConfirm = { deleteError = null },
+            onDismiss = { deleteError = null },
+        )
+    }
+}
+
+@Composable
+private fun OwnerMenu(
+    onDeleteRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    Box(modifier = modifier) {
+        FloatingCircle(
+            icon = AppIcon.OVERFLOW,
+            label = stringResource(R.string.community_action_more),
+            onClick = { showMenu = true },
+        )
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            containerColor = AppSurfaceCard,
+            modifier = Modifier.padding(end = 16.dp),
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(R.string.community_delete_action),
+                        color = AppTertiary,
+                        style = AppType.label(15.sp),
+                    )
+                },
+                onClick = {
+                    showMenu = false
+                    onDeleteRequest()
+                },
+            )
         }
     }
 }
@@ -280,6 +402,7 @@ fun CommunityDetailScreen(
 @Composable
 private fun ActionRow(
     isJoined: Boolean,
+    isOwner: Boolean = false,
     isGuest: Boolean = false,
     onJoin: () -> Unit,
     onShare: () -> Unit,
@@ -287,7 +410,13 @@ private fun ActionRow(
 ) {
     if (isGuest) return
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        JoinButton(isJoined = isJoined, onClick = onJoin, expanded = true, modifier = Modifier.weight(1f))
+        JoinButton(
+            isJoined = isJoined,
+            onClick = onJoin,
+            expanded = true,
+            modifier = Modifier.weight(1f),
+            enabled = !isOwner,
+        )
         CircleIconButton(
             icon = AppIcon.NOTIFICATIONS,
             label = stringResource(R.string.community_action_notifications),
@@ -337,8 +466,22 @@ private fun BackCircle(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    FloatingCircle(
+        icon = AppIcon.BACK,
+        label = stringResource(R.string.community_action_back),
+        onClick = onClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun FloatingCircle(
+    icon: AppIcon,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val interactionSource = remember { MutableInteractionSource() }
-    val label = stringResource(R.string.community_action_back)
     Box(
         modifier =
             modifier
@@ -358,7 +501,7 @@ private fun BackCircle(
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = AppIcon.BACK.image(),
+            imageVector = icon.image(),
             contentDescription = label,
             tint = AppTextPrimary,
             modifier = Modifier.size(20.dp),

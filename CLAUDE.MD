@@ -98,19 +98,35 @@ and caching that data.
 > ✅ **VERIFIED AGAINST THE RUNNING BACKEND (2026-06-27, updated 2026-06-29).** The text above is
 > the original *proposal*; the points below were confirmed with `curl` against the local backend and
 > **take precedence** where they differ:
-> - Auth is **JWT (tymon/jwt-auth), NOT Sanctum.** `JWT_TTL` 60 min, `JWT_REFRESH_TTL` 14 days.
+> - Auth is **JWT (tymon/jwt-auth), NOT Sanctum.** ⚠️ `config/jwt.php` is `env('JWT_TTL', 1)` and the
+>   local `.env` **does not set `JWT_TTL`** — so tokens live **1 minute**, not 60 (re-checked
+>   2026-08-25). Great for exercising the refresh path, confusing when a session seems to drop for
+>   no reason. `JWT_REFRESH_TTL` 14 days.
 > - Refresh = **single-token rotation**: on `401`, `POST /auth/refresh` with the *current* token in
 >   the header (no body) → returns a new token, blacklists the old one. **No separate refresh token.**
 > - Verified endpoints differ from the proposed list below: `POST /auth/register` ·
 >   `POST /auth/login` · `POST /auth/refresh` · `POST /auth/validate` · `POST /auth/logout` ·
 >   `GET /profile/me` (not `GET /me`).
+> - 🔴 **Never bootstrap the session with `POST /auth/validate` — use `GET /profile/me`.**
+>   `auth/validate` sits *outside* `auth:api`, so an expired token gets **200 + `{"user": null}`**
+>   instead of a 401. No 401 means no refresh, and the client resolves to "logged in, but nobody":
+>   on iOS that silently hid every owner-only control, on Android it logged the user out at random.
+>   `profile/me` is behind `auth:api` and answers a real 401 (found 2026-08-25).
+> - 🔴 **Public routes still personalise from the token, and never 401.** `GET /communities` fills
+>   `is_member` from `auth()->id()` while sitting outside `auth:api`: with an expired token it
+>   answers **200 with `is_member: false` for everything**, so a joined community renders as "Join"
+>   until something else triggers a refresh. Both clients therefore **refresh proactively** when the
+>   stored JWT is already expired, before the request goes out (iOS `JWT.isExpired` in `APIClient`,
+>   Android `isJwtExpired` + `TokenRefresher` in `AuthInterceptor`) — a reactive 401 handler alone
+>   cannot see this class of bug.
 > - **Password reset NOW EXISTS as a 3-step OTP flow for mobile (added 2026-06-29).** Clients must
 >   send **`client: "mobile"`** on forgot/reset to get the code flow (the default `"web"` branch
 >   sends an email link instead). Endpoints: `POST /auth/forgot-password` `{ email, client:"mobile" }`
 >   → 200 generic message + emails a **6-digit code** (15-min TTL). `POST /auth/verify-reset-code`
 >   `{ email, code }` → 200 or **400 `{error}`**. `POST /auth/reset-password`
 >   `{ email, code, password, password_confirmation, client:"mobile" }` → 200 (**no token** — the
->   client must auto-login after). Full client blueprint: **`agents/password-reset-flow.md`**.
+>   client must auto-login after). Both clients implement this; the old
+>   `agents/password-reset-flow.md` blueprint no longer exists in either repo.
 > - `register` body is **`{ name, email, password, password_confirmation }`** (Laravel `confirmed`
 >   rule) — the field is **`name`**, not `username`.
 > - Token storage on Android is **DataStore (Preferences)**, not EncryptedSharedPreferences
@@ -173,7 +189,7 @@ JSON request/response. Pagination via `?page=` + `?per_page=` returning Laravel-
 - `POST /auth/register` — `{ username, email, password }` → user + token *(verified: `{ name, email, password, password_confirmation }`)*
 - `POST /auth/login` — `{ email, password }` → user + token
 - `POST /auth/logout` — invalidate current token
-- `POST /auth/password/forgot` — `{ email }` → 204 (sends reset email) *(verified: real endpoint is `POST /auth/forgot-password` `{ email, client:"mobile" }` → 200 + 6-digit OTP email; see `agents/password-reset-flow.md`)*
+- `POST /auth/password/forgot` — `{ email }` → 204 (sends reset email) *(verified: real endpoint is `POST /auth/forgot-password` `{ email, client:"mobile" }` → 200 + 6-digit OTP email; shipped on both clients)*
 - `POST /auth/password/reset` — `{ token, password }` → 204 *(verified: real flow is `POST /auth/verify-reset-code` then `POST /auth/reset-password` with `client:"mobile"`, code-based not token-based)*
 - `POST /auth/email/verify` — `{ code }` → 204 (if email OTP is used)
 - `POST /auth/social/{provider}` — provider in `google|apple|steam|discord` → token
@@ -216,12 +232,37 @@ JSON request/response. Pagination via `?page=` + `?per_page=` returning Laravel-
 > from real content and reads as fake data while the covers download.
 
 - `GET /games/releases` — recent releases *(superseded by `/home/new-releases`)*
-- `GET /games/upcoming` — most anticipated (with hype/date) *(⚠️ still missing — Most Anticipated is mock)*
+- `GET /games/upcoming` — most anticipated *(superseded by `/home/most-anticipated` + `/all`; ✅ wired
+  on both clients 2026-08-24 — same shapes and same `?search=`/`?platform[]=` params as new-releases,
+  only `sort hypes desc` + `first_release_date > now` differ)*
 - `GET /games/trending` — trending (server-computed from platform activity) *(⚠️ still missing)*
-- `GET /games/search?q=` — search the cached catalog *(⚠️ still missing — Search filters loaded pages only)*
-- `GET /games/{slug}` — game detail *(⚠️ still missing — Game detail is fully mocked)*
+- `GET /games/search?q=` — search the cached catalog *(superseded by the `?search=` param on the
+  `/home/*` routes; both clients use it since 2026-08-24)*
+- `GET /igdb/platforms` — platform list for the filter chips *(🔴 **backend bug**: the query filters
+  `where category = (1,5,6)` but IGDB v4 renamed that field to `platform_type`, so it always returns
+  `[]`. The chips stay hardcoded until it's fixed.)*
+
+> ✅ **`GET /games/{slug}` — SHIPPED on both clients 2026-08-24.** Public route, so guests can open it.
+> One request fills the whole screen: hero (first **screenshot**, then artwork, then cover — artworks
+> are sometimes solid black, so screenshots win), title, year, rating, platform chips, genres+themes
+> chips, real screenshots, `summary`, and a Specifications list (Developer / Publisher / Released /
+> Engine / Modes / Perspective — only the ones IGDB returns), rendered as **one full-width card per
+> row** on both clients; the old 2-column grid was dropped because the two platforms equalised row
+> heights differently. Notes:
+> - The rating is IGDB's **0–100** `total_rating` (→ `aggregated_rating` → `rating`); both clients
+>   divide by 10 and **hide the chip** when the game has none (unreleased titles have no rating).
+> - The **System Requirements** section was deleted from both clients — IGDB has no such data and it
+>   was pure invention. Don't reintroduce it without a real source.
+> - Unknown slug → **404 `{ message }`**, rendered as "Couldn't load this game."
+> - Screens reached from mock surfaces (Library, Profile favorites, Most Anticipated) pass **no slug**
+>   and keep rendering `GameDetailMockData`; only Home's New Releases and Search pass a real one.
 
 ### Library
+> 🔴 **NOTHING BELOW EXISTS.** Verified against `php artisan route:list` on 2026-08-24: the API has no
+> library route, controller, or model at all. The **Add to library** sheet on both clients is UI-only —
+> "Save to library" just dismisses, and nothing is stored anywhere (not even in memory). This is the
+> single biggest gap between the product description and the running backend.
+
 - `GET    /me/library?status=&platform=&sort=` — user's library, filterable
 - `POST   /me/library` — `{ game_id, status }` — add a game
 - `PATCH  /me/library/{id}` — update status, rating, hours, dates, review
@@ -244,11 +285,40 @@ JSON request/response. Pagination via `?page=` + `?per_page=` returning Laravel-
 - `POST /conversations` — `{ user_id }` — start/find a 1-1 conversation
 
 ### Community
-- `GET  /topics?game_id=&category=` — list
-- `POST /topics` — `{ title, body, game_id? , category }`
-- `GET  /topics/{id}` — topic + posts
-- `POST /topics/{id}/posts` — `{ body }`
-- `POST /posts/{id}/vote` — `{ value: 1 | -1 }`
+> ✅ **Real routes are `communities` + `posts`, not `topics`.** The proposed shape below never
+> existed; `POST /posts/{id}/vote` is moot (the schema has a `likes` column, so the design's heart
+> is correct). **Creating and deleting a community shipped on both clients 2026-08-25** — the last
+> two community routes that were still unwired:
+> - `POST /communities` (auth) — `{ title, description }` → **201** `{ community, message }`.
+>   `avatar`/`cover` are accepted as multipart but **neither client sends them**, because no screen
+>   renders a community image yet (icons are palette gradients). Wire the upload when the UI needs it.
+> - `DELETE /communities/{id}` (auth) — 200 `{ message }` · **401** when you are not the author
+>   (not 403!) · 404 unknown id.
+>
+> **Two backend behaviours the clients have to absorb:**
+> - `store` runs `str_replace(' ', '', $title)`, so the stored title loses every space while the
+>   `slug` is computed from the raw text *before* that. Both clients therefore send a **handle**
+>   (the typed name minus whitespace) and show it live under the field — "Listed as `RetroShmupClub`".
+>   Don't filter the field's text as it's typed: on iOS a SwiftUI `TextField` keeps rejected input,
+>   and deferring the fix races the keyboard and eats characters.
+> - `CommunityRequest` has **no `unique` rule** while the column does, so a duplicate name is a
+>   **500 with the raw SQL error**, not a 422. Both clients map 500-on-create to "That name may
+>   already be taken." Adding `'unique:communities,title'` to the request would turn it into a
+>   normal 422 — worth asking the backend owner for.
+>
+> **`DELETE` answers 401 for "not the author" — and so does an expired token.** Tell them apart by
+> the body, never by the endpoint: Laravel's auth middleware returns `{ message: "Unauthenticated." }`,
+> a controller denying an action returns `{ error: ... }`. Both clients branch on that
+> (iOS maps 401→`APIError.forbidden` when `error` is present, Android `ErrorMapper` →
+> `ApiError.Forbidden`, and `TokenAuthenticator` peeks the body to skip a pointless refresh).
+> An earlier attempt opted the whole endpoint out of refresh and was **wrong**: with a short
+> `JWT_TTL` an expired token then read as "only the owner can delete it" and never recovered.
+
+- `GET  /topics?game_id=&category=` — list *(never existed — see `GET /communities`)*
+- `POST /topics` — `{ title, body, game_id? , category }` *(never existed — see `POST /posts`)*
+- `GET  /topics/{id}` — topic + posts *(never existed — see `GET /communities/{id}`)*
+- `POST /topics/{id}/posts` — `{ body }` *(never existed — see `POST /posts`)*
+- `POST /posts/{id}/vote` — `{ value: 1 | -1 }` *(never existed — likes, not votes)*
 
 ### Collection (physical) — "My Setup"
 > ⚠️ **Not implemented in the backend.** No route, controller, or model exists yet (verified
@@ -302,28 +372,46 @@ The whole-app flow the team drew (see `agents/app-flow.jpeg`). Applies to every 
 - **Tabs:** `Home` · `Library` · `Community` · `Profile`.
 - **Global header** (present across tabs): `Notifications` · `Search` · `Profile menu`.
 - **Home** → `New Releases` and `New Anticipated` (Most Anticipated) screens.
-  - Both "View all" targets reuse the **Search** screen with a scope. `New Releases` and the
-    header's magnifier show the real IGDB feed with infinite scroll; `New Anticipated` shows a
-    "not available yet" state until `GET /games/upcoming` exists.
+  - Both sliders are real IGDB data since 2026-08-24 and both "View all" targets reuse the **Search**
+    screen with a scope — the scope picks the endpoint (`.mostAnticipated` → `/home/most-anticipated/all`,
+    anything else → `/home/new-releases/all`). Cards differ by intent: New Releases is a portrait cover,
+    Most Anticipated is a 260×150 landscape crop of the same portrait cover with a **year badge**
+    (`appPrimary` when dated, `appSecondary` when `TBA`). The old "not available yet" state is gone.
   - There is no "Can't find a game?" / *Explore Community* banner under the results — it was
     removed 2026-08-19 because the list is now infinite, so a dead end below it made no sense.
-    The platform chips filter **only the pages already fetched**; when a filter empties the
-    result the clients pull a bounded number of extra pages before showing an empty state, and
-    never flash "no games found" while that is still in flight.
+    Feeds are cached in memory per `FeedKey(scope, search, platform)` for **5 minutes**
+    (`FeedCache` + `PaginationSnapshot`, mirrored on both clients). A key that is still fresh is
+    restored from the snapshot with **no request and no spinner**, so re-tapping a chip you already
+    visited and coming back from Game detail are both instant. `HomeFeed.load(force:)` follows the
+    same rule: the `.task` / `LaunchedEffect` on Home skips a refetch once loaded, and only
+    pull-to-refresh or the retry button pass `force`.
+    The search field and the platform chips filter **server-side** since 2026-08-24 — both
+    clients send `?search=` and repeated `?platform[]=` (IGDB slugs) to `/home/new-releases/all`
+    and reset the pagination. The chips are platform *families*, so each one expands to its slug
+    list (`GamePlatform.igdbSlugs`, mirrored on iOS and Android); the query is debounced 300 ms —
+    **only when the typed text changed**, never on a chip tap — and stale responses are dropped by a
+    generation counter plus a cancellation guard on both the view and the view model. The result count in the header is
+    `meta.total`, not the number of rows loaded so far.
 - **Community** → `My Community` and `Discover new Communities`.
   - `My Community` → `Post details` → `Community details`.
   - `Discover new Communities` → `Community details`.
   - `Discover` is **search field → category chips → All communities**. There is no "Featured"
     carousel — it was removed 2026-08-10 because it duplicated the first three rows of the list
     below it and ignored the chip filter.
+  - The `+` FAB is present on **both** segments and changes intent with the segment: `Feed` → **New
+    post**, `Discover` → **New community** (2026-08-25). Creating one pushes straight into its
+    `Community details`, already joined. Deleting lives behind the `…` on `Community details` and
+    is rendered **only for the author** (`community.authorId == currentUser.id`) — the API's own
+    check answers 401, which is a bad thing to surface, so the button is gated client-side too.
 - **Profile** → `Stats`, `Edit profile`, and `My Setup` → `New setup` / `Edit setup`.
 
 Guests land on the same shell; write actions inside it are gated (see *Guest access*).
 
 ### Overflow (`…`) menus
 
-A three-dot button must always open a menu. Audited 2026-08-10 — the only two that exist are
-**Notifications** (Mark all read / Clear all) and **Post detail on your own post** (Delete post).
+A three-dot button must always open a menu. Audited 2026-08-10 — the ones that exist are
+**Notifications** (Mark all read / Clear all), **Post detail on your own post** (Delete post), and
+**Community detail on a community you created** (Delete community, added 2026-08-25).
 Dead `…` buttons were removed from Community detail, Post detail on someone else's post, the
 User profile top bar, and the community post card. Don't reintroduce one as a placeholder: put
 the affordance in when its menu exists.
@@ -337,8 +425,9 @@ Mobile follows the same roadmap as the web app but consumes the shared API. Sugg
 1. **Auth** — welcome, login, sign up, forgot/reset password, (optional) email verify, social login. *(UI already designed in Stitch.)*
 2. **Personal library** — add games, set status, filter list, edit entry details. **This is the core — ship it first.**
 3. **Discovery / Home** — releases, upcoming, trending, search → game detail → add to library.
-   *New Releases shipped 2026-08-19 on both clients (real IGDB data + covers, infinite scroll on
-   "View all"). Upcoming, trending, search and game detail still wait on the endpoints above.*
+   *Shipped on both clients: New Releases (2026-08-19), then server-side search/platform filters,
+   game detail and Most Anticipated (2026-08-24). Only **trending** still waits on an endpoint —
+   and "add to library" waits on the whole Library API (see below).*
 4. **Public profiles + stats + friends**.
 5. **Community** (forum-lite).
 6. **Messaging + realtime** (Reverb) + push notifications.

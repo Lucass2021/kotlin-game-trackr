@@ -2,6 +2,7 @@ package com.lucasdias.gametrackr.feature.app.community.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,11 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
+import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
@@ -30,6 +34,8 @@ import com.lucasdias.gametrackr.feature.app.community.Community
 fun CommunityAboutSection(
     community: Community,
     modifier: Modifier = Modifier,
+    isOwner: Boolean = false,
+    onDelete: () -> Unit = {},
 ) {
     val shape = RoundedCornerShape(16.dp)
     Column(
@@ -55,6 +61,42 @@ fun CommunityAboutSection(
             InfoRow(icon = AppIcon.CALENDAR, label = "Created", value = "March 2024")
             HorizontalDivider(thickness = 1.dp, color = AppOutline)
             InfoRow(icon = AppIcon.MEDAL, label = "Moderators", value = "3")
+        }
+
+        if (isOwner) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(shape)
+                        .background(AppSurfaceCard)
+                        .border(1.dp, AppOutline, shape)
+                        .clickable(onClick = onDelete),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = AppIcon.TRASH.image(),
+                        contentDescription = null,
+                        tint = AppTertiary,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Text(
+                        text = stringResource(R.string.community_delete_action),
+                        color = AppTertiary,
+                        style = AppType.label(15.sp),
+                        modifier = Modifier.padding(start = 12.dp),
+                    )
+                }
+            }
+
+            Text(
+                text = stringResource(R.string.community_delete_owner_note),
+                color = AppTextSecondary,
+                style = AppType.body(13.sp),
+            )
         }
     }
 }
