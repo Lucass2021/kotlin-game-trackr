@@ -4,17 +4,12 @@ import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.core.network.dto.GradientPalette
 import java.time.LocalDate
 
-enum class GamePlatform(
-    val label: String,
-    val igdbSlugs: List<String>,
+data class GamePlatform(
+    val id: Int,
+    val slug: String,
+    val name: String,
 ) {
-    PC("PC", listOf("win", "linux", "mac", "dos", "browser")),
-    PLAYSTATION("PlayStation", listOf("ps", "ps2", "ps3", "ps4--1", "ps5", "psp", "psvita", "psvr", "psvr2")),
-    XBOX("Xbox", listOf("xbox", "xbox360", "xboxone", "series-x-s")),
-    NINTENDO(
-        "Nintendo",
-        listOf("nes", "snes", "n64", "ngc", "wii", "wiiu", "gb", "gbc", "gba", "nds", "3ds", "switch", "switch-2"),
-    ),
+    val label: String get() = PlatformLabel.short(slug, name) ?: name
 }
 
 object PlatformLabel {

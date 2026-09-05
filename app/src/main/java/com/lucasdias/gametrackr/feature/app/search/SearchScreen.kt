@@ -55,11 +55,13 @@ fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(),
 ) {
     var query by rememberSaveable { mutableStateOf("") }
-    var platform by rememberSaveable { mutableStateOf<GamePlatform?>(null) }
+    var platformSlug by rememberSaveable { mutableStateOf<String?>(null) }
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val hasLoaded by viewModel.hasLoaded.collectAsStateWithLifecycle()
     val appliedSearch by viewModel.appliedSearch.collectAsStateWithLifecycle()
+    val platforms by viewModel.platforms.collectAsStateWithLifecycle()
+    val platform = platforms.firstOrNull { it.slug == platformSlug }
 
     val trimmedQuery = query.trim()
     var hasPendingFilter by remember { mutableStateOf(false) }
@@ -80,8 +82,9 @@ fun SearchScreen(
         SearchTopBar(query = query, onQueryChange = { query = it }, onBack = onBack)
 
         SearchFilterChips(
+            platforms = platforms,
             selection = platform,
-            onSelect = { platform = it },
+            onSelect = { platformSlug = it?.slug },
             modifier = Modifier.padding(top = 2.dp, bottom = 14.dp),
         )
 
@@ -115,7 +118,7 @@ fun SearchScreen(
                                     query = query,
                                     onClear = {
                                         query = ""
-                                        platform = null
+                                        platformSlug = null
                                     },
                                 )
                             }

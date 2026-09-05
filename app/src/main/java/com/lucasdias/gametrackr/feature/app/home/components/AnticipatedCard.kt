@@ -22,7 +22,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 
-private val CardWidth = 260.dp
+private val CardWidth = 170.dp
 
 @Composable
 fun AnticipatedCard(
@@ -39,7 +39,7 @@ fun AnticipatedCard(
                 end = game.coverEnd,
                 url = game.coverUrl,
                 width = CardWidth,
-                height = 150.dp,
+                height = 227.dp,
             )
             Text(
                 text = game.year,

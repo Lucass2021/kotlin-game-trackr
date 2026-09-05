@@ -26,6 +26,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 
 @Composable
 fun SearchFilterChips(
+    platforms: List<GamePlatform>,
     selection: GamePlatform?,
     onSelect: (GamePlatform?) -> Unit,
     modifier: Modifier = Modifier,
@@ -37,8 +38,8 @@ fun SearchFilterChips(
         item {
             Chip(label = "All", isSelected = selection == null, onClick = { onSelect(null) })
         }
-        items(GamePlatform.entries.size) { index ->
-            val platform = GamePlatform.entries[index]
+        items(platforms.size) { index ->
+            val platform = platforms[index]
             Chip(
                 label = platform.label,
                 isSelected = selection == platform,

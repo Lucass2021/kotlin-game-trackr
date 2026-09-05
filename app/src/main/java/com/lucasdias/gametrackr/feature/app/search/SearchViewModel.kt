@@ -33,12 +33,23 @@ class SearchViewModel(
     private val _appliedSearch = MutableStateFlow("")
     val appliedSearch: StateFlow<String> = _appliedSearch.asStateFlow()
 
+    private val _platforms = MutableStateFlow<List<GamePlatform>>(emptyList())
+    val platforms: StateFlow<List<GamePlatform>> = _platforms.asStateFlow()
+
     private val cache = FeedCache()
     private var scope: SearchScope = SearchScope.ALL
     private var platform: GamePlatform? = null
     private var generation = 0
 
     private val key get() = FeedKey(scope, _appliedSearch.value.ifEmpty { null }, platform)
+
+    init {
+        viewModelScope.launch {
+            _platforms.value =
+                runCatching { api.getPlatforms().data.mapNotNull { it.toDomain() } }
+                    .getOrDefault(emptyList())
+        }
+    }
 
     fun applyFilters(
         scope: SearchScope,
@@ -78,14 +89,15 @@ class SearchViewModel(
         val requestGeneration = generation
         val nextPage = pagination.currentPage + 1
         val search = _appliedSearch.value.ifEmpty { null }
+        val platformSlugs = platform?.let { listOf(it.slug) }
 
         viewModelScope.launch {
             try {
                 val response =
                     if (scope == SearchScope.MOST_ANTICIPATED) {
-                        api.getAllMostAnticipated(nextPage, PER_PAGE, search, platform?.igdbSlugs)
+                        api.getAllMostAnticipated(nextPage, PER_PAGE, search, platformSlugs)
                     } else {
-                        api.getAllNewReleases(nextPage, PER_PAGE, search, platform?.igdbSlugs)
+                        api.getAllNewReleases(nextPage, PER_PAGE, search, platformSlugs)
                     }
                 if (requestGeneration != generation) return@launch
                 pagination.append(response.toPaginated(), response.data.map { it.toDomain() })

@@ -1,6 +1,7 @@
 package com.lucasdias.gametrackr.core.network.dto
 
 import com.lucasdias.gametrackr.core.model.Game
+import com.lucasdias.gametrackr.core.model.GamePlatform
 import com.lucasdias.gametrackr.core.model.PlatformLabel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -31,6 +32,12 @@ data class GameDto(
     val rating: Double? = null,
     val cover: GameCoverDto? = null,
     val platforms: List<GamePlatformDto>? = null,
+)
+
+@Serializable
+data class PlatformsResponse(
+    val message: String? = null,
+    val data: List<GamePlatformDto>,
 )
 
 @Serializable
@@ -79,4 +86,11 @@ fun GameDto.toDomain(): Game {
         coverUrl = cover?.url,
         platformNames = dtoPlatforms.mapNotNull { PlatformLabel.short(it.slug, it.name) }.distinct(),
     )
+}
+
+fun GamePlatformDto.toDomain(): GamePlatform? {
+    val id = id ?: return null
+    val slug = slug ?: return null
+    val name = name ?: return null
+    return GamePlatform(id = id, slug = slug, name = name)
 }
