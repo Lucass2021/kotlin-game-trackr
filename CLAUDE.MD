@@ -236,11 +236,20 @@ JSON request/response. Pagination via `?page=` + `?per_page=` returning Laravel-
   on both clients 2026-08-24 — same shapes and same `?search=`/`?platform[]=` params as new-releases,
   only `sort hypes desc` + `first_release_date > now` differ)*
 - `GET /games/trending` — trending (server-computed from platform activity) *(⚠️ still missing)*
-- `GET /games/search?q=` — search the cached catalog *(superseded by the `?search=` param on the
-  `/home/*` routes; both clients use it since 2026-08-24)*
-- `GET /igdb/platforms` — platform list for the filter chips *(🔴 **backend bug**: the query filters
-  `where category = (1,5,6)` but IGDB v4 renamed that field to `platform_type`, so it always returns
-  `[]`. The chips stay hardcoded until it's fixed.)*
+- `GET /games/search` — global catalog search *(✅ **wired on both clients 2026-09-05.** Public,
+  paginated with the same nested `meta` as the `/home/*` routes and the same `?search=`/`?platform[]=`
+  params, so it decodes into the existing paginated model unchanged. Base filter is
+  `name != null & cover != null`, sorted `total_rating_count desc` — so with no query it is the
+  **popular** list (GTA V, Witcher 3, Portal 2…), not recent releases; the Search header therefore
+  reads "Popular" instead of the old "Recent Releases". The **magnifying glass in the global header**
+  (scope `.all`) uses this route; the two Home "View all" targets keep their feed endpoints.)*
+- `GET /platforms` — platform list for the filter chips *(✅ **fixed and wired on both clients
+  2026-09-05.** The old `category = (1,5,6)` filter always returned `[]` because IGDB v4 renamed the
+  field to `platform_type`; the backend now falls back to a curated `POPULAR_PLATFORM_IDS` list and
+  answers 6 platforms — Switch, PC, PS4, PS5, Xbox One, Series X|S — each with `slug`, `abbreviation`
+  and `platform_logo`. `?all=true` returns 200 raw IGDB rows including junk like Amiga and Apple II,
+  and Xbox has **no `platform_family`**, so grouping by family server-side is not viable. Also
+  exposed at the older `GET /igdb/platforms`.)*
 
 > ✅ **`GET /games/{slug}` — SHIPPED on both clients 2026-08-24.** Public route, so guests can open it.
 > One request fills the whole screen: hero (first **screenshot**, then artwork, then cover — artworks
@@ -270,6 +279,21 @@ JSON request/response. Pagination via `?page=` + `?per_page=` returning Laravel-
 - `GET    /me/stats` — aggregated stats (totals, platinum rate, by genre/platform/year)
 
 ### Profiles & friends
+> ✅ **`PATCH /profile` + `GET /profile/colors` — SHIPPED on both clients 2026-09-05.** The Edit
+> profile screen now persists. Notes:
+> - `PATCH /profile` (auth) takes `{ name, username, profile_color }` — all `sometimes|required`,
+>   `username` unique — and answers `{ message, user }`. Send the username **without** the `@`.
+> - `GET /profile/colors` (auth) returns 12 curated `{ key, name, hex }`. **A single hex per color**,
+>   not a gradient pair: both clients derive the avatar/banner gradient as `hex → hex darkened 28%`,
+>   so `Profile` stores `avatarHex` and computes `avatarStart`/`avatarEnd`.
+> - `username` and `profile_color` are **auto-generated at registration** (slugified name, random
+>   color), so every user has them before ever opening the screen.
+> - 🔴 **`bio` and `visibility` stay mock** — the API has no column for either. They are the two
+>   fields on that screen that still do not survive an app restart.
+> - The old hardcoded `AvatarPalette` (7 named gradients) was **renamed to `SetupPalette`** and moved
+>   to the setup feature on both clients — it is still the local palette for My Setup cards, which
+>   has nothing to do with the profile color.
+
 - `GET  /users/{username}` — public profile + public library
 - `GET  /users/{username}/stats`
 - `POST /friends/requests` — `{ user_id }`
@@ -374,9 +398,12 @@ The whole-app flow the team drew (see `agents/app-flow.jpeg`). Applies to every 
 - **Home** → `New Releases` and `New Anticipated` (Most Anticipated) screens.
   - Both sliders are real IGDB data since 2026-08-24 and both "View all" targets reuse the **Search**
     screen with a scope — the scope picks the endpoint (`.mostAnticipated` → `/home/most-anticipated/all`,
-    anything else → `/home/new-releases/all`). Cards differ by intent: New Releases is a portrait cover,
-    Most Anticipated is a 260×150 landscape crop of the same portrait cover with a **year badge**
-    (`appPrimary` when dated, `appSecondary` when `TBA`). The old "not available yet" state is gone.
+    `.newReleases` → `/home/new-releases/all`, `.all` → `/games/search`, the whole catalog). Cards differ by intent: New Releases is a portrait cover,
+    Most Anticipated is a **larger 170×227 portrait** of the same cover with a **year badge**
+    (`appPrimary` when dated, `appSecondary` when `TBA`). It was a 260×150 landscape crop until
+    2026-09-05 — the feed payload carries **only `cover`** (portrait 3:4), so a landscape box could
+    only ever crop it, and titles like Fable lost half the art. Don't reintroduce the landscape card
+    unless the endpoint starts returning `artworks`/`screenshots`. The old "not available yet" state is gone.
   - There is no "Can't find a game?" / *Explore Community* banner under the results — it was
     removed 2026-08-19 because the list is now infinite, so a dead end below it made no sense.
     Feeds are cached in memory per `FeedKey(scope, search, platform)` for **5 minutes**
@@ -387,8 +414,11 @@ The whole-app flow the team drew (see `agents/app-flow.jpeg`). Applies to every 
     pull-to-refresh or the retry button pass `force`.
     The search field and the platform chips filter **server-side** since 2026-08-24 — both
     clients send `?search=` and repeated `?platform[]=` (IGDB slugs) to `/home/new-releases/all`
-    and reset the pagination. The chips are platform *families*, so each one expands to its slug
-    list (`GamePlatform.igdbSlugs`, mirrored on iOS and Android); the query is debounced 300 ms —
+    and reset the pagination. The chips come from **`GET /platforms`** since 2026-09-05 — each chip is one
+    real platform and filters by its own slug, so there is no hardcoded platform data left on either
+    client (`GamePlatform` is a plain `{id, slug, name}` decoded from the API, and the request
+    failing just renders no chips). The trade-off: the backend's curated list is 6 entries, so
+    PS3/Switch 2 are not filterable until it grows. The query is debounced 300 ms —
     **only when the typed text changed**, never on a chip tap — and stale responses are dropped by a
     generation counter plus a cancellation guard on both the view and the view model. The result count in the header is
     `meta.total`, not the number of rows loaded so far.
