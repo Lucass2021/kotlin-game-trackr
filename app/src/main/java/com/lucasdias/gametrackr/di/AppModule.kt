@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.di
 import com.lucasdias.gametrackr.BuildConfig
 import com.lucasdias.gametrackr.core.auth.AuthRepository
 import com.lucasdias.gametrackr.core.auth.AuthRepositoryImpl
+import com.lucasdias.gametrackr.core.auth.GoogleAuth
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
 import com.lucasdias.gametrackr.core.network.AuthApi
@@ -111,14 +112,15 @@ val appModule =
         }
 
         single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(), get()) }
+        single { GoogleAuth(get()) }
 
         viewModel { CommunityViewModel(get()) }
         viewModel { HomeViewModel(get()) }
         viewModel { SearchViewModel(get()) }
         viewModel { (slug: String) -> GameDetailViewModel(get(), slug) }
         viewModel { AuthViewModel(get(), get()) }
-        viewModel { LoginViewModel(get(), androidContext()) }
-        viewModel { RegisterViewModel(get(), androidContext()) }
+        viewModel { LoginViewModel(get(), get(), androidContext()) }
+        viewModel { RegisterViewModel(get(), get(), androidContext()) }
         viewModel { ForgotPasswordViewModel(get(), androidContext()) }
         viewModel { (email: String) -> VerifyResetCodeViewModel(get(), androidContext(), email) }
         viewModel { (email: String, code: String) ->

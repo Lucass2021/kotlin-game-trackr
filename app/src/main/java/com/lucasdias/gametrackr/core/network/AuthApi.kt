@@ -23,9 +23,6 @@ interface AuthApi {
         @Body body: LoginRequest,
     ): AuthResponse
 
-    @POST("auth/validate")
-    suspend fun validate(): ValidateResponse
-
     @POST("auth/logout")
     suspend fun logout(): MessageResponse
 

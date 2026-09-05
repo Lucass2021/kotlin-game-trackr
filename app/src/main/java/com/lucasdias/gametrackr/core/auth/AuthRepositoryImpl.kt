@@ -65,6 +65,17 @@ class AuthRepositoryImpl(
                 .also(sessionManager::setAuthenticated)
         }
 
+    override suspend fun signInWithGoogle(token: String): Result<User> {
+        tokenStore.save(token)
+        return apiCall {
+            api
+                .me()
+                .user
+                .toDomain()
+                .also(sessionManager::setAuthenticated)
+        }.onFailure { tokenStore.clear() }
+    }
+
     override suspend fun logout() {
         runCatching { api.logout() }
         tokenStore.clear()

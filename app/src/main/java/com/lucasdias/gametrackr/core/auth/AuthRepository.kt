@@ -17,6 +17,8 @@ interface AuthRepository {
 
     suspend fun validate(): Result<User>
 
+    suspend fun signInWithGoogle(token: String): Result<User>
+
     suspend fun logout()
 
     suspend fun hasToken(): Boolean

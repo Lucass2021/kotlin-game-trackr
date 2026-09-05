@@ -1,27 +1,31 @@
 package com.lucasdias.gametrackr.feature.auth.login
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.auth.AuthRepository
+import com.lucasdias.gametrackr.core.auth.GoogleAuth
+import com.lucasdias.gametrackr.core.auth.GoogleAuthState
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private const val TAG = "LoginViewModel"
-
 class LoginViewModel(
     private val authRepository: AuthRepository,
+    private val googleAuth: GoogleAuth,
     private val context: Context,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<LoginUiState> =
+        combine(_uiState, googleAuth.state, ::withGoogleAuth)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), LoginUiState())
 
     private var submitted = false
 
@@ -36,11 +40,12 @@ class LoginViewModel(
     }
 
     fun onErrorShown() {
+        googleAuth.onErrorShown()
         _uiState.update { it.copy(errorMessage = null) }
     }
 
     fun onGoogleSignIn() {
-        Log.d(TAG, "Sign in with Google")
+        googleAuth.launch(context)
     }
 
     fun onSubmit() {
@@ -87,4 +92,18 @@ class LoginViewModel(
             password.length < 6 -> R.string.validation_password_too_short
             else -> null
         }
+
+    private fun withGoogleAuth(
+        state: LoginUiState,
+        googleState: GoogleAuthState,
+    ): LoginUiState =
+        when (googleState) {
+            GoogleAuthState.IDLE, GoogleAuthState.IN_PROGRESS -> state
+            GoogleAuthState.COMPLETING -> state.copy(isLoading = true, errorMessage = null)
+            GoogleAuthState.FAILED -> state.copy(isLoading = false, errorMessage = context.getString(R.string.error_generic))
+        }
+
+    private companion object {
+        const val STOP_TIMEOUT_MILLIS = 5_000L
+    }
 }

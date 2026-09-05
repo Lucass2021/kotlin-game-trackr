@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.browser)
 
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
