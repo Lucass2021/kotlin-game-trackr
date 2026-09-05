@@ -117,7 +117,13 @@ Exclude all of the above from the coverage metric, or the number lies.
 ## Coverage
 
 - **Kover** (`org.jetbrains.kotlinx.kover`) — better Kotlin support than JaCoCo (inline functions,
-  coroutines, `data class` synthetics).
+  coroutines, `data class` synthetics). Run `./gradlew koverLog` for the number,
+  `./gradlew koverHtmlReport` for the drill-down.
+- ⚠️ **Kover must be 0.9.6 or newer.** 0.9.1 cannot read AGP 9's variant API: it configures without
+  error, exposes only the "for all code" tasks, and every report prints `No sources`. It looks like
+  a filter mistake and is not one.
+- ⚠️ **The Kover percentage is not comparable to the iOS one.** Kover excludes `@Composable`;
+  `xccov` on iOS has no filter and counts every View. Compare per-package rows, not the totals.
 - **Phase 1 and 2: measure, don't gate.** Get a real number first.
 - Gate only once it's stable, and gate by package, not globally:
   - `core.network`, `core.auth`, `core.pagination`, `core.model` → **90%**
@@ -153,16 +159,33 @@ Android's tooling here is genuinely good; this is the platform where benchmarkin
 
 ## Dependencies to add
 
-```toml
-# gradle/libs.versions.toml
-kotlinx-coroutines-test  = "org.jetbrains.kotlinx:kotlinx-coroutines-test"
-turbine                  = "app.cash.turbine:turbine"
-mockk                    = "io.mockk:mockk"
-okhttp-mockwebserver     = "com.squareup.okhttp3:mockwebserver"
-kover                    = "org.jetbrains.kotlinx.kover"          # plugin
-paparazzi                = "app.cash.paparazzi"                   # plugin
-androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4"
+Already wired (2026-09-05): `kotlinx-coroutines-test` 1.9.0, `turbine` 1.2.0, `mockk` 1.13.13,
+`mockwebserver` (pinned to the app's okhttp 4.12.0), and the `kover` 0.9.6 plugin.
+
+Still to add when their phase arrives: `app.cash.paparazzi` (Phase 4) and
+`androidx.benchmark:benchmark-macro-junit4` (Phase 2).
+
+### Test harness in place
+
 ```
+app/src/test/java/com/lucasdias/gametrackr/
+  support/
+    MainDispatcherRule.kt   swaps Dispatchers.Main for a TestDispatcher
+    FakeGameApi.kt          canned GameApi + call counter + optional suspension gate
+    TestData.kt             DTO builders
+  feature/app/home/
+    HomeViewModelTest.kt    load, loading emission, error, the force guard
+```
+
+Two things worth remembering when adding more:
+
+- **`Dispatchers.Main` does not exist on the JVM.** Every ViewModel test needs
+  `MainDispatcherRule`, or `viewModelScope.launch` throws — it reads like a broken test, not a
+  missing rule.
+- **`StateFlow` conflates, so an intermediate `isLoading` emission is not observable** when the
+  fake returns instantly: Turbine sees the initial and final states only. `FakeGameApi` therefore
+  takes an optional `CompletableDeferred` gate — park the coroutine on it, assert the loading
+  state, then complete it. Use the gate for anything that asserts an in-flight state.
 
 ---
 
@@ -171,7 +194,7 @@ androidx-benchmark-macro = "androidx.benchmark:benchmark-macro-junit4"
 | Phase | What | Status |
 | --- | --- | --- |
 | **0** | Dependency injection so ViewModels/services are constructible with fakes | ✅ **already done on Android** — Koin injects through the constructor. Only iOS needed this phase. |
-| 1 | Layer 1 tests + Kover measurement (no gate) | |
+| 1 | Layer 1 tests + Kover measurement (no gate) | ▶ tooling in place 2026-09-05 |
 | 2 | Benchmark baseline recorded in `agents/BASELINE.md` | |
 | 3 | Layers 2 and 3 (ViewModels + MockWebServer/fixtures) | |
 | 4 | Layer 4 Paparazzi snapshots of shared components | |

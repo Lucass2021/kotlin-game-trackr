@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kover)
 }
 
 fun apiBaseUrl(buildType: String): String {
@@ -54,6 +55,31 @@ android {
         compose = true
         buildConfig = true
     }
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+        }
+    }
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                packages(
+                    "com.lucasdias.gametrackr.di",
+                    "com.lucasdias.gametrackr.core.ui.theme",
+                    "com.lucasdias.gametrackr.core.ui.anim",
+                )
+                classes(
+                    "com.lucasdias.gametrackr.*ComposableSingletons*",
+                    "com.lucasdias.gametrackr.*\\$*Preview*",
+                    "com.lucasdias.gametrackr.BuildConfig",
+                )
+                annotatedBy("androidx.compose.runtime.Composable")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -87,6 +113,13 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.mockk)
+    testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.retrofit)
+    testImplementation(libs.retrofit.kotlinx.serialization.converter)
+    testImplementation(libs.kotlinx.serialization.json)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
