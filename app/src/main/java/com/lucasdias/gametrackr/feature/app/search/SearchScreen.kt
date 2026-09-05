@@ -167,7 +167,7 @@ private fun SectionHeader(
                 when {
                     isSearching -> stringResource(R.string.search_results)
                     scope.isFiltered -> stringResource(scope.titleRes)
-                    else -> stringResource(R.string.search_recent_releases)
+                    else -> stringResource(R.string.search_popular)
                 },
             color = AppTextPrimary,
             style = AppType.headline(22.sp),

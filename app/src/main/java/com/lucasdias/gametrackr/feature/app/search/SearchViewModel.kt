@@ -94,10 +94,18 @@ class SearchViewModel(
         viewModelScope.launch {
             try {
                 val response =
-                    if (scope == SearchScope.MOST_ANTICIPATED) {
-                        api.getAllMostAnticipated(nextPage, PER_PAGE, search, platformSlugs)
-                    } else {
-                        api.getAllNewReleases(nextPage, PER_PAGE, search, platformSlugs)
+                    when (scope) {
+                        SearchScope.MOST_ANTICIPATED -> {
+                            api.getAllMostAnticipated(nextPage, PER_PAGE, search, platformSlugs)
+                        }
+
+                        SearchScope.NEW_RELEASES -> {
+                            api.getAllNewReleases(nextPage, PER_PAGE, search, platformSlugs)
+                        }
+
+                        SearchScope.ALL -> {
+                            api.searchGames(nextPage, PER_PAGE, search, platformSlugs)
+                        }
                     }
                 if (requestGeneration != generation) return@launch
                 pagination.append(response.toPaginated(), response.data.map { it.toDomain() })

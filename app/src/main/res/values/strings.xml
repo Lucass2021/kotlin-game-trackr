@@ -168,7 +168,7 @@
 
     <string name="search_placeholder">Search games…</string>
     <string name="search_scope_all">Search</string>
-    <string name="search_recent_releases">Recent Releases</string>
+    <string name="search_popular">Popular</string>
     <string name="search_results">Results</string>
     <string name="search_empty_title">No games found</string>
     <string name="search_empty_filter">No games match this filter. Try a different platform.</string>

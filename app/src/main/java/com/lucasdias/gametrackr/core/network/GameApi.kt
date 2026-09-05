@@ -35,6 +35,14 @@ interface GameApi {
         @Query("platform[]") platforms: List<String>? = null,
     ): PaginatedGamesResponse
 
+    @GET("games/search")
+    suspend fun searchGames(
+        @Query("page") page: Int? = null,
+        @Query("per_page") perPage: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("platform[]") platforms: List<String>? = null,
+    ): PaginatedGamesResponse
+
     @GET("platforms")
     suspend fun getPlatforms(
         @Query("limit") limit: Int? = null,
