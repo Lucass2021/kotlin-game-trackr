@@ -1,13 +1,17 @@
 package com.lucasdias.gametrackr.feature.app.profile.editprofile
 
 import androidx.annotation.StringRes
+import com.lucasdias.gametrackr.core.model.ProfileColor
 import com.lucasdias.gametrackr.feature.app.profile.ProfileVisibility
 
 data class EditProfileUiState(
     val name: String = "",
     val username: String = "",
     val bio: String = "",
-    val palette: AvatarPalette = AvatarPalette.VIOLET,
+    val avatarHex: String = "",
+    val colors: List<ProfileColor> = emptyList(),
+    val isSaving: Boolean = false,
+    val errorMessage: String? = null,
     val visibility: ProfileVisibility = ProfileVisibility.PUBLIC,
     @param:StringRes val nameError: Int? = null,
     @param:StringRes val usernameError: Int? = null,

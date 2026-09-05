@@ -22,17 +22,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.lucasdias.gametrackr.core.model.ProfileColor
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.feature.app.profile.editprofile.AvatarPalette
+import com.lucasdias.gametrackr.core.ui.theme.darkened
+import com.lucasdias.gametrackr.core.ui.theme.toAppColor
 
 @Composable
-fun AvatarPalettePicker(
-    selection: AvatarPalette,
-    onSelect: (AvatarPalette) -> Unit,
+fun AvatarColorPicker(
+    colors: List<ProfileColor>,
+    selection: String,
+    onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -43,11 +46,11 @@ fun AvatarPalettePicker(
                 .padding(vertical = 3.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        AvatarPalette.entries.forEach { palette ->
+        colors.forEach { palette ->
             Swatch(
-                palette = palette,
-                isSelected = palette == selection,
-                onClick = { onSelect(palette) },
+                color = palette,
+                isSelected = palette.hex.equals(selection, ignoreCase = true),
+                onClick = { onSelect(palette.hex) },
             )
         }
     }
@@ -55,7 +58,7 @@ fun AvatarPalettePicker(
 
 @Composable
 private fun Swatch(
-    palette: AvatarPalette,
+    color: ProfileColor,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -67,15 +70,18 @@ private fun Swatch(
                 .pressScale(interaction)
                 .size(46.dp)
                 .clip(CircleShape)
-                .background(Brush.linearGradient(listOf(palette.start, palette.end)))
-                .border(
+                .background(
+                    Brush.linearGradient(
+                        listOf(color.hex.toAppColor(), color.hex.toAppColor().darkened(GRADIENT_DEPTH)),
+                    ),
+                ).border(
                     width = if (isSelected) 2.dp else 1.dp,
                     color = if (isSelected) AppPrimary else AppOutline,
                     shape = CircleShape,
                 ).clickable(
                     interactionSource = interaction,
                     indication = null,
-                    onClickLabel = palette.title,
+                    onClickLabel = color.name,
                     role = Role.RadioButton,
                     onClick = onClick,
                 ),
@@ -91,3 +97,5 @@ private fun Swatch(
         }
     }
 }
+
+private const val GRADIENT_DEPTH = 0.28f

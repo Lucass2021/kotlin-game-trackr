@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -57,11 +58,13 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.darkened
+import com.lucasdias.gametrackr.core.ui.theme.toAppColor
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.SectionLabel
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.fieldBox
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
 import com.lucasdias.gametrackr.feature.app.profile.Profile
-import com.lucasdias.gametrackr.feature.app.profile.editprofile.components.AvatarPalettePicker
+import com.lucasdias.gametrackr.feature.app.profile.editprofile.components.AvatarColorPicker
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.components.VisibilitySelector
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -85,18 +88,27 @@ fun EditProfileScreen(
 
     BackHandler { requestClose() }
 
-    Column(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
-        Header(
-            canSave = state.canSave,
-            onBack = { requestClose() },
-            onSave = {
-                val updated = viewModel.onSave() ?: return@Header
-                onSave(updated)
-                onBack()
-            },
-        )
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
+            Header(
+                canSave = state.canSave && !state.isSaving,
+                onBack = { requestClose() },
+                onSave = {
+                    viewModel.onSave { updated ->
+                        onSave(updated)
+                        onBack()
+                    }
+                },
+            )
 
-        Form(state = state, viewModel = viewModel, original = profile)
+            Form(state = state, viewModel = viewModel, original = profile)
+        }
+
+        Toast(
+            message = state.errorMessage,
+            onDismiss = viewModel::onErrorShown,
+            modifier = Modifier.align(Alignment.TopCenter),
+        )
     }
 
     if (showDiscardConfirm) {
@@ -216,7 +228,11 @@ private fun Form(
         LivePreview(state = state, original = original)
 
         Field(label = stringResource(R.string.edit_profile_field_avatar)) {
-            AvatarPalettePicker(selection = state.palette, onSelect = viewModel::onPaletteChange)
+            AvatarColorPicker(
+                colors = state.colors,
+                selection = state.avatarHex,
+                onSelect = viewModel::onAvatarColorChange,
+            )
         }
 
         Field(
@@ -268,8 +284,8 @@ private fun LivePreview(
     state: EditProfileUiState,
     original: Profile,
 ) {
-    val start by animateColorAsState(state.palette.start, label = "avatarStart")
-    val end by animateColorAsState(state.palette.end, label = "avatarEnd")
+    val start by animateColorAsState(state.avatarHex.toAppColor(), label = "avatarStart")
+    val end by animateColorAsState(state.avatarHex.toAppColor().darkened(AVATAR_GRADIENT_DEPTH), label = "avatarEnd")
 
     Row(
         modifier =
@@ -383,3 +399,5 @@ private fun ProfileTextField(
         },
     )
 }
+
+private const val AVATAR_GRADIENT_DEPTH = 0.28f

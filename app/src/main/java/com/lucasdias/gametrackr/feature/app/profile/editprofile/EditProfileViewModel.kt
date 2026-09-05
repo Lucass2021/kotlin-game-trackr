@@ -1,16 +1,32 @@
 package com.lucasdias.gametrackr.feature.app.profile.editprofile
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.auth.SessionManager
+import com.lucasdias.gametrackr.core.model.User
+import com.lucasdias.gametrackr.core.network.ApiError
+import com.lucasdias.gametrackr.core.network.ProfileApi
+import com.lucasdias.gametrackr.core.network.dto.UpdateProfileRequest
+import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.core.network.toApiError
 import com.lucasdias.gametrackr.feature.app.profile.Profile
 import com.lucasdias.gametrackr.feature.app.profile.ProfileVisibility
+import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 class EditProfileViewModel(
     private val original: Profile,
+    private val api: ProfileApi,
+    private val sessionManager: SessionManager,
+    private val json: Json,
+    private val context: Context,
 ) : ViewModel() {
     private val _uiState =
         MutableStateFlow(
@@ -18,13 +34,22 @@ class EditProfileViewModel(
                 name = original.name,
                 username = original.username.removePrefix("@"),
                 bio = original.bio,
-                palette = AvatarPalette.matching(original.avatarStart, original.avatarEnd),
+                avatarHex = original.avatarHex,
                 visibility = original.visibility,
             ),
         )
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
 
     private var submitted = false
+
+    init {
+        viewModelScope.launch {
+            val colors =
+                runCatching { api.getColors().data.map { it.toDomain() } }
+                    .getOrDefault(emptyList())
+            _uiState.update { it.copy(colors = colors) }
+        }
+    }
 
     fun onNameChange(value: String) {
         _uiState.update { it.copy(name = value) }
@@ -41,8 +66,12 @@ class EditProfileViewModel(
         revalidate()
     }
 
-    fun onPaletteChange(value: AvatarPalette) {
-        _uiState.update { it.copy(palette = value) }
+    fun onAvatarColorChange(value: String) {
+        _uiState.update { it.copy(avatarHex = value) }
+    }
+
+    fun onErrorShown() {
+        _uiState.update { it.copy(errorMessage = null) }
     }
 
     fun onVisibilityChange(value: ProfileVisibility) {
@@ -54,25 +83,54 @@ class EditProfileViewModel(
         return state.name.trim() != original.name ||
             "@${state.normalizedUsername}" != original.username ||
             state.bio.trim() != original.bio ||
-            state.palette != AvatarPalette.matching(original.avatarStart, original.avatarEnd) ||
+            state.avatarHex != original.avatarHex ||
             state.visibility != original.visibility
     }
 
-    fun onSave(): Profile? {
+    fun onSave(onSaved: (Profile) -> Unit) {
         submitted = true
         revalidate()
         val state = _uiState.value
-        if (!state.canSave) return null
+        if (!state.canSave || state.isSaving) return
 
-        return original.copy(
-            name = state.name.trim(),
-            username = "@${state.normalizedUsername}",
-            bio = state.bio.trim(),
-            avatarStart = state.palette.start,
-            avatarEnd = state.palette.end,
-            visibility = state.visibility,
-        )
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSaving = true, errorMessage = null) }
+            val result =
+                runCatching {
+                    api
+                        .update(
+                            UpdateProfileRequest(
+                                name = state.name.trim(),
+                                username = state.normalizedUsername,
+                                profileColor = state.avatarHex,
+                            ),
+                        ).user
+                        .toDomain()
+                }
+            _uiState.update { it.copy(isSaving = false) }
+
+            result
+                .onSuccess { user -> onSaved(updatedProfile(state, user)) }
+                .onFailure { error -> _uiState.update { it.copy(errorMessage = messageFor(error)) } }
+        }
     }
+
+    private fun updatedProfile(
+        state: EditProfileUiState,
+        user: User,
+    ): Profile {
+        sessionManager.setAuthenticated(user)
+        return original
+            .copy(
+                name = state.name.trim(),
+                username = "@${state.normalizedUsername}",
+                bio = state.bio.trim(),
+                avatarHex = state.avatarHex,
+                visibility = state.visibility,
+            ).applying(user)
+    }
+
+    private fun messageFor(error: Throwable): String = error.toApiError(json).toMessage(context)
 
     private fun revalidate() {
         if (!submitted) return

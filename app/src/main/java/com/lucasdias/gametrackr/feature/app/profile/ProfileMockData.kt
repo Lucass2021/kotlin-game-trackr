@@ -14,7 +14,7 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import com.lucasdias.gametrackr.feature.app.library.LibraryEntry
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
-import com.lucasdias.gametrackr.feature.app.profile.editprofile.AvatarPalette
+import com.lucasdias.gametrackr.feature.app.profile.setup.SetupPalette
 
 object ProfileMockData {
     val profile =
@@ -23,8 +23,7 @@ object ProfileMockData {
             username = "@lucasdias",
             bio = "Backlog eterno, platina ocasional. RPGs de turno e speedruns de fim de semana.",
             joinedAt = "Joined March 2024",
-            avatarStart = CoverVioletStart,
-            avatarEnd = CoverVioletEnd,
+            avatarHex = "#8B5CF6",
             stats = ProfileStats(totalGames = 142, hours = 1248, platinum = 21),
         )
 
@@ -72,17 +71,17 @@ object ProfileMockData {
             SetupItem(
                 title = "Main Battle Station",
                 description = "RTX 4090 + i9-14900K, 32\" 4K 144Hz",
-                palette = AvatarPalette.INDIGO,
+                palette = SetupPalette.INDIGO,
             ),
             SetupItem(
                 title = "Retro Corner",
                 description = "CRT TV + SNES, N64, and PS2",
-                palette = AvatarPalette.CRIMSON,
+                palette = SetupPalette.CRIMSON,
             ),
             SetupItem(
                 title = "Portable Setup",
                 description = "Steam Deck OLED + Backbone",
-                palette = AvatarPalette.EMERALD,
+                palette = SetupPalette.EMERALD,
             ),
         )
 }

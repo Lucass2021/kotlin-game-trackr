@@ -48,9 +48,18 @@ data class UserDto(
     val id: Int,
     val name: String,
     val email: String,
+    val username: String? = null,
+    @SerialName("profile_color") val profileColor: String? = null,
 )
 
-fun UserDto.toDomain() = User(id = id, name = name, email = email)
+fun UserDto.toDomain() =
+    User(
+        id = id,
+        name = name,
+        email = email,
+        username = username,
+        profileColor = profileColor,
+    )
 
 @Serializable
 data class AuthResponse(

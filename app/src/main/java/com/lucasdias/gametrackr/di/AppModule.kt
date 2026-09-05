@@ -10,6 +10,7 @@ import com.lucasdias.gametrackr.core.network.AuthApi
 import com.lucasdias.gametrackr.core.network.AuthInterceptor
 import com.lucasdias.gametrackr.core.network.CommunityApi
 import com.lucasdias.gametrackr.core.network.GameApi
+import com.lucasdias.gametrackr.core.network.ProfileApi
 import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.core.network.TokenRefresher
@@ -107,6 +108,9 @@ val appModule =
         single<CommunityApi> {
             retrofit(get(named(AUTH_CLIENT)), get()).create(CommunityApi::class.java)
         }
+        single<ProfileApi> {
+            retrofit(get(named(AUTH_CLIENT)), get()).create(ProfileApi::class.java)
+        }
         single<GameApi> {
             retrofit(get(named(AUTH_CLIENT)), get()).create(GameApi::class.java)
         }
@@ -128,5 +132,5 @@ val appModule =
         }
         viewModel { (communityName: String) -> CreateTopicViewModel(communityName, get()) }
         viewModel { CreateCommunityViewModel(get(), get(), androidContext()) }
-        viewModel { (profile: Profile) -> EditProfileViewModel(profile) }
+        viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get(), get(), androidContext()) }
     }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.ui.components.SuccessScreen
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.about.AboutScreen
@@ -50,10 +52,10 @@ import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.SetupItem
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileMockData
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
-import com.lucasdias.gametrackr.feature.app.profile.editprofile.AvatarPalette
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupScreen
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupScreen
+import com.lucasdias.gametrackr.feature.app.profile.setup.SetupPalette
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
@@ -126,6 +128,7 @@ fun MainTabScreen(
     userName: String?,
     email: String?,
     currentUserId: Int? = null,
+    user: User? = null,
     onLogout: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -135,6 +138,10 @@ fun MainTabScreen(
     var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
     var libraryFilter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
     var profile by remember { mutableStateOf(ProfileMockData.profile) }
+
+    LaunchedEffect(user?.id) {
+        profile = profile.applying(user)
+    }
     val setups = remember { mutableStateListOf<SetupItem>() }
     var editingSetup by remember { mutableStateOf<SetupItem?>(null) }
 
@@ -184,7 +191,7 @@ fun MainTabScreen(
                         SetupItem(
                             title = "",
                             description = "",
-                            palette = AvatarPalette.entries[setups.size % AvatarPalette.entries.size],
+                            palette = SetupPalette.entries[setups.size % SetupPalette.entries.size],
                         )
                     navController.navigate(ShellRoutes.EDIT_SETUP)
                 },
@@ -469,6 +476,7 @@ private fun TabShell(
     setups: List<SetupItem>,
     onViewSetup: () -> Unit,
     currentUserId: Int? = null,
+    user: User? = null,
 ) {
     Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
         AppHeader(

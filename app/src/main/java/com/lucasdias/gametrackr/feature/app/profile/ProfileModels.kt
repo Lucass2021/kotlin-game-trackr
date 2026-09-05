@@ -4,14 +4,17 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.core.ui.theme.darkened
+import com.lucasdias.gametrackr.core.ui.theme.toAppColor
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
-import com.lucasdias.gametrackr.feature.app.profile.editprofile.AvatarPalette
+import com.lucasdias.gametrackr.feature.app.profile.setup.SetupPalette
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -20,11 +23,28 @@ data class Profile(
     val username: String,
     val bio: String,
     val joinedAt: String,
-    val avatarStart: Color,
-    val avatarEnd: Color,
+    val avatarHex: String,
     val stats: ProfileStats,
     val visibility: ProfileVisibility = ProfileVisibility.PUBLIC,
-)
+) {
+    val avatarStart: Color get() = avatarHex.toAppColor()
+    val avatarEnd: Color get() = avatarHex.toAppColor().darkened(AVATAR_GRADIENT_DEPTH)
+
+    fun applying(user: User?): Profile =
+        if (user == null) {
+            this
+        } else {
+            copy(
+                name = user.name,
+                username = user.username?.let { "@$it" } ?: username,
+                avatarHex = user.profileColor ?: avatarHex,
+            )
+        }
+
+    private companion object {
+        const val AVATAR_GRADIENT_DEPTH = 0.28f
+    }
+}
 
 enum class ProfileVisibility(
     val icon: AppIcon,
@@ -110,5 +130,5 @@ data class SetupItem(
     val title: String,
     val description: String,
     val photos: List<Uri> = emptyList(),
-    val palette: AvatarPalette = AvatarPalette.INDIGO,
+    val palette: SetupPalette = SetupPalette.INDIGO,
 )

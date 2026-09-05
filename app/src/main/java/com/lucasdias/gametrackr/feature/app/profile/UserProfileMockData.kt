@@ -15,6 +15,7 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
+import com.lucasdias.gametrackr.core.ui.theme.toHexString
 import com.lucasdias.gametrackr.feature.app.library.LibraryEntry
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 import kotlin.math.abs
@@ -58,8 +59,7 @@ object UserProfileMockData {
             username = user.username,
             bio = "Co-op enjoyer and lore hunter. Always down for a raid night or a slow-burn RPG.",
             joinedAt = "Joined January 2024",
-            avatarStart = user.avatarStart,
-            avatarEnd = user.avatarEnd,
+            avatarHex = user.avatarStart.toHexString(),
             stats = ProfileStats(totalGames = 87, hours = 934, platinum = 12),
         )
 

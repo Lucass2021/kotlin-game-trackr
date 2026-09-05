@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.profile.editprofile
+package com.lucasdias.gametrackr.feature.app.profile.setup
 
 import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
@@ -16,7 +16,7 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 
-enum class AvatarPalette(
+enum class SetupPalette(
     val start: Color,
     val end: Color,
 ) {
@@ -35,6 +35,6 @@ enum class AvatarPalette(
         fun matching(
             start: Color,
             end: Color,
-        ): AvatarPalette = entries.firstOrNull { it.start == start && it.end == end } ?: VIOLET
+        ): SetupPalette = entries.firstOrNull { it.start == start && it.end == end } ?: VIOLET
     }
 }
