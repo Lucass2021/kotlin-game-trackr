@@ -116,6 +116,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
+    testImplementation(libs.json)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.retrofit)
     testImplementation(libs.retrofit.kotlinx.serialization.converter)

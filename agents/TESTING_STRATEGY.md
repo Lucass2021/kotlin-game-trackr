@@ -114,6 +114,16 @@ Exclude all of the above from the coverage metric, or the number lies.
 
 ---
 
+## Running the tests
+
+- `./scripts/test.sh` runs `testDebugUnitTest` and prints one line on success; on failure it prints
+  the failing cases and the path to the full log (Gradle's compile warnings stay in the log).
+- **Lefthook runs it on every commit that touches a `.kt` file** (`pre-commit`, after `ktlint`), so
+  a red suite blocks the commit. Use `git commit --no-verify` only when the failure is unrelated.
+- `./gradlew koverLog` for the coverage number, `./gradlew koverHtmlReport` for the drill-down.
+
+---
+
 ## Coverage
 
 - **Kover** (`org.jetbrains.kotlinx.kover`) — better Kotlin support than JaCoCo (inline functions,
@@ -189,12 +199,79 @@ Two things worth remembering when adding more:
 
 ---
 
+## Baseline measured 2026-09-06 (74 tests, Phase 1)
+
+Layer 1 landed: JWT, `ErrorMapper`, `PaginationState`, `FeedCache`, the DTO → domain mappings and
+the three validation surfaces. `application line coverage: 18.7%` — that global number is mostly
+untested Composables and is only useful as a trend line; the per-file rows are the real signal.
+
+| Area | Line coverage |
+| --- | --- |
+| `core/network/Jwt.kt` | 100% |
+| `core/network/ErrorMapper.kt` | 100% |
+| `core/network/ApiError.kt` | 100% |
+| `core/pagination/PaginationState.kt` | 100% |
+| `core/pagination/FeedCache.kt` | 100% |
+| `core/model/Game.kt` | 92.9% |
+| `core/network/dto/GameDetailDtos.kt` | 80.8% |
+| `core/network/dto/GameDtos.kt` | 74.2% |
+| `feature/app/gamedetail/GameDetailModels.kt` | 100% |
+| `feature/app/home/HomeViewModel.kt` | 100% |
+| `feature/auth/register/RegisterViewModel.kt` | 87.2% |
+| `feature/auth/register/RegisterUiState.kt` | 100% |
+| `feature/app/profile/editprofile/EditProfileUiState.kt` | 100% |
+| `feature/app/community/createcommunity/CreateCommunityUiState.kt` | 100% |
+
+**Still at 0% after Phase 1** — all Layer 2/3 work: `AuthRepositoryImpl`, `AuthInterceptor`,
+`TokenAuthenticator`, `TokenRefresher`, `TokenStore`, `SessionManager`, `SearchViewModel`,
+`CommunityViewModel`, `CreateCommunityViewModel`, `EditProfileViewModel`, `GameDetailViewModel`.
+The four token classes are the highest-value gap left — they hold the proactive-refresh logic.
+
+### What Phase 1 added
+
+```
+app/src/test/java/com/lucasdias/gametrackr/
+  support/
+    TestJwt.kt                    base64url token builder (unpadded, like the real backend's)
+    FakeAuthRepository.kt         records register calls, returns a canned Result
+  core/network/
+    JwtTest.kt                    leeway, malformed input, unpadded base64url, missing exp
+    ErrorMapperTest.kt            401-with-error → Forbidden, 422 first message, 500 passthrough
+    dto/GameMappingTest.kt        missing IGDB keys, Unix timestamps, platform slugs, both shapes
+  core/pagination/
+    PaginationStateTest.kt        canLoadMore, append, reset, restore, snapshot aliasing
+    FeedCacheTest.kt              TTL either side of 5 min, key identity, eviction
+  feature/
+    app/gamedetail/GameDetailMappingTest.kt      hero priority, /10 rating, specs, about chain
+    auth/register/RegisterViewModelTest.kt       errors only after submit, every field rule
+    app/profile/editprofile/EditProfileUiStateTest.kt   username charset + limits, bio counter
+    app/community/createcommunity/CreateCommunityUiStateTest.kt  the whitespace-stripped handle
+```
+
+Three things worth remembering when adding more:
+
+- 🔴 **`android.jar` in a unit test is a stub, and `isReturnDefaultValues = true` makes it lie
+  silently.** `org.json.JSONObject.getLong("exp")` returned **0**, so every JWT looked as if it had
+  expired in 1970 — the "expired token" test passed for entirely the wrong reason and every
+  "valid token" test failed. Fix: `testImplementation(libs.json)` puts the **real** `org.json` on
+  the classpath ahead of the stub, and `mockkStatic(Base64::class)` delegates `android.util.Base64`
+  to `java.util.Base64`. Assume any Android framework class you touch in a JVM test is lying until
+  you prove otherwise.
+- **A `stateIn(..., WhileSubscribed())` flow is cold in a test.** `viewModel.uiState.value` stays
+  the initial state until something collects it, so assertions read `null` for every field error.
+  Collect it in `backgroundScope` with `UnconfinedTestDispatcher(testScheduler)` — plain
+  `backgroundScope.launch` uses `runTest`'s `StandardTestDispatcher` and never starts.
+- **`java.time` makes `year` timezone-dependent.** Pick a timestamp mid-year (`1_655_294_400` —
+  15 Jun 2022 12:00 UTC) so no timezone can shift it into another year.
+
+---
+
 ## Roadmap
 
 | Phase | What | Status |
 | --- | --- | --- |
 | **0** | Dependency injection so ViewModels/services are constructible with fakes | ✅ **already done on Android** — Koin injects through the constructor. Only iOS needed this phase. |
-| 1 | Layer 1 tests + Kover measurement (no gate) | ▶ tooling in place 2026-09-05 |
+| 1 | Layer 1 tests + Kover measurement (no gate) | ✅ done 2026-09-06 — 74 tests |
 | 2 | Benchmark baseline recorded in `agents/BASELINE.md` | |
 | 3 | Layers 2 and 3 (ViewModels + MockWebServer/fixtures) | |
 | 4 | Layer 4 Paparazzi snapshots of shared components | |
