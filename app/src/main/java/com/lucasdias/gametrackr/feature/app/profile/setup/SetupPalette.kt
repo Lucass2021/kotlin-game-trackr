@@ -30,11 +30,4 @@ enum class SetupPalette(
     ;
 
     val title: String get() = name.lowercase().replaceFirstChar { it.uppercase() }
-
-    companion object {
-        fun matching(
-            start: Color,
-            end: Color,
-        ): SetupPalette = entries.firstOrNull { it.start == start && it.end == end } ?: VIOLET
-    }
 }

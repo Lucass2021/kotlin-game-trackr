@@ -3,7 +3,6 @@ package com.lucasdias.gametrackr.feature.app.community
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.core.network.dto.CreatePostRequest
 import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.pagination.PaginationState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -161,48 +160,4 @@ class CommunityViewModel(
         communities.removeAll { it.id == id }
         feed.removeAll { it.communityId == id }
     }
-
-    fun createPost(
-        title: String,
-        body: String,
-        communityId: Long,
-    ): CommunityPost? {
-        var result: CommunityPost? = null
-        viewModelScope.launch {
-            try {
-                val request =
-                    CreatePostRequest(
-                        title = title,
-                        description = body,
-                        communityId = communityId,
-                    )
-                val response = api.createPost(request)
-                val post = response.post.toDomain()
-                feed.add(0, post)
-                result = post
-            } catch (_: Exception) {
-            }
-        }
-        return result
-    }
-
-    suspend fun createPostSuspend(
-        title: String,
-        body: String,
-        communityId: Long,
-    ): CommunityPost? =
-        try {
-            val request =
-                CreatePostRequest(
-                    title = title,
-                    description = body,
-                    communityId = communityId,
-                )
-            val response = api.createPost(request)
-            val post = response.post.toDomain()
-            feed.add(0, post)
-            post
-        } catch (_: Exception) {
-            null
-        }
 }
