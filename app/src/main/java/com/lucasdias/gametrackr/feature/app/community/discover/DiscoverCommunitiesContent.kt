@@ -25,7 +25,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.community.Community
-import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
+import com.lucasdias.gametrackr.feature.app.community.CommunityOptions
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityChipRow
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 
@@ -75,7 +75,7 @@ fun DiscoverCommunitiesContent(
 
         item {
             CommunityChipRow(
-                titles = CommunityMockData.categories,
+                titles = CommunityOptions.categories,
                 selection = category,
                 onSelect = onCategorySelect,
             )

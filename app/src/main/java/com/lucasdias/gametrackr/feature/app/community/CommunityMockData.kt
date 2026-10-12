@@ -184,10 +184,6 @@ object CommunityMockData {
             ),
         )
 
-    val categories = listOf("All", "RPG", "FPS", "Indie", "Retro", "Speedrun", "Tech")
-
-    val feedFilters = listOf("Latest", "Top Rated", "Following")
-
     val detailCommunity =
         Community(
             id = 40,
@@ -320,6 +316,4 @@ object CommunityMockData {
             CommunityMember(83, "@VoidWalker", "Member · joined 5 months ago", CoverCrimsonStart, CoverCrimsonEnd),
             CommunityMember(84, "@NeonSamurai", "Member · joined 1 year ago", CoverCyanStart, CoverCyanEnd),
         )
-
-    val quickReactions = listOf("❤️", "🙌", "🔥", "👏", "😢", "😍")
 }

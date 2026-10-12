@@ -43,7 +43,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverCyanStart
 import com.lucasdias.gametrackr.core.ui.theme.Inter
-import com.lucasdias.gametrackr.feature.app.community.CommunityMockData
+import com.lucasdias.gametrackr.feature.app.community.CommunityOptions
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
 
 @Composable
@@ -62,7 +62,7 @@ fun CommentComposer(
                     .PaddingValues(horizontal = 20.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            items(CommunityMockData.quickReactions) { reaction ->
+            items(CommunityOptions.quickReactions) { reaction ->
                 Text(
                     text = reaction,
                     fontSize = 22.sp,

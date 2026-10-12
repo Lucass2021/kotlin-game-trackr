@@ -52,7 +52,7 @@ fun CommunityScreen(
     currentUserId: Int? = null,
 ) {
     var segment by remember { mutableStateOf(CommunitySegment.MY_FEED) }
-    var feedFilter by remember { mutableStateOf(CommunityMockData.feedFilters.first()) }
+    var feedFilter by remember { mutableStateOf(CommunityOptions.feedFilters.first()) }
     var category by remember { mutableStateOf("All") }
     var communityToLeave by remember { mutableStateOf<Community?>(null) }
     val feedError by viewModel.feedError.collectAsStateWithLifecycle()
@@ -234,7 +234,7 @@ private fun FeedContent(
         ) {
             item {
                 CommunityChipRow(
-                    titles = CommunityMockData.feedFilters,
+                    titles = CommunityOptions.feedFilters,
                     selection = feedFilter,
                     onSelect = onFilterSelect,
                 )
