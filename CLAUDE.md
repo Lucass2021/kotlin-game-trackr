@@ -39,6 +39,7 @@
 ## Do not add comments
 ## All text must be in English: code, UI strings, commits, CLAUDE.md, TODO.MD, sessions/ and any other .md file
 ## Avoid magic numbers; use named constants (private const val in a companion object, or dimension/time tokens in core/ui)
+## Use the theme tokens Spacing, Radius and Durations (core/ui/theme); off-scale values round to the nearest token (ties round down); one-off sizes become named private constants in their file
 ## Avoid hardcoded colors like Color(0xFFE36E1C); add missing colors to core/ui/theme/Color.kt
 ## User-facing text goes in res/values/strings.xml
 
