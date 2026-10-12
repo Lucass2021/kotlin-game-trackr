@@ -9,6 +9,14 @@ enum class CommunitySegment(
     DISCOVER("Discover"),
 }
 
+enum class CommunityFeedFilter(
+    val label: String,
+) {
+    LATEST("Latest"),
+    TOP_RATED("Top Rated"),
+    FOLLOWING("Following"),
+}
+
 enum class CommunityDetailTab(
     val label: String,
 ) {
