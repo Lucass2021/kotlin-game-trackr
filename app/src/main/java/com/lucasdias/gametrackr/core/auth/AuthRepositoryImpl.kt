@@ -1,6 +1,7 @@
 package com.lucasdias.gametrackr.core.auth
 
 import com.lucasdias.gametrackr.core.model.User
+import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.network.AuthApi
 import com.lucasdias.gametrackr.core.network.dto.ForgotPasswordRequest
 import com.lucasdias.gametrackr.core.network.dto.LoginRequest
@@ -29,7 +30,7 @@ class AuthRepositoryImpl(
             val response = api.login(LoginRequest(email = email, password = password))
             tokenStore.save(response.token)
             response.user.toDomain().also(sessionManager::setAuthenticated)
-        }
+        }.forbiddenAsInvalidCredentials()
 
     override suspend fun register(
         name: String,
@@ -134,4 +135,10 @@ class AuthRepositoryImpl(
         } catch (throwable: Throwable) {
             Result.failure(throwable.toApiError(json))
         }
+
+    private fun <T> Result<T>.forbiddenAsInvalidCredentials(): Result<T> =
+        fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { error -> Result.failure(if (error is ApiError.Forbidden) ApiError.Unauthorized else error) },
+        )
 }
