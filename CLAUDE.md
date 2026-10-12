@@ -3,6 +3,7 @@
 ## Context
 ## This project is for learning Jetpack Compose; keep the code simple, small and easy to read
 ## The iOS twin lives in ~/Projetos/GameTrackr (SwiftUI); every refactor batch is done in both projects with the same scope
+## Keep the exact same names in both projects (files, types, functions, properties, folders); differ only where a language convention requires it (e.g. Kotlin const SCREAMING_CASE, Swift PascalCase folders)
 ## Product context, screens and history live in sessions/ and agents/PROJECT_GOALS.android.md; reference designs in agents/screens-base-design/
 
 ## Workflow
