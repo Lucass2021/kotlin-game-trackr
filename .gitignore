@@ -17,3 +17,6 @@ local.properties
 
 # Lefthook
 .lefthook-local/
+
+# Local session notes
+sessions/
