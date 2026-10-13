@@ -64,6 +64,17 @@ class RemoteCommunityRepositoryTest {
             assertEquals(LikeStatus(isLiked = true, likes = LIKES), status)
         }
 
+    @Test
+    fun `fetch post comments nests replies under their root comment`() =
+        runBlocking {
+            server.enqueue(MockResponse().setResponseCode(HTTP_OK).setBody(POST_WITH_COMMENTS_BODY))
+
+            val comments = repository.fetchPostComments(POST_ID).getOrThrow()
+
+            assertEquals(listOf(ROOT_COMMENT_ID), comments.map { it.id })
+            assertEquals(listOf(REPLY_ID, NESTED_REPLY_ID), comments.single().replies.map { it.id })
+        }
+
     private companion object {
         const val HTTP_OK = 200
         const val POST_ID = 7L
@@ -76,6 +87,14 @@ class RemoteCommunityRepositoryTest {
         const val POSTS_BODY =
             """{"data":[{"id":$POST_ID,"title":"$POST_TITLE","slug":"best-boss-fight","community_id":1,"author_id":1}],""" +
                 """"current_page":$CURRENT_PAGE,"last_page":$LAST_PAGE,"per_page":$PER_PAGE,"total":$TOTAL}"""
+        const val ROOT_COMMENT_ID = 1L
+        const val REPLY_ID = 2L
+        const val NESTED_REPLY_ID = 3L
+        const val POST_WITH_COMMENTS_BODY =
+            """{"id":$POST_ID,"title":"$POST_TITLE","slug":"best-boss-fight","community_id":1,"author_id":1,"comments":[""" +
+                """{"id":$ROOT_COMMENT_ID,"content":"Root","author_id":1,"post_id":$POST_ID},""" +
+                """{"id":$REPLY_ID,"content":"Reply","author_id":1,"post_id":$POST_ID,"parent_id":$ROOT_COMMENT_ID},""" +
+                """{"id":$NESTED_REPLY_ID,"content":"Nested","author_id":1,"post_id":$POST_ID,"parent_id":$REPLY_ID}]}"""
         const val LIKE_BODY = """{"message":"Post liked","is_liked":true,"likes":$LIKES}"""
     }
 }

@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.data.community
 import com.lucasdias.gametrackr.core.network.CommunityApi
 import com.lucasdias.gametrackr.core.network.apiCall
 import com.lucasdias.gametrackr.core.network.dto.CommentBody
+import com.lucasdias.gametrackr.core.network.dto.CommentDto
 import com.lucasdias.gametrackr.core.network.dto.CreateCommunityRequest
 import com.lucasdias.gametrackr.core.network.dto.CreatePostRequest
 import com.lucasdias.gametrackr.core.network.dto.LikeResponse
@@ -60,7 +61,7 @@ class RemoteCommunityRepository(
                 .getPost(postId)
                 .comments
                 .orEmpty()
-                .map { it.toDomain() }
+                .toThreads()
         }
 
     override suspend fun createPost(
@@ -102,4 +103,20 @@ class RemoteCommunityRepository(
         )
 
     private fun LikeResponse.toLikeStatus() = LikeStatus(isLiked = isLiked, likes = likes)
+
+    private fun List<CommentDto>.toThreads(): List<PostComment> {
+        val byId = associateBy { it.id }
+
+        fun rootId(comment: CommentDto): Int {
+            var current = comment
+            while (true) {
+                current = current.parentId?.let(byId::get) ?: return current.id
+            }
+        }
+
+        val replies = filter { it.parentId != null }.groupBy { rootId(it) }
+        return filter { it.parentId == null }.map { comment ->
+            comment.toDomain().copy(replies = replies[comment.id].orEmpty().map { it.toDomain() })
+        }
+    }
 }
