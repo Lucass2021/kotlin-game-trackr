@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +52,7 @@ fun CommunityScreen(
     modifier: Modifier = Modifier,
     currentUserId: Int? = null,
 ) {
-    var segment by remember { mutableStateOf(CommunitySegment.MY_FEED) }
+    var segment by rememberSaveable { mutableStateOf(CommunitySegment.MY_FEED) }
     var feedFilter by remember { mutableStateOf(CommunityFeedFilter.LATEST.label) }
     var category by remember { mutableStateOf("All") }
     var communityToLeave by remember { mutableStateOf<Community?>(null) }
