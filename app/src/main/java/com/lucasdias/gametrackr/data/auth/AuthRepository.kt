@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.core.auth
+package com.lucasdias.gametrackr.data.auth
 
 import com.lucasdias.gametrackr.core.model.User
 

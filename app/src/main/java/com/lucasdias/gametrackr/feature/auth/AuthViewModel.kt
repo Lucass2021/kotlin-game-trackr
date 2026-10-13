@@ -2,10 +2,10 @@ package com.lucasdias.gametrackr.feature.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lucasdias.gametrackr.core.auth.AuthRepository
 import com.lucasdias.gametrackr.core.auth.AuthStatus
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.network.ApiError
+import com.lucasdias.gametrackr.data.auth.AuthRepository
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 

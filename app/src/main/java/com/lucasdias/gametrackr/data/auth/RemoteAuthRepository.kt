@@ -1,5 +1,7 @@
-package com.lucasdias.gametrackr.core.auth
+package com.lucasdias.gametrackr.data.auth
 
+import com.lucasdias.gametrackr.core.auth.SessionManager
+import com.lucasdias.gametrackr.core.auth.TokenStore
 import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.network.AuthApi
@@ -12,7 +14,7 @@ import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.network.toApiError
 import kotlinx.serialization.json.Json
 
-class AuthRepositoryImpl(
+class RemoteAuthRepository(
     private val api: AuthApi,
     private val tokenStore: TokenStore,
     private val sessionManager: SessionManager,

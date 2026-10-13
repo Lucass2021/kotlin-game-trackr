@@ -1,8 +1,6 @@
 package com.lucasdias.gametrackr.di
 
 import com.lucasdias.gametrackr.BuildConfig
-import com.lucasdias.gametrackr.core.auth.AuthRepository
-import com.lucasdias.gametrackr.core.auth.AuthRepositoryImpl
 import com.lucasdias.gametrackr.core.auth.DataStoreTokenStore
 import com.lucasdias.gametrackr.core.auth.GoogleAuth
 import com.lucasdias.gametrackr.core.auth.SessionManager
@@ -15,6 +13,8 @@ import com.lucasdias.gametrackr.core.network.ProfileApi
 import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.core.network.TokenRefresher
+import com.lucasdias.gametrackr.data.auth.AuthRepository
+import com.lucasdias.gametrackr.data.auth.RemoteAuthRepository
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
@@ -116,7 +116,7 @@ val appModule =
             retrofit(get(named(AUTH_CLIENT)), get()).create(GameApi::class.java)
         }
 
-        single<AuthRepository> { AuthRepositoryImpl(get(), get(), get(), get()) }
+        single<AuthRepository> { RemoteAuthRepository(get(), get(), get(), get()) }
         single { GoogleAuth(get()) }
 
         viewModel { CommunityViewModel(get()) }
