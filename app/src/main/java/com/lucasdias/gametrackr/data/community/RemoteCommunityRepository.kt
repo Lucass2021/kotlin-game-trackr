@@ -67,7 +67,11 @@ class RemoteCommunityRepository(
         title: String,
         description: String,
         communityId: Long,
-    ): Result<CommunityPost> = apiCall(json) { api.createPost(CreatePostRequest(title, description, communityId)).post.toDomain() }
+    ): Result<CommunityPost> =
+        apiCall(json) {
+            val created = api.createPost(CreatePostRequest(title, description, communityId)).post
+            api.getPost(created.id.toLong()).toDomain()
+        }
 
     override suspend fun deletePost(id: Long): Result<Unit> = apiCall(json) { api.deletePost(id) }.map { }
 
