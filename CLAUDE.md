@@ -5,6 +5,7 @@
 ## The iOS twin lives in ~/Projetos/GameTrackr (SwiftUI); every refactor batch is done in both projects with the same scope
 ## Keep the exact same names in both projects (files, types, functions, properties, folders); differ only where a language convention requires it (e.g. Kotlin const SCREAMING_CASE, Swift PascalCase folders)
 ## Product context, screens and history live in sessions/ and agents/PROJECT_GOALS.android.md; reference designs in agents/screens-base-design/
+## UX references: Reddit for community features (feed, posts, comments)
 
 ## Workflow
 ## Read the latest sessions/AAAA-MM-DD.md before starting; read older ones if needed
@@ -43,6 +44,7 @@
 ## Use the theme tokens Spacing, Radius and Durations (core/ui/theme); off-scale values round to the nearest token (ties round down); one-off sizes become named private constants in their file
 ## Avoid hardcoded colors like Color(0xFFE36E1C); add missing colors to core/ui/theme/Color.kt
 ## User-facing text goes in res/values/strings.xml
+## Form submit buttons are always enabled; on tap, validate and show what is missing instead of disabling the button
 
 ## API
 ## The backend lives in ~/Projetos/game-trackr-api; use it only as reference, never change its code (Docker setup excepted, with permission)
