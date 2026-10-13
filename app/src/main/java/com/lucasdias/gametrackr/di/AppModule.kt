@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.di
 import com.lucasdias.gametrackr.BuildConfig
 import com.lucasdias.gametrackr.core.auth.AuthRepository
 import com.lucasdias.gametrackr.core.auth.AuthRepositoryImpl
+import com.lucasdias.gametrackr.core.auth.DataStoreTokenStore
 import com.lucasdias.gametrackr.core.auth.GoogleAuth
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
@@ -76,7 +77,7 @@ val appModule =
             }
         }
 
-        single { TokenStore(androidContext()) }
+        single<TokenStore> { DataStoreTokenStore(androidContext()) }
         single { SessionManager() }
 
         single { TokenRefresher(get(), get(), get()) }
