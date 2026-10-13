@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.lucasdias.gametrackr.core.network.dto.PaginatedResponse
 
 class PaginationState<T> {
     val items = mutableStateListOf<T>()
@@ -25,16 +24,6 @@ class PaginationState<T> {
         currentPage = 0
         lastPage = 1
         total = 0
-    }
-
-    fun append(
-        response: PaginatedResponse<*>,
-        newItems: List<T>,
-    ) {
-        items.addAll(newItems)
-        currentPage = response.currentPage
-        lastPage = response.lastPage
-        total = response.total
     }
 
     fun append(page: Page<T>) {

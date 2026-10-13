@@ -37,9 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.core.network.dto.CommentBody
-import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -48,7 +45,9 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.community.CommunityRepository
 import com.lucasdias.gametrackr.feature.app.community.PostComment
+import com.lucasdias.gametrackr.feature.app.community.totalCount
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -61,7 +60,7 @@ fun PostCommentsSheet(
     currentUserId: Int? = null,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    api: CommunityApi = koinInject(),
+    repository: CommunityRepository = koinInject(),
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state = remember { comments.toMutableStateList() }
@@ -69,7 +68,7 @@ fun PostCommentsSheet(
     var replyingTo by remember { mutableStateOf<PostComment?>(null) }
     val scope = rememberCoroutineScope()
 
-    val total = state.sumOf { 1 + it.replies.size + it.hiddenReplies }
+    val total = state.totalCount()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -94,7 +93,7 @@ fun PostCommentsSheet(
                                 CommentRow(
                                     comment = comment,
                                     onLike = {
-                                        toggleLikeWithApi(state, index, postId, comment.id, api, scope)
+                                        toggleCommentLike(state, index, postId, comment.id, repository, scope)
                                     },
                                     isGuest = isGuest,
                                     currentUserId = currentUserId,
@@ -150,20 +149,16 @@ fun PostCommentsSheet(
                         val target = replyingTo
                         replyingTo = null
                         scope.launch {
-                            try {
-                                if (target != null) {
-                                    val response = api.replyToComment(postId, target.id, CommentBody(comment = text))
-                                    val newReply = response.reply.toDomain()
+                            if (target != null) {
+                                repository.replyToComment(postId, target.id, text).onSuccess { newReply ->
                                     val parentIndex = state.indexOfFirst { it.id == target.id || it.replies.any { r -> r.id == target.id } }
                                     if (parentIndex >= 0) {
                                         val parent = state[parentIndex]
                                         state[parentIndex] = parent.copy(replies = parent.replies + newReply)
                                     }
-                                } else {
-                                    val response = api.addComment(postId, CommentBody(comment = text))
-                                    state.add(response.comment.toDomain())
                                 }
-                            } catch (_: Exception) {
+                            } else {
+                                repository.addComment(postId, text).onSuccess { state.add(it) }
                             }
                         }
                     },
@@ -253,30 +248,31 @@ private fun EmptyState(modifier: Modifier = Modifier) {
     }
 }
 
-private fun toggleLikeWithApi(
+private fun toggleCommentLike(
     state: SnapshotStateList<PostComment>,
     index: Int,
     postId: Long,
     commentId: Long,
-    api: CommunityApi,
+    repository: CommunityRepository,
     scope: kotlinx.coroutines.CoroutineScope,
 ) {
     val c = state[index]
     state[index] = c.copy(isLiked = !c.isLiked, likes = c.likes + if (c.isLiked) -1 else 1)
 
     scope.launch {
-        try {
-            val response = api.toggleCommentLike(postId, commentId)
-            val i = state.indexOfFirst { it.id == commentId }
-            if (i >= 0) {
-                state[i] = state[i].copy(isLiked = response.isLiked, likes = response.likes)
+        repository
+            .toggleCommentLike(postId, commentId)
+            .onSuccess { status ->
+                val i = state.indexOfFirst { it.id == commentId }
+                if (i >= 0) {
+                    state[i] = state[i].copy(isLiked = status.isLiked, likes = status.likes)
+                }
+            }.onFailure {
+                val i = state.indexOfFirst { it.id == commentId }
+                if (i >= 0) {
+                    state[i] = c
+                }
             }
-        } catch (_: Exception) {
-            val i = state.indexOfFirst { it.id == commentId }
-            if (i >= 0) {
-                state[i] = c
-            }
-        }
     }
 }
 
