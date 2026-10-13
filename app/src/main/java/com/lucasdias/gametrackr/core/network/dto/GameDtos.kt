@@ -60,16 +60,7 @@ data class PaginatedGamesResponse(
     val message: String? = null,
     val data: List<GameDto>,
     val meta: GamesMeta,
-) {
-    fun toPaginated(): PaginatedResponse<GameDto> =
-        PaginatedResponse(
-            data = data,
-            currentPage = meta.page,
-            lastPage = meta.lastPage,
-            perPage = meta.perPage,
-            total = meta.total,
-        )
-}
+)
 
 fun GameDto.toDomain(): Game {
     val dtoPlatforms = platforms.orEmpty()

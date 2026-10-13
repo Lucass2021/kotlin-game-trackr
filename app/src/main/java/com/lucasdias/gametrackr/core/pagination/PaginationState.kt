@@ -37,6 +37,13 @@ class PaginationState<T> {
         total = response.total
     }
 
+    fun append(page: Page<T>) {
+        items.addAll(page.items)
+        currentPage = page.currentPage
+        lastPage = page.lastPage
+        total = page.total
+    }
+
     fun snapshot(): PaginationSnapshot<T> = PaginationSnapshot(items.toList(), currentPage, lastPage, total)
 
     fun restore(snapshot: PaginationSnapshot<T>) {

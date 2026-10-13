@@ -4,18 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.core.model.Game
 import com.lucasdias.gametrackr.core.model.GamePlatform
-import com.lucasdias.gametrackr.core.network.GameApi
-import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.pagination.FeedCache
 import com.lucasdias.gametrackr.core.pagination.FeedKey
+import com.lucasdias.gametrackr.core.pagination.Page
 import com.lucasdias.gametrackr.core.pagination.PaginationState
+import com.lucasdias.gametrackr.data.game.GameRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-    private val api: GameApi,
+    private val repository: GameRepository,
 ) : ViewModel() {
     val pagination = PaginationState<Game>()
 
@@ -45,9 +45,7 @@ class SearchViewModel(
 
     init {
         viewModelScope.launch {
-            _platforms.value =
-                runCatching { api.getPlatforms().data.mapNotNull { it.toDomain() } }
-                    .getOrDefault(emptyList())
+            _platforms.value = repository.fetchPlatforms().getOrDefault(emptyList())
         }
     }
 
@@ -89,31 +87,16 @@ class SearchViewModel(
         val requestGeneration = generation
         val nextPage = pagination.currentPage + 1
         val search = _appliedSearch.value.ifEmpty { null }
-        val platformSlugs = platform?.let { listOf(it.slug) }
+        val platformSlug = platform?.slug
 
         viewModelScope.launch {
-            try {
-                val response =
-                    when (scope) {
-                        SearchScope.MOST_ANTICIPATED -> {
-                            api.getAllMostAnticipated(nextPage, PER_PAGE, search, platformSlugs)
-                        }
-
-                        SearchScope.NEW_RELEASES -> {
-                            api.getAllNewReleases(nextPage, PER_PAGE, search, platformSlugs)
-                        }
-
-                        SearchScope.ALL -> {
-                            api.searchGames(nextPage, PER_PAGE, search, platformSlugs)
-                        }
-                    }
-                if (requestGeneration != generation) return@launch
-                pagination.append(response.toPaginated(), response.data.map { it.toDomain() })
-                cache.store(key, pagination.snapshot())
-            } catch (_: Exception) {
-                if (requestGeneration != generation) return@launch
-                if (reset) _hasError.value = true
-            }
+            val result = fetchPage(nextPage, search, platformSlug)
+            if (requestGeneration != generation) return@launch
+            result
+                .onSuccess { page ->
+                    pagination.append(page)
+                    cache.store(key, pagination.snapshot())
+                }.onFailure { if (reset) _hasError.value = true }
             if (reset) {
                 _isLoading.value = false
                 _hasLoaded.value = true
@@ -121,6 +104,17 @@ class SearchViewModel(
             pagination.setLoading(false)
         }
     }
+
+    private suspend fun fetchPage(
+        page: Int,
+        search: String?,
+        platformSlug: String?,
+    ): Result<Page<Game>> =
+        when (scope) {
+            SearchScope.MOST_ANTICIPATED -> repository.fetchAllMostAnticipated(page, PER_PAGE, search, platformSlug)
+            SearchScope.NEW_RELEASES -> repository.fetchAllNewReleases(page, PER_PAGE, search, platformSlug)
+            SearchScope.ALL -> repository.searchGames(page, PER_PAGE, search, platformSlug)
+        }
 
     private companion object {
         const val PER_PAGE = 20
