@@ -5,13 +5,13 @@ import com.lucasdias.gametrackr.core.auth.TokenStore
 import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.network.AuthApi
+import com.lucasdias.gametrackr.core.network.apiCall
 import com.lucasdias.gametrackr.core.network.dto.ForgotPasswordRequest
 import com.lucasdias.gametrackr.core.network.dto.LoginRequest
 import com.lucasdias.gametrackr.core.network.dto.RegisterRequest
 import com.lucasdias.gametrackr.core.network.dto.ResetPasswordRequest
 import com.lucasdias.gametrackr.core.network.dto.VerifyResetCodeRequest
 import com.lucasdias.gametrackr.core.network.dto.toDomain
-import com.lucasdias.gametrackr.core.network.toApiError
 import kotlinx.serialization.json.Json
 
 class RemoteAuthRepository(
@@ -28,7 +28,7 @@ class RemoteAuthRepository(
         email: String,
         password: String,
     ): Result<User> =
-        apiCall {
+        apiCall(json) {
             val response = api.login(LoginRequest(email = email, password = password))
             tokenStore.save(response.token)
             response.user.toDomain().also(sessionManager::setAuthenticated)
@@ -40,7 +40,7 @@ class RemoteAuthRepository(
         password: String,
         passwordConfirmation: String,
     ): Result<User> =
-        apiCall {
+        apiCall(json) {
             val response =
                 api.register(
                     RegisterRequest(
@@ -60,7 +60,7 @@ class RemoteAuthRepository(
     }
 
     override suspend fun validate(): Result<User> =
-        apiCall {
+        apiCall(json) {
             api
                 .me()
                 .user
@@ -70,7 +70,7 @@ class RemoteAuthRepository(
 
     override suspend fun signInWithGoogle(token: String): Result<User> {
         tokenStore.save(token)
-        return apiCall {
+        return apiCall(json) {
             api
                 .me()
                 .user
@@ -88,7 +88,7 @@ class RemoteAuthRepository(
     override suspend fun hasToken(): Boolean = tokenStore.get() != null
 
     override suspend fun forgotPassword(email: String): Result<Unit> =
-        apiCall {
+        apiCall(json) {
             api.forgotPassword(ForgotPasswordRequest(email = email))
             Unit
         }
@@ -97,7 +97,7 @@ class RemoteAuthRepository(
         email: String,
         code: String,
     ): Result<Unit> =
-        apiCall {
+        apiCall(json) {
             api.verifyResetCode(VerifyResetCodeRequest(email = email, code = code))
             Unit
         }
@@ -107,7 +107,7 @@ class RemoteAuthRepository(
         code: String,
         newPassword: String,
     ): Result<Unit> =
-        apiCall {
+        apiCall(json) {
             api.resetPassword(
                 ResetPasswordRequest(
                     email = email,
@@ -121,7 +121,7 @@ class RemoteAuthRepository(
         }
 
     override suspend fun completePasswordReset(): Result<User> =
-        apiCall {
+        apiCall(json) {
             val email = requireNotNull(pendingResetEmail)
             val password = requireNotNull(pendingResetPassword)
             val response = api.login(LoginRequest(email = email, password = password))
@@ -129,13 +129,6 @@ class RemoteAuthRepository(
             pendingResetEmail = null
             pendingResetPassword = null
             response.user.toDomain().also(sessionManager::setAuthenticated)
-        }
-
-    private inline fun <T> apiCall(block: () -> T): Result<T> =
-        try {
-            Result.success(block())
-        } catch (throwable: Throwable) {
-            Result.failure(throwable.toApiError(json))
         }
 
     private fun <T> Result<T>.forbiddenAsInvalidCredentials(): Result<T> =

@@ -3,9 +3,7 @@ package com.lucasdias.gametrackr.feature.app.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.core.model.Game
-import com.lucasdias.gametrackr.core.network.GameApi
-import com.lucasdias.gametrackr.core.network.dto.GameDto
-import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.data.game.GameRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +19,7 @@ data class HomeFeed(
 )
 
 class HomeViewModel(
-    private val api: GameApi,
+    private val repository: GameRepository,
 ) : ViewModel() {
     private val _newReleases = MutableStateFlow(HomeFeed())
     val newReleases: StateFlow<HomeFeed> = _newReleases.asStateFlow()
@@ -32,8 +30,8 @@ class HomeViewModel(
     fun load(force: Boolean = false) {
         viewModelScope.launch {
             awaitAll(
-                async { load(_newReleases, force) { api.getNewReleases(limit = SLIDER_LIMIT).data } },
-                async { load(_mostAnticipated, force) { api.getMostAnticipated(limit = SLIDER_LIMIT).data } },
+                async { load(_newReleases, force) { repository.fetchNewReleases(SLIDER_LIMIT) } },
+                async { load(_mostAnticipated, force) { repository.fetchMostAnticipated(SLIDER_LIMIT) } },
             )
         }
     }
@@ -41,18 +39,18 @@ class HomeViewModel(
     private suspend fun load(
         feed: MutableStateFlow<HomeFeed>,
         force: Boolean,
-        fetch: suspend () -> List<GameDto>,
+        fetch: suspend () -> Result<List<Game>>,
     ) {
         if (feed.value.isLoading) return
         if (!force && feed.value.hasLoaded && feed.value.games.isNotEmpty()) return
         feed.value = feed.value.copy(isLoading = true, hasError = false)
 
         feed.value =
-            try {
-                feed.value.copy(games = fetch().map { it.toDomain() })
-            } catch (_: Exception) {
-                feed.value.copy(hasError = true)
-            }.copy(isLoading = false, hasLoaded = true)
+            fetch()
+                .fold(
+                    onSuccess = { games -> feed.value.copy(games = games) },
+                    onFailure = { feed.value.copy(hasError = true) },
+                ).copy(isLoading = false, hasLoaded = true)
     }
 
     private companion object {
