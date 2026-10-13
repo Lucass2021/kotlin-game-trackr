@@ -44,9 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.ApiError
-import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.core.network.dto.toDomain
-import com.lucasdias.gametrackr.core.network.toApiError
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.pagination.PaginationState
@@ -60,6 +57,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.community.CommunityRepository
 import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.CommunityDetailTab
 import com.lucasdias.gametrackr.feature.app.community.CommunityMember
@@ -71,8 +69,9 @@ import com.lucasdias.gametrackr.feature.app.community.components.CreatePostButto
 import com.lucasdias.gametrackr.feature.app.community.components.JoinButton
 import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import org.koin.compose.koinInject
+
+private const val POSTS_PAGE_SIZE = 30
 
 @Composable
 fun CommunityDetailScreen(
@@ -85,8 +84,7 @@ fun CommunityDetailScreen(
     onMemberClick: (CommunityMember) -> Unit,
     onDeleted: () -> Unit = {},
     modifier: Modifier = Modifier,
-    api: CommunityApi = koinInject(),
-    json: Json = koinInject(),
+    repository: CommunityRepository = koinInject(),
 ) {
     var isJoined by remember { mutableStateOf(community.isJoined) }
     val isOwner = currentUserId != null && community.authorId == currentUserId
@@ -107,27 +105,22 @@ fun CommunityDetailScreen(
             postsPagination.reset()
         } else {
             if (!postsPagination.canLoadMore) return
-            postsPagination.setLoading(true)
         }
+        postsPagination.setLoading(true)
 
         val nextPage = postsPagination.currentPage + 1
 
-        try {
-            val response = api.getPosts(communityId = community.id, perPage = 30, page = nextPage)
-            postsPagination.append(response, response.data.map { it.toDomain() })
-        } catch (_: Exception) {
-            if (reset) postsError = true
-        }
+        repository
+            .fetchPosts(page = nextPage, perPage = POSTS_PAGE_SIZE, communityId = community.id)
+            .onSuccess { postsPagination.append(it) }
+            .onFailure { if (reset) postsError = true }
         postsPagination.setLoading(false)
     }
 
     suspend fun loadMembers() {
-        try {
-            val detail = api.getCommunity(community.id)
-            val apiMembers = detail.members?.map { it.toDomain() }.orEmpty()
+        repository.fetchCommunityMembers(community.id).onSuccess {
             members.clear()
-            members.addAll(apiMembers)
-        } catch (_: Exception) {
+            members.addAll(it)
         }
     }
 
@@ -169,11 +162,7 @@ fun CommunityDetailScreen(
                         } else {
                             isJoined = true
                             scope.launch {
-                                try {
-                                    api.joinCommunity(community.id)
-                                } catch (_: Exception) {
-                                    isJoined = false
-                                }
+                                repository.joinCommunity(community.id).onFailure { isJoined = false }
                             }
                         }
                     },
@@ -234,26 +223,27 @@ fun CommunityDetailScreen(
                                             likes = post.likes + if (wasLiked) -1 else 1,
                                         )
                                     scope.launch {
-                                        try {
-                                            val response = api.toggleLike(post.id)
-                                            val i = posts.indexOfFirst { it.id == post.id }
-                                            if (i >= 0) {
-                                                posts[i] =
-                                                    posts[i].copy(
-                                                        isLiked = response.isLiked,
-                                                        likes = response.likes,
-                                                    )
+                                        repository
+                                            .togglePostLike(post.id)
+                                            .onSuccess { status ->
+                                                val i = posts.indexOfFirst { it.id == post.id }
+                                                if (i >= 0) {
+                                                    posts[i] =
+                                                        posts[i].copy(
+                                                            isLiked = status.isLiked,
+                                                            likes = status.likes,
+                                                        )
+                                                }
+                                            }.onFailure {
+                                                val i = posts.indexOfFirst { it.id == post.id }
+                                                if (i >= 0) {
+                                                    posts[i] =
+                                                        posts[i].copy(
+                                                            isLiked = wasLiked,
+                                                            likes = post.likes,
+                                                        )
+                                                }
                                             }
-                                        } catch (_: Exception) {
-                                            val i = posts.indexOfFirst { it.id == post.id }
-                                            if (i >= 0) {
-                                                posts[i] =
-                                                    posts[i].copy(
-                                                        isLiked = wasLiked,
-                                                        likes = post.likes,
-                                                    )
-                                            }
-                                        }
                                     }
                                 },
                                 onComment = { onPostClick(post) },
@@ -316,11 +306,7 @@ fun CommunityDetailScreen(
                 showLeaveDialog = false
                 isJoined = false
                 scope.launch {
-                    try {
-                        api.leaveCommunity(community.id)
-                    } catch (_: Exception) {
-                        isJoined = true
-                    }
+                    repository.leaveCommunity(community.id).onFailure { isJoined = true }
                 }
             },
             onDismiss = { showLeaveDialog = false },
@@ -336,17 +322,18 @@ fun CommunityDetailScreen(
             onConfirm = {
                 showDeleteDialog = false
                 scope.launch {
-                    try {
-                        api.deleteCommunity(community.id)
-                        onDeleted()
-                        onBack()
-                    } catch (throwable: Exception) {
-                        deleteError =
-                            when (val error = throwable.toApiError(json)) {
-                                is ApiError.Forbidden -> context.getString(R.string.community_delete_forbidden)
-                                else -> error.toMessage(context)
-                            }
-                    }
+                    repository
+                        .deleteCommunity(community.id)
+                        .onSuccess {
+                            onDeleted()
+                            onBack()
+                        }.onFailure { error ->
+                            deleteError =
+                                when (error) {
+                                    is ApiError.Forbidden -> context.getString(R.string.community_delete_forbidden)
+                                    else -> (error as? ApiError)?.toMessage(context) ?: context.getString(R.string.error_generic)
+                                }
+                        }
                 }
             },
             onDismiss = { showDeleteDialog = false },
