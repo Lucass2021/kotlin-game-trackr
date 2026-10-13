@@ -46,8 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.format.abbreviated
-import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -60,6 +59,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.community.CommunityRepository
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.PostComment
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
@@ -77,7 +77,7 @@ fun PostDetailScreen(
     onCreateAccount: () -> Unit = {},
     onDelete: () -> Unit = {},
     modifier: Modifier = Modifier,
-    api: CommunityApi = koinInject(),
+    repository: CommunityRepository = koinInject(),
 ) {
     var isLiked by remember { mutableStateOf(post.isLiked) }
     var likes by remember { mutableIntStateOf(post.likes) }
@@ -93,14 +93,12 @@ fun PostDetailScreen(
 
     LaunchedEffect(post.id) {
         commentsError = false
-        try {
-            val detail = api.getPost(post.id)
-            val apiComments = detail.comments?.map { it.toDomain() }.orEmpty()
-            comments.clear()
-            comments.addAll(apiComments)
-        } catch (_: Exception) {
-            commentsError = true
-        }
+        repository
+            .fetchPostComments(post.id)
+            .onSuccess {
+                comments.clear()
+                comments.addAll(it)
+            }.onFailure { commentsError = true }
         commentsLoaded = true
     }
 
@@ -123,7 +121,7 @@ fun PostDetailScreen(
             AuthorRow(
                 post = post,
                 isFollowing = isFollowing,
-                showFollow = !isGuest,
+                showFollow = !isGuest && !isOwnPost,
                 onFollow = { isFollowing = !isFollowing },
                 onAuthorClick = onAuthorClick,
             )
@@ -154,14 +152,15 @@ fun PostDetailScreen(
                     isLiked = !wasLiked
                     likes += if (wasLiked) -1 else 1
                     scope.launch {
-                        try {
-                            val response = api.toggleLike(post.id)
-                            isLiked = response.isLiked
-                            likes = response.likes
-                        } catch (_: Exception) {
-                            isLiked = wasLiked
-                            likes = oldLikes
-                        }
+                        repository
+                            .togglePostLike(post.id)
+                            .onSuccess { status ->
+                                isLiked = status.isLiked
+                                likes = status.likes
+                            }.onFailure {
+                                isLiked = wasLiked
+                                likes = oldLikes
+                            }
                     }
                 },
                 onComment = { showComments = true },
@@ -189,11 +188,10 @@ fun PostDetailScreen(
             onConfirm = {
                 showDeleteDialog = false
                 scope.launch {
-                    try {
-                        api.deletePost(post.id)
+                    val result = repository.deletePost(post.id)
+                    if (result.isSuccess || result.exceptionOrNull() == ApiError.NotFound) {
                         onDelete()
                         onBack()
-                    } catch (_: Exception) {
                     }
                 }
             },
