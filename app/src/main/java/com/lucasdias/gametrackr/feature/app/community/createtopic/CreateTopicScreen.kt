@@ -33,7 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
@@ -84,7 +83,6 @@ fun CreateTopicScreen(
     Column(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         Header(
             showPostAction = !isGuest,
-            canSubmit = state.canSubmit,
             onClose = { requestClose() },
             onPost = {
                 scope.launch {
@@ -136,7 +134,6 @@ fun CreateTopicScreen(
 @Composable
 private fun Header(
     showPostAction: Boolean,
-    canSubmit: Boolean,
     onClose: () -> Unit,
     onPost: () -> Unit,
 ) {
@@ -184,7 +181,6 @@ private fun Header(
                 modifier =
                     Modifier
                         .pressScale(postInteraction)
-                        .alpha(if (canSubmit) 1f else 0.45f)
                         .height(38.dp)
                         .clip(CircleShape)
                         .background(AppPrimary)

@@ -33,7 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
@@ -80,7 +79,6 @@ fun CreateCommunityScreen(
     Column(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         Header(
             isSubmitting = state.isSubmitting,
-            canSubmit = state.canSubmit,
             onClose = { requestClose() },
             onCreate = {
                 scope.launch {
@@ -121,7 +119,6 @@ fun CreateCommunityScreen(
 @Composable
 private fun Header(
     isSubmitting: Boolean,
-    canSubmit: Boolean,
     onClose: () -> Unit,
     onCreate: () -> Unit,
 ) {
@@ -168,7 +165,6 @@ private fun Header(
             modifier =
                 Modifier
                     .pressScale(createInteraction)
-                    .alpha(if (canSubmit) 1f else 0.45f)
                     .height(38.dp)
                     .clip(CircleShape)
                     .background(AppPrimary)
