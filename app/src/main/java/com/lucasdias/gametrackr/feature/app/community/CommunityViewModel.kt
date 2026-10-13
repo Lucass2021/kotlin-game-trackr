@@ -2,16 +2,15 @@ package com.lucasdias.gametrackr.feature.app.community
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.pagination.PaginationState
+import com.lucasdias.gametrackr.data.community.CommunityRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CommunityViewModel(
-    private val api: CommunityApi,
+    private val repository: CommunityRepository,
 ) : ViewModel() {
     val feedPagination = PaginationState<CommunityPost>()
     val communitiesPagination = PaginationState<Community>()
@@ -45,12 +44,10 @@ class CommunityViewModel(
         val nextPage = feedPagination.currentPage + 1
 
         viewModelScope.launch {
-            try {
-                val response = api.getPosts(perPage = 20, page = nextPage)
-                feedPagination.append(response, response.data.map { it.toDomain() })
-            } catch (_: Exception) {
-                if (reset) _feedError.value = true
-            }
+            repository
+                .fetchPosts(page = nextPage, perPage = FEED_PAGE_SIZE, communityId = null)
+                .onSuccess { feedPagination.append(it) }
+                .onFailure { if (reset) _feedError.value = true }
             if (reset) _isLoadingFeed.value = false
             feedPagination.setLoading(false)
         }
@@ -75,12 +72,10 @@ class CommunityViewModel(
         val nextPage = communitiesPagination.currentPage + 1
 
         viewModelScope.launch {
-            try {
-                val response = api.getCommunities(search = search, perPage = 30, page = nextPage)
-                communitiesPagination.append(response, response.data.map { it.toDomain() })
-            } catch (_: Exception) {
-                if (reset) _communitiesError.value = true
-            }
+            repository
+                .fetchCommunities(page = nextPage, perPage = COMMUNITIES_PAGE_SIZE, search = search)
+                .onSuccess { communitiesPagination.append(it) }
+                .onFailure { if (reset) _communitiesError.value = true }
             if (reset) _isLoadingCommunities.value = false
             communitiesPagination.setLoading(false)
         }
@@ -99,22 +94,23 @@ class CommunityViewModel(
             )
 
         viewModelScope.launch {
-            try {
-                val response = api.toggleLike(post.id)
-                val i = feed.indexOfFirst { it.id == post.id }
-                if (i >= 0) {
-                    feed[i] = feed[i].copy(isLiked = response.isLiked, likes = response.likes)
+            repository
+                .togglePostLike(post.id)
+                .onSuccess { status ->
+                    val i = feed.indexOfFirst { it.id == post.id }
+                    if (i >= 0) {
+                        feed[i] = feed[i].copy(isLiked = status.isLiked, likes = status.likes)
+                    }
+                }.onFailure {
+                    val i = feed.indexOfFirst { it.id == post.id }
+                    if (i >= 0) {
+                        feed[i] =
+                            feed[i].copy(
+                                isLiked = !feed[i].isLiked,
+                                likes = feed[i].likes + if (feed[i].isLiked) -1 else 1,
+                            )
+                    }
                 }
-            } catch (_: Exception) {
-                val i = feed.indexOfFirst { it.id == post.id }
-                if (i >= 0) {
-                    feed[i] =
-                        feed[i].copy(
-                            isLiked = !feed[i].isLiked,
-                            likes = feed[i].likes + if (feed[i].isLiked) -1 else 1,
-                        )
-                }
-            }
         }
     }
 
@@ -137,13 +133,13 @@ class CommunityViewModel(
         communities[index] = community.copy(isJoined = joined)
 
         viewModelScope.launch {
-            try {
+            val result =
                 if (joined) {
-                    api.joinCommunity(community.id)
+                    repository.joinCommunity(community.id)
                 } else {
-                    api.leaveCommunity(community.id)
+                    repository.leaveCommunity(community.id)
                 }
-            } catch (_: Exception) {
+            result.onFailure {
                 val i = communities.indexOfFirst { it.id == community.id }
                 if (i >= 0) {
                     communities[i] = communities[i].copy(isJoined = !joined)
@@ -159,5 +155,10 @@ class CommunityViewModel(
     fun removeCommunity(id: Long) {
         communities.removeAll { it.id == id }
         feed.removeAll { it.communityId == id }
+    }
+
+    private companion object {
+        const val FEED_PAGE_SIZE = 20
+        const val COMMUNITIES_PAGE_SIZE = 30
     }
 }

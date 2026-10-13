@@ -4,9 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.core.network.dto.CreatePostRequest
-import com.lucasdias.gametrackr.core.network.dto.toDomain
+import com.lucasdias.gametrackr.data.community.CommunityRepository
 import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class CreateTopicViewModel(
     communityName: String,
-    private val api: CommunityApi,
+    private val repository: CommunityRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CreateTopicUiState())
     val uiState: StateFlow<CreateTopicUiState> = _uiState.asStateFlow()
@@ -28,11 +26,7 @@ class CreateTopicViewModel(
 
     init {
         viewModelScope.launch {
-            try {
-                val response = api.getJoinedCommunities()
-                communities.addAll(response.data.map { it.toDomain() })
-            } catch (_: Exception) {
-            }
+            repository.fetchJoinedCommunities().onSuccess { communities.addAll(it) }
             val locked =
                 communityName
                     .takeIf { it.isNotBlank() }
@@ -65,17 +59,12 @@ class CreateTopicViewModel(
         val community = state.community ?: return null
         if (!state.canSubmit) return null
 
-        return try {
-            val request =
-                CreatePostRequest(
-                    title = state.title.trim(),
-                    description = state.body.trim(),
-                    communityId = community.id,
-                )
-            api.createPost(request).post.toDomain()
-        } catch (_: Exception) {
-            null
-        }
+        return repository
+            .createPost(
+                title = state.title.trim(),
+                description = state.body.trim(),
+                communityId = community.id,
+            ).getOrNull()
     }
 
     private fun revalidate() {

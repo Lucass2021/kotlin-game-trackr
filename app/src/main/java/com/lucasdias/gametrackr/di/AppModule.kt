@@ -15,6 +15,8 @@ import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.core.network.TokenRefresher
 import com.lucasdias.gametrackr.data.auth.AuthRepository
 import com.lucasdias.gametrackr.data.auth.RemoteAuthRepository
+import com.lucasdias.gametrackr.data.community.CommunityRepository
+import com.lucasdias.gametrackr.data.community.RemoteCommunityRepository
 import com.lucasdias.gametrackr.data.game.GameRepository
 import com.lucasdias.gametrackr.data.game.RemoteGameRepository
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
@@ -119,6 +121,7 @@ val appModule =
         }
 
         single<GameRepository> { RemoteGameRepository(get(), get()) }
+        single<CommunityRepository> { RemoteCommunityRepository(get(), get()) }
         single<AuthRepository> { RemoteAuthRepository(get(), get(), get(), get()) }
         single { GoogleAuth(get()) }
 
@@ -135,6 +138,6 @@ val appModule =
             ResetPasswordViewModel(get(), androidContext(), email, code)
         }
         viewModel { (communityName: String) -> CreateTopicViewModel(communityName, get()) }
-        viewModel { CreateCommunityViewModel(get(), get(), androidContext()) }
+        viewModel { CreateCommunityViewModel(get(), androidContext()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get(), get(), androidContext()) }
     }

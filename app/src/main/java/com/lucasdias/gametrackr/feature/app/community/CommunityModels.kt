@@ -83,3 +83,8 @@ data class PostComment(
     val replies: List<PostComment> = emptyList(),
     val hiddenReplies: Int = 0,
 )
+
+data class LikeStatus(
+    val isLiked: Boolean,
+    val likes: Int,
+)

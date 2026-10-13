@@ -4,21 +4,16 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.ApiError
-import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.core.network.dto.CreateCommunityRequest
-import com.lucasdias.gametrackr.core.network.dto.toDomain
-import com.lucasdias.gametrackr.core.network.toApiError
+import com.lucasdias.gametrackr.data.community.CommunityRepository
 import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.json.Json
 
 class CreateCommunityViewModel(
-    private val api: CommunityApi,
-    private val json: Json,
+    private val repository: CommunityRepository,
     private val context: Context,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CreateCommunityUiState())
@@ -43,29 +38,19 @@ class CreateCommunityViewModel(
         if (!state.canSubmit) return null
 
         _uiState.update { it.copy(isSubmitting = true, submitError = null) }
-        return try {
-            val request =
-                CreateCommunityRequest(
-                    title = state.handle,
-                    description = state.description.trim(),
-                )
-            api
-                .createCommunity(request)
-                .community
-                .toDomain()
-                .copy(isJoined = true, members = "1")
-        } catch (throwable: Exception) {
-            val message =
-                when (val error = throwable.toApiError(json)) {
-                    is ApiError.Server -> context.getString(R.string.create_community_name_taken)
-                    else -> error.toMessage(context)
-                }
-            _uiState.update { it.copy(submitError = message) }
-            null
-        } finally {
-            _uiState.update { it.copy(isSubmitting = false) }
-        }
+        val result = repository.createCommunity(title = state.handle, description = state.description.trim())
+        _uiState.update { it.copy(isSubmitting = false) }
+        return result
+            .onFailure { error -> _uiState.update { it.copy(submitError = submitErrorFor(error)) } }
+            .getOrNull()
+            ?.copy(isJoined = true, members = FIRST_MEMBER_COUNT)
     }
+
+    private fun submitErrorFor(error: Throwable): String =
+        when (error) {
+            is ApiError.Server -> context.getString(R.string.create_community_name_taken)
+            else -> (error as? ApiError)?.toMessage(context) ?: context.getString(R.string.error_generic)
+        }
 
     private fun revalidate() {
         if (!submitted) return
@@ -106,5 +91,9 @@ class CreateCommunityViewModel(
                 null
             }
         }
+    }
+
+    private companion object {
+        const val FIRST_MEMBER_COUNT = "1"
     }
 }
