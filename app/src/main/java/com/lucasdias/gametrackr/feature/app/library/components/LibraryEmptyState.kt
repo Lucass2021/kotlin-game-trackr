@@ -19,12 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
 import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
@@ -38,8 +36,12 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 
 @Composable
 fun LibraryEmptyState(
-    onBrowse: () -> Unit,
+    title: String,
+    message: String,
+    actionTitle: String,
+    onAction: () -> Unit,
     modifier: Modifier = Modifier,
+    actionIcon: AppIcon? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Column(
@@ -66,7 +68,7 @@ fun LibraryEmptyState(
         }
 
         Text(
-            text = stringResource(R.string.library_empty_title),
+            text = title,
             color = AppTextPrimary,
             style = AppType.headline(26.sp, FontWeight.ExtraBold),
             textAlign = TextAlign.Center,
@@ -74,7 +76,7 @@ fun LibraryEmptyState(
         )
 
         Text(
-            text = stringResource(R.string.library_empty_subtitle),
+            text = message,
             color = AppTextSecondary,
             fontSize = 15.sp,
             textAlign = TextAlign.Center,
@@ -92,23 +94,25 @@ fun LibraryEmptyState(
                     .clickable(
                         interactionSource = interactionSource,
                         indication = null,
-                        onClick = onBrowse,
+                        onClick = onAction,
                     ).padding(horizontal = 28.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
-                text = stringResource(R.string.library_browse_games),
+                text = actionTitle,
                 color = AppOnPrimary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
             )
-            Icon(
-                imageVector = AppIcon.FORWARD.image(),
-                contentDescription = null,
-                tint = AppOnPrimary,
-                modifier = Modifier.size(18.dp),
-            )
+            if (actionIcon != null) {
+                Icon(
+                    imageVector = actionIcon.image(),
+                    contentDescription = null,
+                    tint = AppOnPrimary,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
         }
     }
 }

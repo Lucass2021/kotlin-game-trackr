@@ -39,7 +39,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.data.library.LibraryRepository
-import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryFilterChips
@@ -110,7 +109,13 @@ fun LibraryScreen(
             }
 
             pagination.items.isEmpty() -> {
-                LibraryEmptyState(onBrowse = onBrowseGames)
+                LibraryEmptyState(
+                    title = stringResource(R.string.library_empty_title),
+                    message = stringResource(R.string.library_empty_subtitle),
+                    actionTitle = stringResource(R.string.library_browse_games),
+                    onAction = onBrowseGames,
+                    actionIcon = AppIcon.FORWARD,
+                )
             }
 
             filteredEntries.isEmpty() -> {
@@ -156,8 +161,7 @@ fun LibraryScreen(
 
 @Composable
 private fun LibraryGuestState(onCreateAccount: () -> Unit) {
-    CommunityEmptyState(
-        icon = AppIcon.BRAND,
+    LibraryEmptyState(
         title = stringResource(R.string.library_guest_title),
         message = stringResource(R.string.library_guest_message),
         actionTitle = stringResource(R.string.library_guest_action),

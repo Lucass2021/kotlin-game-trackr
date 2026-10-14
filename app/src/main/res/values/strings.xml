@@ -290,7 +290,7 @@
     <string name="create_community_name_taken">Couldn\'t create the community. That name may already be taken.</string>
 
     <string name="library_guest_title">Library needs an account</string>
-    <string name="library_guest_message">Create an account to track your games, log hours, and build your collection.</string>
+    <string name="library_guest_message">Create an account to start tracking your games, building your collection, and logging your progress.</string>
     <string name="library_guest_action">Create an account</string>
 
     <string name="discover_guest_title">Account required</string>
