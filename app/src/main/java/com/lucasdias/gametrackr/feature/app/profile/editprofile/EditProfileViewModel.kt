@@ -7,10 +7,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.network.ApiError
-import com.lucasdias.gametrackr.core.network.ProfileApi
-import com.lucasdias.gametrackr.core.network.dto.UpdateProfileRequest
-import com.lucasdias.gametrackr.core.network.dto.toDomain
-import com.lucasdias.gametrackr.core.network.toApiError
+import com.lucasdias.gametrackr.data.profile.ProfileRepository
 import com.lucasdias.gametrackr.feature.app.profile.Profile
 import com.lucasdias.gametrackr.feature.app.profile.ProfileVisibility
 import com.lucasdias.gametrackr.feature.auth.toMessage
@@ -19,13 +16,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 class EditProfileViewModel(
     private val original: Profile,
-    private val api: ProfileApi,
+    private val repository: ProfileRepository,
     private val sessionManager: SessionManager,
-    private val json: Json,
     private val context: Context,
 ) : ViewModel() {
     private val _uiState =
@@ -44,9 +39,7 @@ class EditProfileViewModel(
 
     init {
         viewModelScope.launch {
-            val colors =
-                runCatching { api.getColors().data.map { it.toDomain() } }
-                    .getOrDefault(emptyList())
+            val colors = repository.fetchColors().getOrDefault(emptyList())
             _uiState.update { it.copy(colors = colors) }
         }
     }
@@ -96,17 +89,11 @@ class EditProfileViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true, errorMessage = null) }
             val result =
-                runCatching {
-                    api
-                        .update(
-                            UpdateProfileRequest(
-                                name = state.name.trim(),
-                                username = state.normalizedUsername,
-                                profileColor = state.avatarHex,
-                            ),
-                        ).user
-                        .toDomain()
-                }
+                repository.updateProfile(
+                    name = state.name.trim(),
+                    username = state.normalizedUsername,
+                    profileColor = state.avatarHex,
+                )
             _uiState.update { it.copy(isSaving = false) }
 
             result
@@ -130,7 +117,7 @@ class EditProfileViewModel(
             ).applying(user)
     }
 
-    private fun messageFor(error: Throwable): String = error.toApiError(json).toMessage(context)
+    private fun messageFor(error: Throwable): String = (error as? ApiError)?.toMessage(context) ?: context.getString(R.string.error_generic)
 
     private fun revalidate() {
         if (!submitted) return
