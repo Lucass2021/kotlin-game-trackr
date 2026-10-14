@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.feature.app.library
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,8 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,18 +31,23 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
-import com.lucasdias.gametrackr.core.pagination.MockPaginationState
+import com.lucasdias.gametrackr.core.pagination.PaginationState
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
+import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.library.LibraryRepository
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryFilterChips
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryStatsBar
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+
+private const val ENTRIES_PAGE_SIZE = 3
 
 @Composable
 fun LibraryScreen(
@@ -50,21 +58,40 @@ fun LibraryScreen(
     modifier: Modifier = Modifier,
     onBrowseGames: () -> Unit = {},
     onGameClick: () -> Unit = {},
+    repository: LibraryRepository = koinInject(),
 ) {
     if (isGuest) {
         LibraryGuestState(onCreateAccount = onCreateAccount)
         return
     }
 
-    val pagination = remember { MockPaginationState(LibraryMockData.entries, pageSize = 3) }
+    val pagination = remember { PaginationState<LibraryEntry>() }
+    var stats by remember { mutableStateOf<LibraryStats?>(null) }
     val coroutineScope = rememberCoroutineScope()
+
+    fun loadNextPage() {
+        if (!pagination.canLoadMore) return
+        pagination.setLoading(true)
+        coroutineScope.launch {
+            repository
+                .fetchLibrary(page = pagination.currentPage + 1, perPage = ENTRIES_PAGE_SIZE)
+                .onSuccess { pagination.append(it) }
+            pagination.setLoading(false)
+        }
+    }
+
+    LaunchedEffect(repository) {
+        loadNextPage()
+        stats = repository.fetchLibraryStats().getOrNull()
+    }
 
     val filteredEntries = if (filter == null) pagination.items.toList() else pagination.items.filter { it.status == filter }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
-        if (pagination.items.isNotEmpty()) {
+        val loadedStats = stats
+        if (pagination.items.isNotEmpty() && loadedStats != null) {
             LibraryStatsBar(
-                stats = LibraryMockData.stats,
+                stats = loadedStats,
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 16.dp),
             )
         }
@@ -76,6 +103,12 @@ fun LibraryScreen(
         )
 
         when {
+            pagination.currentPage == 0 -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AppPrimary)
+                }
+            }
+
             pagination.items.isEmpty() -> {
                 LibraryEmptyState(onBrowse = onBrowseGames)
             }
@@ -90,7 +123,7 @@ fun LibraryScreen(
                 InfiniteScrollEffect(
                     listState = listState,
                     canLoadMore = pagination.canLoadMore,
-                    onLoadMore = { coroutineScope.launch { pagination.loadNextPage() } },
+                    onLoadMore = ::loadNextPage,
                 )
 
                 LazyColumn(
