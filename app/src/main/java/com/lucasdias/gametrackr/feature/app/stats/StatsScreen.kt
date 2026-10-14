@@ -2,12 +2,20 @@ package com.lucasdias.gametrackr.feature.app.stats
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -16,6 +24,8 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
+import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
+import com.lucasdias.gametrackr.data.stats.StatsRepository
 import com.lucasdias.gametrackr.feature.app.stats.components.AchievementSpotlightCard
 import com.lucasdias.gametrackr.feature.app.stats.components.StatBarList
 import com.lucasdias.gametrackr.feature.app.stats.components.StatHighlightCard
@@ -23,16 +33,18 @@ import com.lucasdias.gametrackr.feature.app.stats.components.StatsSectionCard
 import com.lucasdias.gametrackr.feature.app.stats.components.StatsTopBar
 import com.lucasdias.gametrackr.feature.app.stats.components.StatusShareBar
 import com.lucasdias.gametrackr.feature.app.stats.components.YearBarChart
+import org.koin.compose.koinInject
 
 @Composable
 fun StatsScreen(
     onBack: () -> Unit,
     onAchievements: () -> Unit,
     modifier: Modifier = Modifier,
-    stats: UserStats = StatsMockData.stats,
     ownerName: String? = null,
+    repository: StatsRepository = koinInject(),
 ) {
     val context = LocalContext.current
+    var stats by remember { mutableStateOf<UserStats?>(null) }
     val title =
         if (ownerName == null) {
             stringResource(R.string.stats_title_own)
@@ -54,41 +66,60 @@ fun StatsScreen(
             onShare = { context.shareText(shareMessage) },
         )
 
-        LazyColumn(
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            items(stats.highlights, key = { it.labelRes }) { highlight ->
-                StatHighlightCard(highlight = highlight)
+        val loaded = stats
+        if (loaded == null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = AppPrimary)
             }
+        } else {
+            StatsContent(stats = loaded, onAchievements = onAchievements)
+        }
+    }
 
-            item {
-                StatsSectionCard(title = stringResource(R.string.stats_section_status), icon = AppIcon.CHART) {
-                    StatusShareBar(shares = stats.statusShare)
-                }
-            }
+    LaunchedEffect(repository) {
+        stats = repository.fetchStats().getOrNull()
+    }
+}
 
-            item {
-                StatsSectionCard(title = stringResource(R.string.stats_section_genres), icon = AppIcon.BRAND) {
-                    StatBarList(bars = stats.genres)
-                }
-            }
+@Composable
+private fun StatsContent(
+    stats: UserStats,
+    onAchievements: () -> Unit,
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        items(stats.highlights, key = { it.labelRes }) { highlight ->
+            StatHighlightCard(highlight = highlight)
+        }
 
-            item {
-                StatsSectionCard(title = stringResource(R.string.stats_section_platforms), icon = AppIcon.DEVICES) {
-                    StatBarList(bars = stats.platforms)
-                }
+        item {
+            StatsSectionCard(title = stringResource(R.string.stats_section_status), icon = AppIcon.CHART) {
+                StatusShareBar(shares = stats.statusShare)
             }
+        }
 
-            item {
-                StatsSectionCard(title = stringResource(R.string.stats_section_years), icon = AppIcon.CALENDAR) {
-                    YearBarChart(years = stats.yearsCompleted)
-                }
+        item {
+            StatsSectionCard(title = stringResource(R.string.stats_section_genres), icon = AppIcon.BRAND) {
+                StatBarList(bars = stats.genres)
             }
+        }
 
-            item {
-                AchievementSpotlightCard(spotlight = stats.spotlight, onAction = onAchievements)
+        item {
+            StatsSectionCard(title = stringResource(R.string.stats_section_platforms), icon = AppIcon.DEVICES) {
+                StatBarList(bars = stats.platforms)
             }
+        }
+
+        item {
+            StatsSectionCard(title = stringResource(R.string.stats_section_years), icon = AppIcon.CALENDAR) {
+                YearBarChart(years = stats.yearsCompleted)
+            }
+        }
+
+        item {
+            AchievementSpotlightCard(spotlight = stats.spotlight, onAction = onAchievements)
         }
     }
 }

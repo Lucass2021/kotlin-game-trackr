@@ -21,6 +21,8 @@ import com.lucasdias.gametrackr.data.game.GameRepository
 import com.lucasdias.gametrackr.data.game.RemoteGameRepository
 import com.lucasdias.gametrackr.data.profile.ProfileRepository
 import com.lucasdias.gametrackr.data.profile.RemoteProfileRepository
+import com.lucasdias.gametrackr.data.stats.FakeStatsRepository
+import com.lucasdias.gametrackr.data.stats.StatsRepository
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
@@ -126,6 +128,7 @@ val appModule =
         single<CommunityRepository> { RemoteCommunityRepository(get(), get()) }
         single<AuthRepository> { RemoteAuthRepository(get(), get(), get(), get()) }
         single<ProfileRepository> { RemoteProfileRepository(get(), get()) }
+        single<StatsRepository> { FakeStatsRepository() }
         single { GoogleAuth(get()) }
 
         viewModel { CommunityViewModel(get()) }
