@@ -71,8 +71,8 @@ class FakeGameRepository : GameRepository {
         return Result.success(HomeMockData.platforms)
     }
 
-    private companion object {
-        val games = listOf(HomeMockData.sampleGame)
+    companion object {
+        private val games = listOf(HomeMockData.sampleGame)
 
         val gameDetail =
             GameDetail(

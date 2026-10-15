@@ -58,8 +58,8 @@ fun GameDetailScreen(
     onBack: () -> Unit,
     slug: String,
     isGuest: Boolean = false,
-    viewModel: GameDetailViewModel = koinViewModel { parametersOf(slug) },
 ) {
+    val viewModel: GameDetailViewModel = koinViewModel { parametersOf(slug) }
     val game by viewModel.game.collectAsStateWithLifecycle()
     val hasError by viewModel.hasError.collectAsStateWithLifecycle()
 
@@ -197,12 +197,6 @@ private fun GameDetailContent(
 @Composable
 private fun GameDetailScreenPreview() {
     AppPreview {
-        GameDetailScreen(
-            onBack = {},
-            slug = PREVIEW_SLUG,
-            viewModel = GameDetailViewModel(FakeGameRepository(), PREVIEW_SLUG),
-        )
+        GameDetailContent(game = FakeGameRepository.gameDetail, onBack = {}, isGuest = false)
     }
 }
-
-private const val PREVIEW_SLUG = "neon-ascent-revival"
