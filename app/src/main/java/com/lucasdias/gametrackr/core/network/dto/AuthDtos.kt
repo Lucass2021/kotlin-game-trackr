@@ -1,10 +1,14 @@
 package com.lucasdias.gametrackr.core.network.dto
 
+import com.lucasdias.gametrackr.core.model.ProfileVisibility
 import com.lucasdias.gametrackr.core.model.User
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 @Serializable
 data class LoginRequest(
@@ -50,6 +54,9 @@ data class UserDto(
     val email: String,
     val username: String? = null,
     @SerialName("profile_color") val profileColor: String? = null,
+    val bio: String? = null,
+    val visibility: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
 )
 
 fun UserDto.toDomain() =
@@ -59,7 +66,12 @@ fun UserDto.toDomain() =
         email = email,
         username = username,
         profileColor = profileColor,
+        bio = bio,
+        visibility = ProfileVisibility.fromApi(visibility),
+        createdAt = createdAt?.let(::parseDate),
     )
+
+private fun parseDate(value: String): LocalDate? = runCatching { Instant.parse(value).atZone(ZoneOffset.UTC).toLocalDate() }.getOrNull()
 
 @Serializable
 data class AuthResponse(

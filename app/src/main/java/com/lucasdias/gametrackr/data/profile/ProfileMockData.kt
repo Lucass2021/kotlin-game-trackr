@@ -22,6 +22,7 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
+import java.time.LocalDate
 
 object ProfileMockData {
     val profile =
@@ -29,7 +30,7 @@ object ProfileMockData {
             name = "Lucas Dias",
             username = "@lucasdias",
             bio = "Backlog eterno, platina ocasional. RPGs de turno e speedruns de fim de semana.",
-            joinedAt = "Joined March 2024",
+            joinedAt = LocalDate.of(2024, 3, 15),
             avatarHex = "#8B5CF6",
             stats = ProfileStats(totalGames = 142, hours = 1248, platinum = 21),
         )

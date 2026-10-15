@@ -42,6 +42,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
 import com.lucasdias.gametrackr.feature.app.profile.ProfileHeaderMode
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 private val AvatarSize = 88.dp
 private val AvatarOverhang = 44.dp
@@ -100,9 +102,17 @@ fun ProfileHeader(
             modifier = Modifier.padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Text(text = profile.bio, color = AppTextSecondary, style = AppType.body(15.sp))
+            if (profile.bio.isNotBlank()) {
+                Text(text = profile.bio, color = AppTextSecondary, style = AppType.body(15.sp))
+            }
 
-            Text(text = profile.joinedAt, color = AppTextSecondary, style = AppType.body(13.sp))
+            profile.joinedAt?.let { joinedAt ->
+                Text(
+                    text = stringResource(R.string.profile_joined, JOINED_FORMATTER.format(joinedAt)),
+                    color = AppTextSecondary,
+                    style = AppType.body(13.sp),
+                )
+            }
 
             Actions(
                 mode = mode,
@@ -303,3 +313,5 @@ private fun CircleAction(
         )
     }
 }
+
+private val JOINED_FORMATTER = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH)

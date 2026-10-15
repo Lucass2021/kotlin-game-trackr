@@ -147,6 +147,7 @@
     <string name="profile_stat_games">Games</string>
     <string name="profile_stat_hours">Hours</string>
     <string name="profile_stat_platinum">Platinum</string>
+    <string name="profile_joined">Joined %1$s</string>
     <string name="profile_section_breakdown">Breakdown</string>
     <string name="profile_section_favorites">Favorites</string>
     <string name="profile_section_currently_playing">Currently playing</string>

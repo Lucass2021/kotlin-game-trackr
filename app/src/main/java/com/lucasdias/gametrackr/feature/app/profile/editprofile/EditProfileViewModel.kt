@@ -93,6 +93,8 @@ class EditProfileViewModel(
                     name = state.name.trim(),
                     username = state.normalizedUsername,
                     profileColor = state.avatarHex,
+                    bio = state.bio.trim(),
+                    visibility = state.visibility,
                 )
             _uiState.update { it.copy(isSaving = false) }
 

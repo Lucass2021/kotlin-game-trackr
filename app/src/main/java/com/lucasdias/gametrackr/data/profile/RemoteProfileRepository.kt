@@ -1,6 +1,7 @@
 package com.lucasdias.gametrackr.data.profile
 
 import com.lucasdias.gametrackr.core.model.ProfileColor
+import com.lucasdias.gametrackr.core.model.ProfileVisibility
 import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.network.ProfileApi
 import com.lucasdias.gametrackr.core.network.apiCall
@@ -18,8 +19,18 @@ class RemoteProfileRepository(
         name: String,
         username: String,
         profileColor: String,
+        bio: String,
+        visibility: ProfileVisibility,
     ): Result<User> =
         apiCall(json) {
-            api.update(UpdateProfileRequest(name = name, username = username, profileColor = profileColor)).user.toDomain()
+            val request =
+                UpdateProfileRequest(
+                    name = name,
+                    username = username,
+                    profileColor = profileColor,
+                    bio = bio,
+                    visibility = visibility.apiValue,
+                )
+            api.update(request).user.toDomain()
         }
 }

@@ -31,7 +31,7 @@ data class EditProfileUiState(
     companion object {
         const val NAME_LIMIT = 50
         const val USERNAME_LIMIT = 20
-        const val BIO_LIMIT = 160
+        const val BIO_LIMIT = 1000
         const val USERNAME_ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789_"
     }
 }

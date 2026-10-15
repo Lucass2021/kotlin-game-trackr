@@ -22,6 +22,8 @@ data class UpdateProfileRequest(
     val name: String,
     val username: String,
     @SerialName("profile_color") val profileColor: String,
+    val bio: String,
+    val visibility: String,
 )
 
 fun ProfileColorDto.toDomain() = ProfileColor(key = key, name = name, hex = hex)

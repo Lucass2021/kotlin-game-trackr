@@ -12,6 +12,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.darkened
 import com.lucasdias.gametrackr.core.ui.theme.toAppColor
+import java.time.LocalDate
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -19,7 +20,7 @@ data class Profile(
     val name: String,
     val username: String,
     val bio: String,
-    val joinedAt: String,
+    val joinedAt: LocalDate?,
     val avatarHex: String,
     val stats: ProfileStats,
     val visibility: ProfileVisibility = ProfileVisibility.PUBLIC,
@@ -35,6 +36,9 @@ data class Profile(
                 name = user.name,
                 username = user.username?.let { "@$it" } ?: username,
                 avatarHex = user.profileColor ?: avatarHex,
+                bio = user.bio.orEmpty(),
+                visibility = user.visibility,
+                joinedAt = user.createdAt ?: joinedAt,
             )
         }
 
@@ -44,20 +48,28 @@ data class Profile(
 }
 
 enum class ProfileVisibility(
+    val apiValue: String,
     val icon: AppIcon,
     @param:StringRes val titleRes: Int,
     @param:StringRes val detailRes: Int,
 ) {
     PUBLIC(
+        "public",
         AppIcon.EYE,
         R.string.edit_profile_visibility_public,
         R.string.edit_profile_visibility_public_detail,
     ),
     PRIVATE(
+        "private",
         AppIcon.EYE_SLASH,
         R.string.edit_profile_visibility_private,
         R.string.edit_profile_visibility_private_detail,
     ),
+    ;
+
+    companion object {
+        fun fromApi(value: String?): ProfileVisibility = entries.firstOrNull { it.apiValue == value } ?: PUBLIC
+    }
 }
 
 data class ProfileStats(
