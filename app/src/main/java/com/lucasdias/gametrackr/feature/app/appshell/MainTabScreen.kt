@@ -188,9 +188,9 @@ fun MainTabScreen(
                 onAdd = {
                     editingSetup =
                         SetupItem(
+                            id = (setups.maxOfOrNull { it.id } ?: 0) + 1,
                             title = "",
                             description = "",
-                            palette = SetupPalette.entries[setups.size % SetupPalette.entries.size],
                         )
                     navController.navigate(ShellRoutes.EDIT_SETUP)
                 },

@@ -85,16 +85,19 @@ object ProfileMockData {
     val setups =
         listOf(
             SetupItem(
+                id = 1,
                 title = "Main Battle Station",
                 description = "RTX 4090 + i9-14900K, 32\" 4K 144Hz",
                 palette = SetupPalette.INDIGO,
             ),
             SetupItem(
+                id = 2,
                 title = "Retro Corner",
                 description = "CRT TV + SNES, N64, and PS2",
                 palette = SetupPalette.CRIMSON,
             ),
             SetupItem(
+                id = 3,
                 title = "Portable Setup",
                 description = "Steam Deck OLED + Backbone",
                 palette = SetupPalette.EMERALD,

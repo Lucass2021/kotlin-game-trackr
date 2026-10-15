@@ -30,4 +30,8 @@ enum class SetupPalette(
     ;
 
     val title: String get() = name.lowercase().replaceFirstChar { it.uppercase() }
+
+    companion object {
+        fun forId(id: Int): SetupPalette = entries[id.mod(entries.size)]
+    }
 }

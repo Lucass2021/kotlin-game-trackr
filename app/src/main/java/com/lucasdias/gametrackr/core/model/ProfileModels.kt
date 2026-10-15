@@ -127,11 +127,23 @@ data class ActivityEvent(
 )
 
 data class SetupItem(
-    val id: String = UUID.randomUUID().toString(),
+    val id: Int,
     val title: String,
     val description: String,
+    val images: List<SetupImage> = emptyList(),
     val photos: List<Uri> = emptyList(),
-    val palette: SetupPalette = SetupPalette.INDIGO,
+    val palette: SetupPalette = SetupPalette.forId(id),
+)
+
+data class SetupImage(
+    val id: Int,
+    val url: String,
+)
+
+class SetupImageUpload(
+    val bytes: ByteArray,
+    val fileName: String,
+    val mimeType: String,
 )
 
 data class ProfileOverview(
