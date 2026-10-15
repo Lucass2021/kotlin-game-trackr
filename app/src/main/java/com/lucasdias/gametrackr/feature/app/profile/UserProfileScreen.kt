@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,15 +40,18 @@ import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
+import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.profile.ProfileOverviewRepository
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileActivitySection
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileBreakdownSection
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileFavoritesRow
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileHeader
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileStatsBar
+import org.koin.compose.koinInject
 
 @Composable
 fun UserProfileScreen(
@@ -56,10 +61,16 @@ fun UserProfileScreen(
     onGameClick: () -> Unit,
     onViewStats: () -> Unit,
     modifier: Modifier = Modifier,
+    repository: ProfileOverviewRepository = koinInject(),
 ) {
     var isFriend by rememberSaveable(user.name) { mutableStateOf(user.isFriend) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
     val profile = remember(user) { UserProfileMockData.profile(user) }
+    var overview by remember { mutableStateOf<ProfileOverview?>(null) }
+
+    LaunchedEffect(user.username) {
+        overview = repository.fetchUserOverview(user.username).getOrNull()
+    }
 
     val guestAddFriend = stringResource(R.string.user_profile_guest_add_friend)
     val guestMessage = stringResource(R.string.user_profile_guest_message)
@@ -74,6 +85,14 @@ fun UserProfileScreen(
     Box(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBar(username = user.username, onBack = onBack)
+
+            val loadedOverview = overview
+            if (loadedOverview == null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AppPrimary)
+                }
+                return@Column
+            }
 
             LazyColumn(contentPadding = PaddingValues(bottom = 32.dp)) {
                 item {
@@ -102,7 +121,7 @@ fun UserProfileScreen(
                     SectionTitle(stringResource(R.string.profile_section_breakdown))
                     Spacer(Modifier.height(14.dp))
                     ProfileBreakdownSection(
-                        breakdown = UserProfileMockData.breakdown,
+                        breakdown = loadedOverview.breakdown,
                         onSelect = {},
                         modifier = Modifier.padding(horizontal = 20.dp),
                     )
@@ -112,7 +131,7 @@ fun UserProfileScreen(
                 item {
                     SectionTitle(stringResource(R.string.profile_section_favorites))
                     Spacer(Modifier.height(14.dp))
-                    ProfileFavoritesRow(favorites = UserProfileMockData.favorites, onSelect = { onGameClick() })
+                    ProfileFavoritesRow(favorites = loadedOverview.favorites, onSelect = { onGameClick() })
                     Spacer(Modifier.height(26.dp))
                 }
 
@@ -121,7 +140,7 @@ fun UserProfileScreen(
                     Spacer(Modifier.height(14.dp))
                 }
 
-                items(UserProfileMockData.currentlyPlaying, key = { it.title }) { entry ->
+                items(loadedOverview.currentlyPlaying, key = { it.title }) { entry ->
                     val interactionSource = remember { MutableInteractionSource() }
                     LibraryEntryRow(
                         entry = entry,
@@ -145,7 +164,7 @@ fun UserProfileScreen(
                     SectionTitle(stringResource(R.string.profile_section_activity))
                     Spacer(Modifier.height(14.dp))
                     ProfileActivitySection(
-                        events = UserProfileMockData.activity,
+                        events = loadedOverview.activity,
                         modifier = Modifier.padding(horizontal = 20.dp),
                     )
                 }

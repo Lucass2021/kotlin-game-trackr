@@ -25,6 +25,8 @@ import com.lucasdias.gametrackr.data.library.FakeLibraryRepository
 import com.lucasdias.gametrackr.data.library.LibraryRepository
 import com.lucasdias.gametrackr.data.notifications.FakeNotificationsRepository
 import com.lucasdias.gametrackr.data.notifications.NotificationsRepository
+import com.lucasdias.gametrackr.data.profile.FakeProfileOverviewRepository
+import com.lucasdias.gametrackr.data.profile.ProfileOverviewRepository
 import com.lucasdias.gametrackr.data.profile.ProfileRepository
 import com.lucasdias.gametrackr.data.profile.RemoteProfileRepository
 import com.lucasdias.gametrackr.data.stats.FakeStatsRepository
@@ -138,6 +140,7 @@ val appModule =
         single<LibraryRepository> { FakeLibraryRepository() }
         single<NotificationsRepository> { FakeNotificationsRepository() }
         single<AchievementsRepository> { FakeAchievementsRepository() }
+        single<ProfileOverviewRepository> { FakeProfileOverviewRepository() }
         single { GoogleAuth(get()) }
 
         viewModel { CommunityViewModel(get()) }

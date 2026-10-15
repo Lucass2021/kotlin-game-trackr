@@ -13,6 +13,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.darkened
 import com.lucasdias.gametrackr.core.ui.theme.toAppColor
+import com.lucasdias.gametrackr.feature.app.library.LibraryEntry
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 import com.lucasdias.gametrackr.feature.app.profile.setup.SetupPalette
 import java.util.UUID
@@ -131,4 +132,11 @@ data class SetupItem(
     val description: String,
     val photos: List<Uri> = emptyList(),
     val palette: SetupPalette = SetupPalette.INDIGO,
+)
+
+data class ProfileOverview(
+    val breakdown: List<StatusCount>,
+    val favorites: List<LibraryEntry>,
+    val currentlyPlaying: List<LibraryEntry>,
+    val activity: List<ActivityEvent>,
 )

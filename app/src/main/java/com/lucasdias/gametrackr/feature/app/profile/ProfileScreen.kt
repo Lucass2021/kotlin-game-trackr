@@ -17,10 +17,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +48,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.profile.ProfileOverviewRepository
 import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileActivitySection
@@ -51,6 +57,7 @@ import com.lucasdias.gametrackr.feature.app.profile.components.ProfileFavoritesR
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileHeader
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileSetupRow
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileStatsBar
+import org.koin.compose.koinInject
 
 @Composable
 fun ProfileScreen(
@@ -64,9 +71,22 @@ fun ProfileScreen(
     setups: List<SetupItem>,
     modifier: Modifier = Modifier,
     profile: Profile = ProfileMockData.profile,
+    repository: ProfileOverviewRepository = koinInject(),
 ) {
     if (isGuest) {
         GuestState(onCreateAccount = onCreateAccount, modifier = modifier)
+        return
+    }
+
+    var overview by remember { mutableStateOf<ProfileOverview?>(null) }
+
+    LaunchedEffect(repository) {
+        overview = repository.fetchMyOverview().getOrNull()
+    }
+
+    val loadedOverview = overview
+    if (loadedOverview == null) {
+        LoadingState(modifier)
         return
     }
 
@@ -97,7 +117,7 @@ fun ProfileScreen(
             SectionHeader(title = stringResource(R.string.profile_section_breakdown))
             Spacer(Modifier.height(14.dp))
             ProfileBreakdownSection(
-                breakdown = ProfileMockData.breakdown,
+                breakdown = loadedOverview.breakdown,
                 onSelect = onStatusClick,
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
@@ -111,7 +131,7 @@ fun ProfileScreen(
                 onAction = onGameClick,
             )
             Spacer(Modifier.height(14.dp))
-            ProfileFavoritesRow(favorites = ProfileMockData.favorites, onSelect = { onGameClick() })
+            ProfileFavoritesRow(favorites = loadedOverview.favorites, onSelect = { onGameClick() })
             Spacer(Modifier.height(26.dp))
         }
 
@@ -124,7 +144,7 @@ fun ProfileScreen(
             Spacer(Modifier.height(14.dp))
         }
 
-        items(ProfileMockData.currentlyPlaying, key = { it.title }) { entry ->
+        items(loadedOverview.currentlyPlaying, key = { it.title }) { entry ->
             val interactionSource = remember { MutableInteractionSource() }
             LibraryEntryRow(
                 entry = entry,
@@ -246,5 +266,12 @@ private fun GuestState(
             onClick = onCreateAccount,
             modifier = Modifier.padding(top = 28.dp),
         )
+    }
+}
+
+@Composable
+private fun LoadingState(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize().background(AppBackground), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(color = AppPrimary)
     }
 }
