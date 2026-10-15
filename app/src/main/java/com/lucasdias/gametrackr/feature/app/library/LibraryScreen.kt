@@ -29,6 +29,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.LibraryEntry
+import com.lucasdias.gametrackr.core.model.LibraryStats
+import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.pagination.PaginationState

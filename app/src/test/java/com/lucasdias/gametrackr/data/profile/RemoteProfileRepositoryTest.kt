@@ -1,5 +1,6 @@
 package com.lucasdias.gametrackr.data.profile
 
+import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.ProfileColor
 import com.lucasdias.gametrackr.core.network.ProfileApi
 import kotlinx.coroutines.runBlocking

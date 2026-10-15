@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.GameScreenshot
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
-import com.lucasdias.gametrackr.feature.app.gamedetail.GameScreenshot
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
 
 @Composable

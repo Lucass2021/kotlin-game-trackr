@@ -1,6 +1,15 @@
-package com.lucasdias.gametrackr.feature.app.profile
+package com.lucasdias.gametrackr.data.profile
 
+import com.lucasdias.gametrackr.core.model.ActivityEvent
+import com.lucasdias.gametrackr.core.model.ActivityKind
+import com.lucasdias.gametrackr.core.model.LibraryEntry
+import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.ProfileColor
+import com.lucasdias.gametrackr.core.model.ProfileStats
+import com.lucasdias.gametrackr.core.model.SetupItem
+import com.lucasdias.gametrackr.core.model.SetupPalette
+import com.lucasdias.gametrackr.core.model.StatusCount
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
@@ -13,9 +22,6 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
-import com.lucasdias.gametrackr.feature.app.library.LibraryEntry
-import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
-import com.lucasdias.gametrackr.feature.app.profile.setup.SetupPalette
 
 object ProfileMockData {
     val profile =

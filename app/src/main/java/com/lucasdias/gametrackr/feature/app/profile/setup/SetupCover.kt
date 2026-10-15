@@ -23,12 +23,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.model.SetupItem
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.feature.app.profile.ProfileMockData
-import com.lucasdias.gametrackr.feature.app.profile.SetupItem
+import com.lucasdias.gametrackr.data.profile.ProfileMockData
 
 @Composable
 fun SetupCover(

@@ -2,6 +2,8 @@ package com.lucasdias.gametrackr.feature.app.community
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lucasdias.gametrackr.core.model.Community
+import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.pagination.PaginationState
 import com.lucasdias.gametrackr.data.community.CommunityRepository
 import kotlinx.coroutines.flow.MutableStateFlow

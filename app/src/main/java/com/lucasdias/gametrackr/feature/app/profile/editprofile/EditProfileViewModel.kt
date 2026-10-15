@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.auth.SessionManager
+import com.lucasdias.gametrackr.core.model.Profile
+import com.lucasdias.gametrackr.core.model.ProfileVisibility
 import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.profile.ProfileRepository
-import com.lucasdias.gametrackr.feature.app.profile.Profile
-import com.lucasdias.gametrackr.feature.app.profile.ProfileVisibility
 import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

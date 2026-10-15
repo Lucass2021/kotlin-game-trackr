@@ -25,7 +25,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.feature.app.home.HomeMockData
+import com.lucasdias.gametrackr.data.game.HomeMockData
 
 @Composable
 fun SearchFilterChips(

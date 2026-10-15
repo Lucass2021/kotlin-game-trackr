@@ -1,6 +1,14 @@
-package com.lucasdias.gametrackr.feature.app.profile
+package com.lucasdias.gametrackr.data.profile
 
 import androidx.compose.ui.graphics.Color
+import com.lucasdias.gametrackr.core.model.ActivityEvent
+import com.lucasdias.gametrackr.core.model.ActivityKind
+import com.lucasdias.gametrackr.core.model.LibraryEntry
+import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.model.Profile
+import com.lucasdias.gametrackr.core.model.ProfileStats
+import com.lucasdias.gametrackr.core.model.StatusCount
+import com.lucasdias.gametrackr.core.model.UserProfile
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
@@ -16,17 +24,7 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import com.lucasdias.gametrackr.core.ui.theme.toHexString
-import com.lucasdias.gametrackr.feature.app.library.LibraryEntry
-import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 import kotlin.math.abs
-
-data class UserProfile(
-    val name: String,
-    val username: String,
-    val avatarStart: Color,
-    val avatarEnd: Color,
-    val isFriend: Boolean = false,
-)
 
 object UserProfileMockData {
     val user =

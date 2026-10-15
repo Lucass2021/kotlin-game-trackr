@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.components.SecondaryButton
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -40,9 +41,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.appshell.components.DetailTopBar
-import com.lucasdias.gametrackr.feature.app.profile.Profile
-import com.lucasdias.gametrackr.feature.app.profile.ProfileMockData
 
 private data class MenuItem(
     val icon: AppIcon,

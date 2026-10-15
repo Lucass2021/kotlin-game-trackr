@@ -1,5 +1,8 @@
-package com.lucasdias.gametrackr.feature.app.library
+package com.lucasdias.gametrackr.data.library
 
+import com.lucasdias.gametrackr.core.model.LibraryEntry
+import com.lucasdias.gametrackr.core.model.LibraryStats
+import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd

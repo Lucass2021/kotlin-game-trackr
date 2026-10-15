@@ -1,8 +1,7 @@
 package com.lucasdias.gametrackr.data.stats
 
+import com.lucasdias.gametrackr.core.model.UserStats
 import com.lucasdias.gametrackr.data.FakeLatency
-import com.lucasdias.gametrackr.feature.app.stats.StatsMockData
-import com.lucasdias.gametrackr.feature.app.stats.UserStats
 import kotlinx.coroutines.delay
 
 class FakeStatsRepository : StatsRepository {

@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -63,7 +64,6 @@ import com.lucasdias.gametrackr.core.ui.theme.toAppColor
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.SectionLabel
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.fieldBox
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
-import com.lucasdias.gametrackr.feature.app.profile.Profile
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.components.AvatarColorPicker
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.components.VisibilitySelector
 import org.koin.androidx.compose.koinViewModel

@@ -1,7 +1,7 @@
 package com.lucasdias.gametrackr.data.community
 
+import com.lucasdias.gametrackr.core.model.LikeStatus
 import com.lucasdias.gametrackr.core.network.CommunityApi
-import com.lucasdias.gametrackr.feature.app.community.LikeStatus
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType

@@ -17,7 +17,7 @@ import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.feature.app.home.HomeMockData
+import com.lucasdias.gametrackr.data.game.HomeMockData
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
 
 @Composable

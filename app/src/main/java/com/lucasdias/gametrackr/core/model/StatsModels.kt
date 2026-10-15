@@ -1,8 +1,7 @@
-package com.lucasdias.gametrackr.feature.app.stats
+package com.lucasdias.gametrackr.core.model
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
-import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 
 data class StatHighlight(
     @param:StringRes val labelRes: Int,

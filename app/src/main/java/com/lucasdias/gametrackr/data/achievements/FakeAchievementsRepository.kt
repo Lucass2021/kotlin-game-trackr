@@ -1,12 +1,11 @@
 package com.lucasdias.gametrackr.data.achievements
 
+import com.lucasdias.gametrackr.core.model.AchievementsSummary
+import com.lucasdias.gametrackr.core.model.GameAchievements
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.pagination.Page
 import com.lucasdias.gametrackr.core.pagination.fakePage
 import com.lucasdias.gametrackr.data.FakeLatency
-import com.lucasdias.gametrackr.feature.app.achievements.AchievementsMockData
-import com.lucasdias.gametrackr.feature.app.achievements.AchievementsSummary
-import com.lucasdias.gametrackr.feature.app.achievements.GameAchievements
 import kotlinx.coroutines.delay
 
 class FakeAchievementsRepository : AchievementsRepository {

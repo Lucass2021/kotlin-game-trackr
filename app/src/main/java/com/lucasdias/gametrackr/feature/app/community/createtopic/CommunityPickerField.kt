@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -44,7 +45,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.fieldBox
-import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityIcon
 
 @Composable

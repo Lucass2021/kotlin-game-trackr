@@ -18,13 +18,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.CommunityOptions
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityChipRow
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState

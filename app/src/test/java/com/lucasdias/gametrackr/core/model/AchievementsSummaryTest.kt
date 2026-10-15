@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.achievements
+package com.lucasdias.gametrackr.core.model
 
 import androidx.compose.ui.graphics.Color
 import org.junit.Assert.assertEquals

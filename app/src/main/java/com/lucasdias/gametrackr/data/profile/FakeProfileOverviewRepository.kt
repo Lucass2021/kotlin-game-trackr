@@ -1,9 +1,7 @@
 package com.lucasdias.gametrackr.data.profile
 
+import com.lucasdias.gametrackr.core.model.ProfileOverview
 import com.lucasdias.gametrackr.data.FakeLatency
-import com.lucasdias.gametrackr.feature.app.profile.ProfileMockData
-import com.lucasdias.gametrackr.feature.app.profile.ProfileOverview
-import com.lucasdias.gametrackr.feature.app.profile.UserProfileMockData
 import kotlinx.coroutines.delay
 
 class FakeProfileOverviewRepository : ProfileOverviewRepository {

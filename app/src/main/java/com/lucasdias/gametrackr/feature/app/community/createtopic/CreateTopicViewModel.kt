@@ -4,9 +4,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Community
+import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.data.community.CommunityRepository
-import com.lucasdias.gametrackr.feature.app.community.Community
-import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

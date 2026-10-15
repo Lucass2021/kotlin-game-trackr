@@ -1,14 +1,13 @@
 package com.lucasdias.gametrackr.data.game
 
 import com.lucasdias.gametrackr.core.model.Game
+import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.core.model.GamePlatform
 import com.lucasdias.gametrackr.core.network.GameApi
 import com.lucasdias.gametrackr.core.network.apiCall
 import com.lucasdias.gametrackr.core.network.dto.PaginatedGamesResponse
 import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.pagination.Page
-import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetail
-import com.lucasdias.gametrackr.feature.app.gamedetail.toDomain
 import kotlinx.serialization.json.Json
 
 class RemoteGameRepository(

@@ -5,6 +5,7 @@ import com.lucasdias.gametrackr.core.auth.DataStoreTokenStore
 import com.lucasdias.gametrackr.core.auth.GoogleAuth
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
+import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.network.AuthApi
 import com.lucasdias.gametrackr.core.network.AuthInterceptor
 import com.lucasdias.gametrackr.core.network.CommunityApi
@@ -36,7 +37,6 @@ import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateComm
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailViewModel
 import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
-import com.lucasdias.gametrackr.feature.app.profile.Profile
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
 import com.lucasdias.gametrackr.feature.app.search.SearchViewModel
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel

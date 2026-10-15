@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.home
+package com.lucasdias.gametrackr.data.game
 
 import com.lucasdias.gametrackr.core.model.Game
 import com.lucasdias.gametrackr.core.model.GamePlatform

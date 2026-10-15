@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.library
+package com.lucasdias.gametrackr.core.model
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color

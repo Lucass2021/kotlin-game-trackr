@@ -35,6 +35,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.AvatarBadge
+import com.lucasdias.gametrackr.core.model.NotificationItem
+import com.lucasdias.gametrackr.core.model.NotificationLeading
+import com.lucasdias.gametrackr.core.model.NotificationSection
+import com.lucasdias.gametrackr.core.model.NotificationSpan
+import com.lucasdias.gametrackr.core.model.NotificationSpanStyle
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -46,12 +52,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.feature.app.notifications.AvatarBadge
-import com.lucasdias.gametrackr.feature.app.notifications.NotificationItem
-import com.lucasdias.gametrackr.feature.app.notifications.NotificationLeading
-import com.lucasdias.gametrackr.feature.app.notifications.NotificationSection
-import com.lucasdias.gametrackr.feature.app.notifications.NotificationSpan
-import com.lucasdias.gametrackr.feature.app.notifications.NotificationSpanStyle
 
 @Composable
 fun NotificationRow(

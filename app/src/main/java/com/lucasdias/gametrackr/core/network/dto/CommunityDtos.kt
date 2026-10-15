@@ -1,6 +1,10 @@
 package com.lucasdias.gametrackr.core.network.dto
 
 import androidx.compose.ui.graphics.Color
+import com.lucasdias.gametrackr.core.model.Community
+import com.lucasdias.gametrackr.core.model.CommunityMember
+import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.model.PostComment
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
@@ -15,10 +19,6 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
-import com.lucasdias.gametrackr.feature.app.community.Community
-import com.lucasdias.gametrackr.feature.app.community.CommunityMember
-import com.lucasdias.gametrackr.feature.app.community.CommunityPost
-import com.lucasdias.gametrackr.feature.app.community.PostComment
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.Instant

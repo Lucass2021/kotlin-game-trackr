@@ -26,6 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Community
+import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon

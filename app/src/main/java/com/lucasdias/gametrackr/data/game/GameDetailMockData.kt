@@ -1,5 +1,8 @@
-package com.lucasdias.gametrackr.feature.app.gamedetail
+package com.lucasdias.gametrackr.data.game
 
+import com.lucasdias.gametrackr.core.model.GameDetail
+import com.lucasdias.gametrackr.core.model.GameScreenshot
+import com.lucasdias.gametrackr.core.model.GameSpec
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd

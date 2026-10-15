@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.shareText
@@ -38,6 +39,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.game.GameDetailMockData
 import com.lucasdias.gametrackr.feature.app.addtolibrary.AddToLibrarySheet
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameAboutSection
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameDetailHero

@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.format.abbreviated
+import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.model.PostComment
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
@@ -60,8 +62,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.data.community.CommunityRepository
-import com.lucasdias.gametrackr.feature.app.community.CommunityPost
-import com.lucasdias.gametrackr.feature.app.community.PostComment
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject

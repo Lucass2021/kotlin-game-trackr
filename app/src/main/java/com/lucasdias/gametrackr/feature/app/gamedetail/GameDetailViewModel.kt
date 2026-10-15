@@ -2,6 +2,7 @@ package com.lucasdias.gametrackr.feature.app.gamedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.data.game.GameRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

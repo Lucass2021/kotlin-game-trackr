@@ -1,10 +1,9 @@
-package com.lucasdias.gametrackr.feature.app.profile
+package com.lucasdias.gametrackr.core.model
 
 import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
@@ -13,9 +12,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.darkened
 import com.lucasdias.gametrackr.core.ui.theme.toAppColor
-import com.lucasdias.gametrackr.feature.app.library.LibraryEntry
-import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
-import com.lucasdias.gametrackr.feature.app.profile.setup.SetupPalette
 import java.util.UUID
 import kotlin.math.roundToInt
 
@@ -71,14 +67,6 @@ data class ProfileStats(
 ) {
     val platinumRate: Int
         get() = if (totalGames == 0) 0 else (platinum.toDouble() / totalGames * 100).roundToInt()
-}
-
-sealed interface ProfileHeaderMode {
-    data object Own : ProfileHeaderMode
-
-    data class Other(
-        val isFriend: Boolean,
-    ) : ProfileHeaderMode
 }
 
 data class StatusCount(

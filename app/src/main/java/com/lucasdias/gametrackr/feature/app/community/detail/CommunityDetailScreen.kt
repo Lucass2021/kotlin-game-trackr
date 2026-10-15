@@ -43,6 +43,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Community
+import com.lucasdias.gametrackr.core.model.CommunityMember
+import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
@@ -58,10 +61,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.data.community.CommunityRepository
-import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.app.community.CommunityDetailTab
-import com.lucasdias.gametrackr.feature.app.community.CommunityMember
-import com.lucasdias.gametrackr.feature.app.community.CommunityPost
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityPostCard
 import com.lucasdias.gametrackr.feature.app.community.components.ConfirmDialog

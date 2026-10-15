@@ -32,7 +32,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.darkened
 import com.lucasdias.gametrackr.core.ui.theme.toAppColor
-import com.lucasdias.gametrackr.feature.app.profile.ProfileMockData
+import com.lucasdias.gametrackr.data.profile.ProfileMockData
 
 @Composable
 fun AvatarColorPicker(

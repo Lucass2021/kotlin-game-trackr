@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -41,7 +42,6 @@ import com.lucasdias.gametrackr.feature.app.addtolibrary.components.ReviewField
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.SectionLabel
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.StatusSelectGrid
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
-import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 
 private val platforms = listOf("PS5", "PS4", "Xbox Series X|S", "PC", "Nintendo Switch")
 

@@ -1,5 +1,8 @@
-package com.lucasdias.gametrackr.feature.app.achievements
+package com.lucasdias.gametrackr.data.achievements
 
+import com.lucasdias.gametrackr.core.model.Achievement
+import com.lucasdias.gametrackr.core.model.AchievementTier
+import com.lucasdias.gametrackr.core.model.GameAchievements
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd

@@ -2,7 +2,7 @@ package com.lucasdias.gametrackr.feature.app.profile.editprofile
 
 import androidx.annotation.StringRes
 import com.lucasdias.gametrackr.core.model.ProfileColor
-import com.lucasdias.gametrackr.feature.app.profile.ProfileVisibility
+import com.lucasdias.gametrackr.core.model.ProfileVisibility
 
 data class EditProfileUiState(
     val name: String = "",

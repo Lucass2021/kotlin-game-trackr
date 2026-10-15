@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.UserStats
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground

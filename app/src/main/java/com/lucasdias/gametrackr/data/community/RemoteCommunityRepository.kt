@@ -1,5 +1,10 @@
 package com.lucasdias.gametrackr.data.community
 
+import com.lucasdias.gametrackr.core.model.Community
+import com.lucasdias.gametrackr.core.model.CommunityMember
+import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.model.LikeStatus
+import com.lucasdias.gametrackr.core.model.PostComment
 import com.lucasdias.gametrackr.core.network.CommunityApi
 import com.lucasdias.gametrackr.core.network.apiCall
 import com.lucasdias.gametrackr.core.network.dto.CommentBody
@@ -10,11 +15,6 @@ import com.lucasdias.gametrackr.core.network.dto.LikeResponse
 import com.lucasdias.gametrackr.core.network.dto.PaginatedResponse
 import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.pagination.Page
-import com.lucasdias.gametrackr.feature.app.community.Community
-import com.lucasdias.gametrackr.feature.app.community.CommunityMember
-import com.lucasdias.gametrackr.feature.app.community.CommunityPost
-import com.lucasdias.gametrackr.feature.app.community.LikeStatus
-import com.lucasdias.gametrackr.feature.app.community.PostComment
 import kotlinx.serialization.json.Json
 
 class RemoteCommunityRepository(

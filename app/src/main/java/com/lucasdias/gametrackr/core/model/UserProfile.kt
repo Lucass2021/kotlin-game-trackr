@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.profile.setup
+package com.lucasdias.gametrackr.core.model
 
 import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
@@ -15,19 +15,13 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
+import com.lucasdias.gametrackr.core.ui.theme.toHexString
+import kotlin.math.abs
 
-enum class SetupPalette(
-    val start: Color,
-    val end: Color,
-) {
-    VIOLET(CoverVioletStart, CoverVioletEnd),
-    EMERALD(CoverEmeraldStart, CoverEmeraldEnd),
-    CRIMSON(CoverCrimsonStart, CoverCrimsonEnd),
-    INDIGO(CoverIndigoStart, CoverIndigoEnd),
-    AZURE(CoverAzureStart, CoverAzureEnd),
-    CYAN(CoverCyanStart, CoverCyanEnd),
-    PINE(CoverPineStart, CoverPineEnd),
-    ;
-
-    val title: String get() = name.lowercase().replaceFirstChar { it.uppercase() }
-}
+data class UserProfile(
+    val name: String,
+    val username: String,
+    val avatarStart: Color,
+    val avatarEnd: Color,
+    val isFriend: Boolean = false,
+)

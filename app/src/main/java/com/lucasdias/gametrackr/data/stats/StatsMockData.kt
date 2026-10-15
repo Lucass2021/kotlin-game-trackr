@@ -1,9 +1,16 @@
-package com.lucasdias.gametrackr.feature.app.stats
+package com.lucasdias.gametrackr.data.stats
 
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Achievement
+import com.lucasdias.gametrackr.core.model.AchievementSpotlight
+import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.model.StatBar
+import com.lucasdias.gametrackr.core.model.StatHighlight
+import com.lucasdias.gametrackr.core.model.StatusShare
+import com.lucasdias.gametrackr.core.model.UserStats
+import com.lucasdias.gametrackr.core.model.YearCount
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
-import com.lucasdias.gametrackr.feature.app.library.LibraryStatus
 
 object StatsMockData {
     val stats =

@@ -35,6 +35,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.ProfileOverview
+import com.lucasdias.gametrackr.core.model.UserProfile
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -45,6 +47,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.data.profile.ProfileOverviewRepository
+import com.lucasdias.gametrackr.data.profile.UserProfileMockData
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileActivitySection
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileBreakdownSection

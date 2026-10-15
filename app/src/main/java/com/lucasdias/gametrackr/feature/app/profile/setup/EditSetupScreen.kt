@@ -53,6 +53,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.SetupItem
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -66,7 +67,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.SectionLabel
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.fieldBox
-import com.lucasdias.gametrackr.feature.app.profile.SetupItem
 
 @Composable
 fun EditSetupScreen(

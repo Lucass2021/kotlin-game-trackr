@@ -1,7 +1,7 @@
 package com.lucasdias.gametrackr.feature.app.community.createtopic
 
 import androidx.annotation.StringRes
-import com.lucasdias.gametrackr.feature.app.community.Community
+import com.lucasdias.gametrackr.core.model.Community
 
 data class CreateTopicUiState(
     val community: Community? = null,

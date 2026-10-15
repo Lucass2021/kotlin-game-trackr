@@ -3,9 +3,9 @@ package com.lucasdias.gametrackr.feature.app.community.createcommunity
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.community.CommunityRepository
-import com.lucasdias.gametrackr.feature.app.community.Community
 import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
