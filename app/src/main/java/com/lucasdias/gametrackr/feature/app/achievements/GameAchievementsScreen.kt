@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.feature.app.achievements
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,9 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,52 +39,73 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.achievements.AchievementsRepository
 import com.lucasdias.gametrackr.feature.app.achievements.components.AchievementRow
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
 import com.lucasdias.gametrackr.feature.app.stats.components.StatsSectionCard
 import com.lucasdias.gametrackr.feature.app.stats.components.StatsTopBar
+import org.koin.compose.koinInject
 
 @Composable
 fun GameAchievementsScreen(
-    game: GameAchievements,
+    gameId: Long,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    repository: AchievementsRepository = koinInject(),
 ) {
-    val unlocked = game.achievements.filter { it.isUnlocked }
-    val locked = game.achievements.filterNot { it.isUnlocked }
+    var game by remember { mutableStateOf<GameAchievements?>(null) }
+
+    LaunchedEffect(gameId) {
+        game = repository.fetchGameAchievements(gameId).getOrNull()
+    }
 
     Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
         StatsTopBar(
             title = stringResource(R.string.achievements_title),
-            subtitle = game.title,
+            subtitle = game?.title,
             onBack = onBack,
         )
 
-        LazyColumn(
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            item { GameHeader(game) }
+        val loadedGame = game
+        if (loadedGame == null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = AppPrimary)
+            }
+        } else {
+            GameAchievementsContent(loadedGame)
+        }
+    }
+}
 
-            if (unlocked.isNotEmpty()) {
-                item {
-                    StatsSectionCard(
-                        title = stringResource(R.string.achievements_section_unlocked),
-                        icon = AppIcon.SUCCESS,
-                    ) {
-                        AchievementList(unlocked)
-                    }
+@Composable
+private fun GameAchievementsContent(game: GameAchievements) {
+    val unlocked = game.achievements.filter { it.isUnlocked }
+    val locked = game.achievements.filterNot { it.isUnlocked }
+
+    LazyColumn(
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        item { GameHeader(game) }
+
+        if (unlocked.isNotEmpty()) {
+            item {
+                StatsSectionCard(
+                    title = stringResource(R.string.achievements_section_unlocked),
+                    icon = AppIcon.SUCCESS,
+                ) {
+                    AchievementList(unlocked)
                 }
             }
+        }
 
-            if (locked.isNotEmpty()) {
-                item {
-                    StatsSectionCard(
-                        title = stringResource(R.string.achievements_section_locked),
-                        icon = AppIcon.EYE_SLASH,
-                    ) {
-                        AchievementList(locked)
-                    }
+        if (locked.isNotEmpty()) {
+            item {
+                StatsSectionCard(
+                    title = stringResource(R.string.achievements_section_locked),
+                    icon = AppIcon.EYE_SLASH,
+                ) {
+                    AchievementList(locked)
                 }
             }
         }

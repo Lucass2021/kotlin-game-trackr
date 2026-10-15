@@ -35,21 +35,15 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.feature.app.achievements.GameAchievements
-import com.lucasdias.gametrackr.feature.app.achievements.achievementTotal
-import com.lucasdias.gametrackr.feature.app.achievements.completedCount
-import com.lucasdias.gametrackr.feature.app.achievements.platinumCount
-import com.lucasdias.gametrackr.feature.app.achievements.unlockedFraction
-import com.lucasdias.gametrackr.feature.app.achievements.unlockedPercent
-import com.lucasdias.gametrackr.feature.app.achievements.unlockedTotal
+import com.lucasdias.gametrackr.feature.app.achievements.AchievementsSummary
 
 @Composable
 fun AchievementsSummaryCard(
-    games: List<GameAchievements>,
+    summary: AchievementsSummary,
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(18.dp)
-    val a11y = stringResource(R.string.achievements_summary_a11y, games.unlockedTotal, games.achievementTotal)
+    val a11y = stringResource(R.string.achievements_summary_a11y, summary.unlockedCount, summary.total)
 
     Column(
         modifier =
@@ -68,18 +62,18 @@ fun AchievementsSummaryCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = games.unlockedTotal.toString(),
+                text = summary.unlockedCount.toString(),
                 color = AppPrimary,
                 style = AppType.headline(34.sp, FontWeight.ExtraBold),
             )
             Text(
-                text = stringResource(R.string.achievements_summary_of, games.achievementTotal),
+                text = stringResource(R.string.achievements_summary_of, summary.total),
                 color = AppTextSecondary,
                 style = AppType.body(15.sp),
                 modifier = Modifier.weight(1f),
             )
             Text(
-                text = stringResource(R.string.achievements_summary_percent, games.unlockedPercent),
+                text = stringResource(R.string.achievements_summary_percent, summary.percent),
                 color = AppTextPrimary,
                 style = AppType.headline(20.sp),
             )
@@ -96,7 +90,7 @@ fun AchievementsSummaryCard(
             Box(
                 modifier =
                     Modifier
-                        .fillMaxWidth(games.unlockedFraction)
+                        .fillMaxWidth(summary.fraction)
                         .fillMaxHeight()
                         .clip(CircleShape)
                         .background(Brush.horizontalGradient(listOf(AppPrimary, AppSecondary))),
@@ -106,17 +100,17 @@ fun AchievementsSummaryCard(
         Row(horizontalArrangement = Arrangement.spacedBy(22.dp)) {
             MiniStat(
                 icon = AppIcon.TROPHY,
-                value = games.platinumCount.toString(),
+                value = summary.platinumCount.toString(),
                 label = stringResource(R.string.achievements_stat_platinums),
             )
             MiniStat(
                 icon = AppIcon.SUCCESS,
-                value = games.completedCount.toString(),
+                value = summary.completedCount.toString(),
                 label = stringResource(R.string.achievements_stat_completed),
             )
             MiniStat(
                 icon = AppIcon.BRAND,
-                value = games.size.toString(),
+                value = summary.gameCount.toString(),
                 label = stringResource(R.string.achievements_stat_games),
             )
         }

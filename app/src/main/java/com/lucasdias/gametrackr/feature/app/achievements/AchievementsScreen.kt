@@ -14,9 +14,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
-import com.lucasdias.gametrackr.core.pagination.MockPaginationState
+import com.lucasdias.gametrackr.core.pagination.PaginationState
 import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
 import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
@@ -45,11 +47,15 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.data.achievements.AchievementsRepository
 import com.lucasdias.gametrackr.feature.app.achievements.components.AchievementFilterChips
 import com.lucasdias.gametrackr.feature.app.achievements.components.AchievementsSummaryCard
 import com.lucasdias.gametrackr.feature.app.achievements.components.GameAchievementsRow
 import com.lucasdias.gametrackr.feature.app.stats.components.StatsTopBar
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+
+private const val GAMES_PAGE_SIZE = 3
 
 @Composable
 fun AchievementsScreen(
@@ -57,10 +63,28 @@ fun AchievementsScreen(
     onGameClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     ownerName: String? = null,
+    repository: AchievementsRepository = koinInject(),
 ) {
     var filter by rememberSaveable { mutableStateOf(AchievementFilter.ALL) }
-    val pagination = remember { MockPaginationState(AchievementsMockData.games, pageSize = 3) }
+    val pagination = remember { PaginationState<GameAchievements>() }
+    var summary by remember { mutableStateOf<AchievementsSummary?>(null) }
     val coroutineScope = rememberCoroutineScope()
+
+    fun loadNextPage() {
+        if (!pagination.canLoadMore) return
+        pagination.setLoading(true)
+        coroutineScope.launch {
+            repository
+                .fetchAchievementGames(page = pagination.currentPage + 1, perPage = GAMES_PAGE_SIZE)
+                .onSuccess { pagination.append(it) }
+            pagination.setLoading(false)
+        }
+    }
+
+    LaunchedEffect(repository) {
+        loadNextPage()
+        summary = repository.fetchAchievementsSummary().getOrNull()
+    }
 
     val visible = remember(pagination.items.size, filter) { pagination.items.filter(filter::matches) }
 
@@ -77,6 +101,13 @@ fun AchievementsScreen(
             modifier = Modifier.padding(bottom = 4.dp),
         )
 
+        if (pagination.currentPage == 0) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = AppPrimary)
+            }
+            return@Column
+        }
+
         if (visible.isEmpty()) {
             EmptyState()
             return@Column
@@ -87,7 +118,7 @@ fun AchievementsScreen(
         InfiniteScrollEffect(
             listState = listState,
             canLoadMore = pagination.canLoadMore,
-            onLoadMore = { coroutineScope.launch { pagination.loadNextPage() } },
+            onLoadMore = ::loadNextPage,
         )
 
         LazyColumn(
@@ -95,9 +126,10 @@ fun AchievementsScreen(
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            if (filter == AchievementFilter.ALL) {
+            val loadedSummary = summary
+            if (filter == AchievementFilter.ALL && loadedSummary != null) {
                 item {
-                    AchievementsSummaryCard(games = pagination.items, modifier = Modifier.padding(bottom = 6.dp))
+                    AchievementsSummaryCard(summary = loadedSummary, modifier = Modifier.padding(bottom = 6.dp))
                 }
             }
 

@@ -231,6 +231,4 @@ object AchievementsMockData {
                     ),
             ),
         )
-
-    fun byId(id: Long): GameAchievements = games.firstOrNull { it.id == id } ?: games.first()
 }

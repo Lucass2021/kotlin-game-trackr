@@ -74,20 +74,25 @@ data class GameAchievements(
         get() = achievements.any { it.tier == AchievementTier.PLATINUM && it.isUnlocked }
 }
 
-val List<GameAchievements>.unlockedTotal: Int
-    get() = sumOf { it.unlockedCount }
+data class AchievementsSummary(
+    val unlockedCount: Int,
+    val total: Int,
+    val platinumCount: Int,
+    val completedCount: Int,
+    val gameCount: Int,
+) {
+    val fraction: Float get() = if (total == 0) 0f else unlockedCount.toFloat() / total
 
-val List<GameAchievements>.achievementTotal: Int
-    get() = sumOf { it.total }
+    val percent: Int get() = (fraction * 100).roundToInt()
 
-val List<GameAchievements>.platinumCount: Int
-    get() = count { it.hasPlatinum }
-
-val List<GameAchievements>.completedCount: Int
-    get() = count { it.isComplete }
-
-val List<GameAchievements>.unlockedFraction: Float
-    get() = if (achievementTotal == 0) 0f else unlockedTotal.toFloat() / achievementTotal
-
-val List<GameAchievements>.unlockedPercent: Int
-    get() = (unlockedFraction * 100).roundToInt()
+    companion object {
+        fun from(games: List<GameAchievements>): AchievementsSummary =
+            AchievementsSummary(
+                unlockedCount = games.sumOf { it.unlockedCount },
+                total = games.sumOf { it.total },
+                platinumCount = games.count { it.hasPlatinum },
+                completedCount = games.count { it.isComplete },
+                gameCount = games.size,
+            )
+    }
+}

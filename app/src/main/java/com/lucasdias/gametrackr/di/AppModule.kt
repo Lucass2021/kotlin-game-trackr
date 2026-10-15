@@ -13,6 +13,8 @@ import com.lucasdias.gametrackr.core.network.ProfileApi
 import com.lucasdias.gametrackr.core.network.RefreshApi
 import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.core.network.TokenRefresher
+import com.lucasdias.gametrackr.data.achievements.AchievementsRepository
+import com.lucasdias.gametrackr.data.achievements.FakeAchievementsRepository
 import com.lucasdias.gametrackr.data.auth.AuthRepository
 import com.lucasdias.gametrackr.data.auth.RemoteAuthRepository
 import com.lucasdias.gametrackr.data.community.CommunityRepository
@@ -135,6 +137,7 @@ val appModule =
         single<StatsRepository> { FakeStatsRepository() }
         single<LibraryRepository> { FakeLibraryRepository() }
         single<NotificationsRepository> { FakeNotificationsRepository() }
+        single<AchievementsRepository> { FakeAchievementsRepository() }
         single { GoogleAuth(get()) }
 
         viewModel { CommunityViewModel(get()) }

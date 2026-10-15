@@ -27,7 +27,6 @@ import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.ui.components.SuccessScreen
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.about.AboutScreen
-import com.lucasdias.gametrackr.feature.app.achievements.AchievementsMockData
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsScreen
 import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsScreen
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
@@ -425,7 +424,7 @@ fun MainTabScreen(
         ) { backStackEntry ->
             val gameId = backStackEntry.arguments?.getLong(ShellRoutes.GAME_ACHIEVEMENTS_ARG_ID) ?: 0L
             GameAchievementsScreen(
-                game = AchievementsMockData.byId(gameId),
+                gameId = gameId,
                 onBack = { navController.popBackStackIfResumed() },
             )
         }
