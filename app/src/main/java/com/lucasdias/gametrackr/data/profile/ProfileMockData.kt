@@ -52,23 +52,24 @@ object ProfileMockData {
 
     val favorites =
         listOf(
-            LibraryEntry("Elden Ring", LibraryStatus.PLATINUM, 5, 210, CoverEmeraldStart, CoverEmeraldEnd),
-            LibraryEntry("Hollow Knight", LibraryStatus.COMPLETED, 5, 64, CoverIndigoStart, CoverIndigoEnd),
-            LibraryEntry("Chrono Trigger", LibraryStatus.PLATINUM, 5, 38, CoverCrimsonStart, CoverCrimsonEnd),
-            LibraryEntry("Outer Wilds", LibraryStatus.COMPLETED, 5, 27, CoverCyanStart, CoverCyanEnd),
+            LibraryEntry("Elden Ring", "elden-ring", LibraryStatus.PLATINUM, 5, 210, CoverEmeraldStart, CoverEmeraldEnd),
+            LibraryEntry("Hollow Knight", "hollow-knight", LibraryStatus.COMPLETED, 5, 64, CoverIndigoStart, CoverIndigoEnd),
+            LibraryEntry("Chrono Trigger", "chrono-trigger", LibraryStatus.PLATINUM, 5, 38, CoverCrimsonStart, CoverCrimsonEnd),
+            LibraryEntry("Outer Wilds", "outer-wilds", LibraryStatus.COMPLETED, 5, 27, CoverCyanStart, CoverCyanEnd),
         )
 
     val currentlyPlaying =
         listOf(
             LibraryEntry(
                 "Cyberpunk 2077: Phantom Liberty",
+                "cyberpunk-2077-phantom-liberty",
                 LibraryStatus.PLAYING,
                 4,
                 32,
                 CoverVioletStart,
                 CoverVioletEnd,
             ),
-            LibraryEntry("Final Fantasy VII Rebirth", LibraryStatus.PLAYING, 5, 61, CoverAzureStart, CoverAzureEnd),
+            LibraryEntry("Final Fantasy VII Rebirth", "final-fantasy-vii-rebirth", LibraryStatus.PLAYING, 5, 61, CoverAzureStart, CoverAzureEnd),
         )
 
     val activity =

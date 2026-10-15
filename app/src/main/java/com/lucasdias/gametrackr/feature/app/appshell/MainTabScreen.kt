@@ -108,7 +108,7 @@ private object ShellRoutes {
 
     fun gameAchievements(gameId: Long) = "$GAME_ACHIEVEMENTS/$gameId"
 
-    fun gameDetail(slug: String? = null) = "$GAME_DETAIL?$GAME_DETAIL_ARG_SLUG=${Uri.encode(slug.orEmpty())}"
+    fun gameDetail(slug: String) = "$GAME_DETAIL?$GAME_DETAIL_ARG_SLUG=${Uri.encode(slug)}"
 
     fun userProfile(name: String) = "$USER_PROFILE?$USER_PROFILE_ARG_NAME=${Uri.encode(name)}"
 
@@ -254,7 +254,7 @@ fun MainTabScreen(
             GameDetailScreen(
                 onBack = { navController.popBackStackIfResumed() },
                 isGuest = isGuest,
-                slug = backStackEntry.arguments?.getString(ShellRoutes.GAME_DETAIL_ARG_SLUG)?.ifEmpty { null },
+                slug = backStackEntry.arguments?.getString(ShellRoutes.GAME_DETAIL_ARG_SLUG).orEmpty(),
             )
         }
         composable(ShellRoutes.CREATE_COMMUNITY) {
@@ -443,7 +443,7 @@ fun MainTabScreen(
                 user = UserProfileMockData.forName(name),
                 isGuest = isGuest,
                 onBack = { navController.popBackStackIfResumed() },
-                onGameClick = { navController.navigate(ShellRoutes.gameDetail()) },
+                onGameClick = { navController.navigate(ShellRoutes.gameDetail(it)) },
                 onViewStats = { navController.navigate(ShellRoutes.stats(name)) },
             )
         }
@@ -462,12 +462,12 @@ private fun TabShell(
     onSearch: () -> Unit,
     onViewAll: (SearchScope) -> Unit,
     onMenu: () -> Unit,
-    onGameClick: (String?) -> Unit,
+    onGameClick: (String) -> Unit,
     onPostClick: (CommunityPost) -> Unit,
     onCommunityClick: (Community) -> Unit,
     onCreatePost: () -> Unit,
     onCreateCommunity: () -> Unit,
-    onStatusClick: (LibraryStatus) -> Unit,
+    onStatusClick: (LibraryStatus?) -> Unit,
     onCreateAccount: () -> Unit,
     onViewStats: () -> Unit,
     profile: Profile,
@@ -497,7 +497,7 @@ private fun TabShell(
                         isGuest = isGuest,
                         onCreateAccount = onCreateAccount,
                         onBrowseGames = onSearch,
-                        onGameClick = { onGameClick(null) },
+                        onGameClick = onGameClick,
                     )
                 }
 
@@ -517,7 +517,7 @@ private fun TabShell(
                 AppTab.PROFILE -> {
                     ProfileScreen(
                         isGuest = isGuest,
-                        onGameClick = { onGameClick(null) },
+                        onGameClick = onGameClick,
                         onStatusClick = onStatusClick,
                         onEditProfile = onEditProfile,
                         onCreateAccount = onCreateAccount,

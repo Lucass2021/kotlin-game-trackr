@@ -43,6 +43,7 @@ enum class LibraryStatus(
 
 data class LibraryEntry(
     val title: String,
+    val slug: String,
     val status: LibraryStatus,
     val rating: Int,
     val hours: Int,

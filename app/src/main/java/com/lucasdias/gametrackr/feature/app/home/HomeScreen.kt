@@ -45,7 +45,7 @@ private val SectionHeight = 240.dp
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onViewAll: (SearchScope) -> Unit = {},
-    onGameClick: (String?) -> Unit = {},
+    onGameClick: (String) -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val newReleases by viewModel.newReleases.collectAsStateWithLifecycle()

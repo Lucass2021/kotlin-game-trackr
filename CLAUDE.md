@@ -55,6 +55,7 @@
 
 ## Tests
 ## Keep one unit test for each ViewModel, mapper and component logic
+## Every bug fix comes with a regression test that reproduces the fixed scenario
 ## Respect the lefthook pre-commit hooks (ktlint format, lint and tests); fix failures instead of skipping them
 
 ## Tools

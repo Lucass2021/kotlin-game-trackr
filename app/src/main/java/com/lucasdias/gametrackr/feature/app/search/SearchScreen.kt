@@ -50,7 +50,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SearchScreen(
     onBack: () -> Unit,
-    onGameClick: (String?) -> Unit,
+    onGameClick: (String) -> Unit,
     scope: SearchScope = SearchScope.ALL,
     viewModel: SearchViewModel = koinViewModel(),
 ) {

@@ -26,11 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.GameDetail
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.shareText
@@ -39,7 +41,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.data.game.GameDetailMockData
+import com.lucasdias.gametrackr.data.game.FakeGameRepository
 import com.lucasdias.gametrackr.feature.app.addtolibrary.AddToLibrarySheet
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameAboutSection
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameDetailHero
@@ -54,15 +56,10 @@ import java.util.Locale
 @Composable
 fun GameDetailScreen(
     onBack: () -> Unit,
+    slug: String,
     isGuest: Boolean = false,
-    slug: String? = null,
+    viewModel: GameDetailViewModel = koinViewModel { parametersOf(slug) },
 ) {
-    if (slug == null) {
-        GameDetailContent(game = GameDetailMockData.game, onBack = onBack, isGuest = isGuest)
-        return
-    }
-
-    val viewModel: GameDetailViewModel = koinViewModel { parametersOf(slug) }
     val game by viewModel.game.collectAsStateWithLifecycle()
     val hasError by viewModel.hasError.collectAsStateWithLifecycle()
 
@@ -195,3 +192,17 @@ private fun GameDetailContent(
         )
     }
 }
+
+@Preview
+@Composable
+private fun GameDetailScreenPreview() {
+    AppPreview {
+        GameDetailScreen(
+            onBack = {},
+            slug = PREVIEW_SLUG,
+            viewModel = GameDetailViewModel(FakeGameRepository(), PREVIEW_SLUG),
+        )
+    }
+}
+
+private const val PREVIEW_SLUG = "neon-ascent-revival"

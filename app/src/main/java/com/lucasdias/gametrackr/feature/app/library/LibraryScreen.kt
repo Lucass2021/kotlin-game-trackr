@@ -59,7 +59,7 @@ fun LibraryScreen(
     onCreateAccount: () -> Unit = {},
     modifier: Modifier = Modifier,
     onBrowseGames: () -> Unit = {},
-    onGameClick: () -> Unit = {},
+    onGameClick: (String) -> Unit = {},
     repository: LibraryRepository = koinInject(),
 ) {
     if (isGuest) {
@@ -149,7 +149,7 @@ fun LibraryScreen(
                                     pagination.items[index] = pagination.items[index].copy(isFavorite = !entry.isFavorite)
                                 }
                             },
-                            modifier = Modifier.clickable(onClick = onGameClick),
+                            modifier = Modifier.clickable { onGameClick(entry.slug) },
                         )
                     }
 

@@ -61,7 +61,7 @@ fun UserProfileScreen(
     user: UserProfile,
     isGuest: Boolean,
     onBack: () -> Unit,
-    onGameClick: () -> Unit,
+    onGameClick: (String) -> Unit,
     onViewStats: () -> Unit,
     modifier: Modifier = Modifier,
     repository: ProfileOverviewRepository = koinInject(),
@@ -134,7 +134,7 @@ fun UserProfileScreen(
                 item {
                     SectionTitle(stringResource(R.string.profile_section_favorites))
                     Spacer(Modifier.height(14.dp))
-                    ProfileFavoritesRow(favorites = loadedOverview.favorites, onSelect = { onGameClick() })
+                    ProfileFavoritesRow(favorites = loadedOverview.favorites, onSelect = { onGameClick(it.slug) })
                     Spacer(Modifier.height(26.dp))
                 }
 
@@ -156,7 +156,7 @@ fun UserProfileScreen(
                                     indication = null,
                                     onClickLabel = entry.title,
                                     role = Role.Button,
-                                    onClick = onGameClick,
+                                    onClick = { onGameClick(entry.slug) },
                                 ),
                     )
                     Spacer(Modifier.height(14.dp))

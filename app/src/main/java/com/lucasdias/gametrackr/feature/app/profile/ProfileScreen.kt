@@ -66,8 +66,8 @@ import org.koin.compose.koinInject
 @Composable
 fun ProfileScreen(
     isGuest: Boolean,
-    onGameClick: () -> Unit,
-    onStatusClick: (LibraryStatus) -> Unit,
+    onGameClick: (String) -> Unit,
+    onStatusClick: (LibraryStatus?) -> Unit,
     onEditProfile: () -> Unit,
     onCreateAccount: () -> Unit,
     onViewStats: () -> Unit,
@@ -132,10 +132,10 @@ fun ProfileScreen(
             SectionHeader(
                 title = stringResource(R.string.profile_section_favorites),
                 actionTitle = stringResource(R.string.profile_section_view_all),
-                onAction = onGameClick,
+                onAction = { onStatusClick(null) },
             )
             Spacer(Modifier.height(14.dp))
-            ProfileFavoritesRow(favorites = loadedOverview.favorites, onSelect = { onGameClick() })
+            ProfileFavoritesRow(favorites = loadedOverview.favorites, onSelect = { onGameClick(it.slug) })
             Spacer(Modifier.height(26.dp))
         }
 
@@ -161,7 +161,7 @@ fun ProfileScreen(
                             indication = null,
                             onClickLabel = entry.title,
                             role = Role.Button,
-                            onClick = onGameClick,
+                            onClick = { onGameClick(entry.slug) },
                         ),
             )
             Spacer(Modifier.height(14.dp))

@@ -82,16 +82,16 @@ object UserProfileMockData {
 
     val favorites =
         listOf(
-            LibraryEntry("The Witcher 3", LibraryStatus.PLATINUM, 5, 168, CoverPineStart, CoverPineEnd),
-            LibraryEntry("Bloodborne", LibraryStatus.COMPLETED, 5, 72, CoverCrimsonStart, CoverCrimsonEnd),
-            LibraryEntry("Celeste", LibraryStatus.PLATINUM, 5, 24, CoverAzureStart, CoverAzureEnd),
-            LibraryEntry("Disco Elysium", LibraryStatus.COMPLETED, 5, 41, CoverIndigoStart, CoverIndigoEnd),
+            LibraryEntry("The Witcher 3", "the-witcher-3-wild-hunt", LibraryStatus.PLATINUM, 5, 168, CoverPineStart, CoverPineEnd),
+            LibraryEntry("Bloodborne", "bloodborne", LibraryStatus.COMPLETED, 5, 72, CoverCrimsonStart, CoverCrimsonEnd),
+            LibraryEntry("Celeste", "celeste", LibraryStatus.PLATINUM, 5, 24, CoverAzureStart, CoverAzureEnd),
+            LibraryEntry("Disco Elysium", "disco-elysium", LibraryStatus.COMPLETED, 5, 41, CoverIndigoStart, CoverIndigoEnd),
         )
 
     val currentlyPlaying =
         listOf(
-            LibraryEntry("Baldur's Gate 3", LibraryStatus.PLAYING, 5, 96, CoverEmeraldStart, CoverEmeraldEnd),
-            LibraryEntry("Helldivers 2", LibraryStatus.PLAYING, 4, 44, CoverCyanStart, CoverCyanEnd),
+            LibraryEntry("Baldur's Gate 3", "baldurs-gate-iii", LibraryStatus.PLAYING, 5, 96, CoverEmeraldStart, CoverEmeraldEnd),
+            LibraryEntry("Helldivers 2", "helldivers-2", LibraryStatus.PLAYING, 4, 44, CoverCyanStart, CoverCyanEnd),
         )
 
     val activity =
