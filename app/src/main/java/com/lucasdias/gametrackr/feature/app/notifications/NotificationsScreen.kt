@@ -2,6 +2,7 @@ package com.lucasdias.gametrackr.feature.app.notifications
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,8 +11,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,33 +31,62 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
-import com.lucasdias.gametrackr.core.pagination.MockPaginationState
+import com.lucasdias.gametrackr.core.pagination.PaginationState
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
+import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.data.notifications.NotificationsRepository
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationFilterTabs
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationRow
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationsEmptyState
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationsTopBar
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+
+private const val NOTIFICATIONS_PAGE_SIZE = 4
 
 @Composable
 fun NotificationsScreen(
     isGuest: Boolean,
     onBack: () -> Unit,
     onCreateAccount: () -> Unit,
+    repository: NotificationsRepository = koinInject(),
 ) {
     var filter by rememberSaveable { mutableStateOf(NotificationFilter.ALL) }
     var markedAllRead by rememberSaveable { mutableStateOf(false) }
     val removedIds = remember { mutableListOf<Int>().toMutableStateList() }
-    val pagination = remember { MockPaginationState(NotificationsMockData.items, pageSize = 4) }
+    val pagination = remember { PaginationState<NotificationItem>() }
     val coroutineScope = rememberCoroutineScope()
+
+    fun loadNextPage() {
+        if (!pagination.canLoadMore) return
+        pagination.setLoading(true)
+        coroutineScope.launch {
+            repository
+                .fetchNotifications(page = pagination.currentPage + 1, perPage = NOTIFICATIONS_PAGE_SIZE)
+                .onSuccess { pagination.append(it) }
+            pagination.setLoading(false)
+        }
+    }
+
+    LaunchedEffect(isGuest) {
+        if (!isGuest) loadNextPage()
+    }
 
     Column(modifier = Modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         NotificationsTopBar(
             onBack = onBack,
-            onMarkAllRead = { markedAllRead = true },
+            onMarkAllRead = {
+                coroutineScope.launch {
+                    repository.markAllAsRead().onSuccess { markedAllRead = true }
+                }
+            },
             onClearAll = {
-                pagination.items.forEach { removedIds.add(it.id) }
+                coroutineScope.launch {
+                    repository.clearNotifications().onSuccess {
+                        pagination.items.forEach { removedIds.add(it.id) }
+                    }
+                }
             },
             showActions = !isGuest,
         )
@@ -85,7 +118,11 @@ fun NotificationsScreen(
                 modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
             )
 
-            if (visible.isEmpty()) {
+            if (pagination.currentPage == 0) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AppPrimary)
+                }
+            } else if (visible.isEmpty()) {
                 NotificationsEmptyState(
                     title = stringResource(R.string.notifications_empty_title),
                     subtitle = stringResource(R.string.notifications_empty_subtitle),
@@ -96,7 +133,7 @@ fun NotificationsScreen(
                 InfiniteScrollEffect(
                     listState = listState,
                     canLoadMore = pagination.canLoadMore,
-                    onLoadMore = { coroutineScope.launch { pagination.loadNextPage() } },
+                    onLoadMore = ::loadNextPage,
                 )
 
                 LazyColumn(
