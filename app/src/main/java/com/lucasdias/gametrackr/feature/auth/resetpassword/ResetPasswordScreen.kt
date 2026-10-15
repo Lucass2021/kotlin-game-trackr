@@ -14,10 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.components.Toast
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.resetpassword.components.ResetPasswordBottomSection
 import com.lucasdias.gametrackr.feature.auth.resetpassword.components.ResetPasswordFormSection
 import org.koin.androidx.compose.koinViewModel
@@ -108,7 +108,7 @@ private fun ResetPasswordContent(
 @Preview
 @Composable
 private fun ResetPasswordPreview() {
-    GameTrackrTheme {
+    AppPreview {
         ResetPasswordContent(
             uiState = ResetPasswordUiState(password = "secret1"),
             onBack = {},

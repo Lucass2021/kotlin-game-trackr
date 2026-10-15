@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
@@ -298,5 +299,7 @@ private fun FaqRow(
 @Preview
 @Composable
 private fun HelpScreenPreview() {
-    HelpScreen(onBack = {})
+    AppPreview {
+        HelpScreen(onBack = {})
+    }
 }

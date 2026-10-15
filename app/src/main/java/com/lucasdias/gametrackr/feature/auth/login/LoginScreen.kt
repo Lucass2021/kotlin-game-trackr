@@ -12,12 +12,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.components.SocialLoginSection
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.components.Toast
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.login.components.ForgotPasswordRow
 import com.lucasdias.gametrackr.feature.auth.login.components.GuestPrompt
 import com.lucasdias.gametrackr.feature.auth.login.components.LoginFormSection
@@ -142,7 +142,7 @@ private fun LoginContent(
 @Preview
 @Composable
 private fun LoginScreenPreview() {
-    GameTrackrTheme {
+    AppPreview {
         LoginContent(
             uiState = LoginUiState(),
             onBack = {},

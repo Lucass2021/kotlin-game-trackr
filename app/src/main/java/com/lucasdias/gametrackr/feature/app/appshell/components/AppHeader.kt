@@ -27,11 +27,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 
 @Composable
 fun AppHeader(
@@ -91,7 +91,7 @@ private fun HeaderButton(
 @Preview
 @Composable
 private fun AppHeaderPreview() {
-    GameTrackrTheme {
+    AppPreview {
         AppHeader(onNotifications = {}, onSearch = {}, onMenu = {})
     }
 }

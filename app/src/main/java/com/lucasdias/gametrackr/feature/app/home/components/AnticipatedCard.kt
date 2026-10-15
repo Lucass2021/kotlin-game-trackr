@@ -12,15 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.Game
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.feature.app.home.HomeMockData
 
 private val CardWidth = 170.dp
 
@@ -71,5 +74,13 @@ fun AnticipatedCard(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AnticipatedCardPreview() {
+    AppPreview {
+        AnticipatedCard(game = HomeMockData.sampleGame, modifier = Modifier.padding(20.dp))
     }
 }

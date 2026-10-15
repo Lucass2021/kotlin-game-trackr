@@ -2,17 +2,21 @@ package com.lucasdias.gametrackr.feature.app.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.Game
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.feature.app.home.HomeMockData
 
 private val CardWidth = 150.dp
 
@@ -48,5 +52,13 @@ fun NewReleaseCard(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun NewReleaseCardPreview() {
+    AppPreview {
+        NewReleaseCard(game = HomeMockData.sampleGame, modifier = Modifier.padding(20.dp))
     }
 }

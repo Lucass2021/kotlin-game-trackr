@@ -21,8 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lucasdias.gametrackr.core.model.ProfileColor
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
@@ -30,6 +32,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.darkened
 import com.lucasdias.gametrackr.core.ui.theme.toAppColor
+import com.lucasdias.gametrackr.feature.app.profile.ProfileMockData
 
 @Composable
 fun AvatarColorPicker(
@@ -99,3 +102,16 @@ private fun Swatch(
 }
 
 private const val GRADIENT_DEPTH = 0.28f
+
+@Preview
+@Composable
+private fun AvatarColorPickerPreview() {
+    AppPreview {
+        AvatarColorPicker(
+            colors = ProfileMockData.colors,
+            selection = ProfileMockData.colors.first().hex,
+            onSelect = {},
+            modifier = Modifier.padding(20.dp),
+        )
+    }
+}

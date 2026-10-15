@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 
 fun Modifier.staggeredAppear(
@@ -19,7 +20,8 @@ fun Modifier.staggeredAppear(
     stepMillis: Int = 80,
 ): Modifier =
     composed {
-        var shown by remember { mutableStateOf(false) }
+        val isPreview = LocalInspectionMode.current
+        var shown by remember { mutableStateOf(isPreview) }
         val translateY = with(LocalDensity.current) { 14.dp.toPx() }
         val spec = tween<Float>(durationMillis = 400, delayMillis = index * stepMillis, easing = EaseOut)
 

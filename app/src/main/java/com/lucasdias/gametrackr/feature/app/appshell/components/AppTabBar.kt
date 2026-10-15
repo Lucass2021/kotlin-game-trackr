@@ -19,18 +19,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.app.appshell.AppTab
 
 @Composable
@@ -96,9 +95,7 @@ private fun TabItem(
 @Preview
 @Composable
 private fun AppTabBarPreview() {
-    GameTrackrTheme {
-        Column(modifier = Modifier.background(Color.Black)) {
-            AppTabBar(selected = AppTab.HOME, onSelect = {})
-        }
+    AppPreview {
+        AppTabBar(selected = AppTab.HOME, onSelect = {})
     }
 }

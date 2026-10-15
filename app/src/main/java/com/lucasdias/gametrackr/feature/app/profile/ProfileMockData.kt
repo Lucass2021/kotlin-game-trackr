@@ -1,5 +1,6 @@
 package com.lucasdias.gametrackr.feature.app.profile
 
+import com.lucasdias.gametrackr.core.model.ProfileColor
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
@@ -25,6 +26,13 @@ object ProfileMockData {
             joinedAt = "Joined March 2024",
             avatarHex = "#8B5CF6",
             stats = ProfileStats(totalGames = 142, hours = 1248, platinum = 21),
+        )
+
+    val colors =
+        listOf(
+            ProfileColor(key = "purple", name = "Purple", hex = "#8B5CF6"),
+            ProfileColor(key = "emerald", name = "Emerald", hex = "#10B981"),
+            ProfileColor(key = "amber", name = "Amber", hex = "#F59E0B"),
         )
 
     val breakdown =

@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
@@ -44,7 +45,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -179,7 +179,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
 @Preview
 @Composable
 private fun SplashScreenPreview() {
-    GameTrackrTheme {
+    AppPreview {
         SplashScreen(onAnimationFinished = {})
     }
 }

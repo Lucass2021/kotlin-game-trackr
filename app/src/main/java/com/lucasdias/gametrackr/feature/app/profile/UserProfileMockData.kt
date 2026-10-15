@@ -29,6 +29,16 @@ data class UserProfile(
 )
 
 object UserProfileMockData {
+    val user =
+        UserProfile(
+            name = "Ava Reyes",
+            username = "@avareyes",
+            avatarStart = CoverCyanStart,
+            avatarEnd = CoverCyanEnd,
+        )
+
+    val friend = user.copy(isFriend = true)
+
     private val avatarPalette =
         listOf(
             CoverCyanStart to CoverCyanEnd,

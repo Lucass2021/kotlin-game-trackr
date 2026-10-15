@@ -15,12 +15,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
 import com.lucasdias.gametrackr.core.ui.components.OtpField
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.verifyresetcode.components.VerifyResetCodeBottomSection
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -117,7 +117,7 @@ private fun VerifyResetCodeContent(
 @Preview
 @Composable
 private fun VerifyResetCodePreview() {
-    GameTrackrTheme {
+    AppPreview {
         VerifyResetCodeContent(
             email = "you@email.com",
             uiState = VerifyResetCodeUiState(code = "123"),

@@ -12,11 +12,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
 import com.lucasdias.gametrackr.core.ui.components.SocialLoginSection
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.components.Toast
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.register.components.RegisterBottomSection
 import com.lucasdias.gametrackr.feature.auth.register.components.RegisterFormSection
 import com.lucasdias.gametrackr.feature.auth.register.components.TermsAcceptanceRow
@@ -135,7 +135,7 @@ private fun RegisterContent(
 @Preview
 @Composable
 private fun RegisterScreenPreview() {
-    GameTrackrTheme {
+    AppPreview {
         RegisterContent(
             uiState = RegisterUiState(),
             onBack = {},

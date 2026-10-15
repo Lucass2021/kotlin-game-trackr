@@ -15,13 +15,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 
 @Composable
 fun ComingSoon(
@@ -63,7 +63,7 @@ fun ComingSoon(
 @Preview
 @Composable
 private fun ComingSoonPreview() {
-    GameTrackrTheme {
+    AppPreview {
         ComingSoon(
             icon = AppIcon.LIBRARY,
             title = "Library",

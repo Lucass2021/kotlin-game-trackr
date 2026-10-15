@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.feature.auth.welcome.components.WelcomeBackground
 import com.lucasdias.gametrackr.feature.auth.welcome.components.WelcomeBottomSection
 
@@ -90,7 +90,7 @@ fun WelcomeScreen(
 @Preview
 @Composable
 private fun WelcomeScreenPreview() {
-    GameTrackrTheme {
+    AppPreview {
         WelcomeScreen(onCreateAccount = {}, onSignIn = {})
     }
 }
