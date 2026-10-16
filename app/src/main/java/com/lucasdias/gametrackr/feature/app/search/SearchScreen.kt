@@ -102,6 +102,15 @@ fun SearchScreen(
                     color = AppPrimary,
                     modifier = Modifier.align(Alignment.Center),
                 )
+            } else if (games.isEmpty()) {
+                SearchResultsEmptyState(
+                    query = query,
+                    onClear = {
+                        query = ""
+                        platformSlug = null
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
@@ -111,38 +120,22 @@ fun SearchScreen(
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    when {
-                        games.isEmpty() -> {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                SearchResultsEmptyState(
-                                    query = query,
-                                    onClear = {
-                                        query = ""
-                                        platformSlug = null
-                                    },
-                                )
-                            }
-                        }
-
-                        else -> {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                SectionHeader(
-                                    scope = scope,
-                                    isSearching = trimmedQuery.isNotEmpty(),
-                                    count = viewModel.pagination.total,
-                                )
-                            }
-                            items(games.size) { index ->
-                                SearchResultCard(
-                                    game = games[index],
-                                    modifier = Modifier.clickable { onGameClick(games[index].slug) },
-                                )
-                            }
-                            if (viewModel.pagination.isLoadingMore) {
-                                item(span = { GridItemSpan(maxLineSpan) }) {
-                                    LoadingMoreIndicator()
-                                }
-                            }
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        SectionHeader(
+                            scope = scope,
+                            isSearching = trimmedQuery.isNotEmpty(),
+                            count = viewModel.pagination.total,
+                        )
+                    }
+                    items(games.size) { index ->
+                        SearchResultCard(
+                            game = games[index],
+                            modifier = Modifier.clickable { onGameClick(games[index].slug) },
+                        )
+                    }
+                    if (viewModel.pagination.isLoadingMore) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            LoadingMoreIndicator()
                         }
                     }
                 }

@@ -40,6 +40,7 @@ import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.pagination.PaginationState
 import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -111,7 +112,7 @@ fun AchievementsScreen(
         }
 
         if (visible.isEmpty()) {
-            EmptyState()
+            AchievementsEmptyState()
             return@Column
         }
 
@@ -160,43 +161,11 @@ fun AchievementsScreen(
 }
 
 @Composable
-private fun EmptyState() {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .subtleBounce()
-                    .size(104.dp)
-                    .glow(color = AppPrimary, cornerRadius = 26.dp, blurRadius = 34.dp, alpha = 0.35f)
-                    .clip(RoundedCornerShape(26.dp))
-                    .background(AppSurfaceCard),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = AppIcon.TROPHY.image(),
-                contentDescription = null,
-                tint = AppPrimary,
-                modifier = Modifier.size(48.dp),
-            )
-        }
-
-        Text(
-            text = stringResource(R.string.achievements_empty_title),
-            color = AppTextPrimary,
-            style = AppType.headline(20.sp),
-            modifier = Modifier.padding(top = 24.dp),
-        )
-
-        Text(
-            text = stringResource(R.string.achievements_empty_message),
-            color = AppTextSecondary,
-            style = AppType.body(15.sp),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 10.dp),
-        )
-    }
+private fun AchievementsEmptyState() {
+    EmptyState(
+        icon = AppIcon.TROPHY,
+        title = stringResource(R.string.achievements_empty_title),
+        message = stringResource(R.string.achievements_empty_message),
+        modifier = Modifier.fillMaxSize(),
+    )
 }

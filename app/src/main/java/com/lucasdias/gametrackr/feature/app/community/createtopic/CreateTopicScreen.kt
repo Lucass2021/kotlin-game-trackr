@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -55,7 +56,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.SectionLabel
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.fieldBox
-import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -94,12 +94,13 @@ fun CreateTopicScreen(
         )
 
         if (isGuest) {
-            CommunityEmptyState(
+            EmptyState(
                 icon = AppIcon.COMMUNITY,
                 title = stringResource(R.string.create_topic_guest_title),
                 message = stringResource(R.string.create_topic_guest_message),
                 actionTitle = stringResource(R.string.create_topic_guest_action),
                 onAction = onCreateAccount,
+                modifier = Modifier.weight(1f),
             )
         } else {
             Form(state = state, viewModel = viewModel)

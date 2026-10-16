@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.SetupItem
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -43,7 +44,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 
 @Composable
 fun MySetupScreen(
@@ -61,7 +61,7 @@ fun MySetupScreen(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                CommunityEmptyState(
+                EmptyState(
                     icon = AppIcon.DEVICES,
                     title = stringResource(R.string.setup_empty_title),
                     message = stringResource(R.string.setup_empty_message),

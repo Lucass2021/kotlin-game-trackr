@@ -35,6 +35,7 @@ import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.pagination.PaginationState
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -42,7 +43,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.data.library.LibraryRepository
-import com.lucasdias.gametrackr.feature.app.library.components.LibraryEmptyState
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryFilterChips
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryStatsBar
@@ -112,12 +112,14 @@ fun LibraryScreen(
             }
 
             pagination.items.isEmpty() -> {
-                LibraryEmptyState(
+                EmptyState(
+                    icon = AppIcon.BRAND,
                     title = stringResource(R.string.library_empty_title),
                     message = stringResource(R.string.library_empty_subtitle),
                     actionTitle = stringResource(R.string.library_browse_games),
-                    onAction = onBrowseGames,
                     actionIcon = AppIcon.FORWARD,
+                    onAction = onBrowseGames,
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
 
@@ -164,36 +166,26 @@ fun LibraryScreen(
 
 @Composable
 private fun LibraryGuestState(onCreateAccount: () -> Unit) {
-    LibraryEmptyState(
+    EmptyState(
+        icon = AppIcon.BRAND,
         title = stringResource(R.string.library_guest_title),
         message = stringResource(R.string.library_guest_message),
         actionTitle = stringResource(R.string.library_guest_action),
         onAction = onCreateAccount,
+        modifier = Modifier.fillMaxSize(),
     )
 }
 
 @Composable
 private fun FilterEmptyState(status: LibraryStatus?) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = stringResource(R.string.library_filter_empty_title),
-            color = AppTextPrimary,
-            style = AppType.headline(20.sp, FontWeight.ExtraBold),
-        )
-        Text(
-            text =
-                stringResource(
-                    R.string.library_filter_empty_subtitle,
-                    status?.let { stringResource(it.labelRes) } ?: "",
-                ),
-            color = AppTextSecondary,
-            fontSize = 15.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 8.dp),
-        )
-    }
+    EmptyState(
+        icon = AppIcon.LIBRARY,
+        title = stringResource(R.string.library_filter_empty_title),
+        message =
+            stringResource(
+                R.string.library_filter_empty_subtitle,
+                status?.let { stringResource(it.labelRes) } ?: "",
+            ),
+        modifier = Modifier.fillMaxSize(),
+    )
 }

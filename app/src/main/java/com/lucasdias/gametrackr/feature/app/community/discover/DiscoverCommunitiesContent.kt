@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.feature.app.community.discover
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,13 +22,14 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
+import com.lucasdias.gametrackr.core.ui.components.rememberRemainingHeight
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.feature.app.community.CommunityOptions
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityChipRow
-import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 
 @Composable
 fun DiscoverCommunitiesContent(
@@ -82,11 +84,12 @@ fun DiscoverCommunitiesContent(
         }
 
         if (filtered.isEmpty()) {
-            item {
-                CommunityEmptyState(
+            item(key = EMPTY_STATE_KEY) {
+                EmptyState(
                     icon = AppIcon.SEARCH,
                     title = "No communities found",
                     message = "Try a different search or category.",
+                    modifier = Modifier.heightIn(min = rememberRemainingHeight(listState, EMPTY_STATE_KEY)),
                 )
             }
         } else {
@@ -123,3 +126,5 @@ fun DiscoverCommunitiesContent(
         }
     }
 }
+
+private const val EMPTY_STATE_KEY = "empty_state"

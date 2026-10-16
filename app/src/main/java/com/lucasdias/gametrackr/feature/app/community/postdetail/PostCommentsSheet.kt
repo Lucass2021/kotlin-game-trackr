@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.PostComment
 import com.lucasdias.gametrackr.core.model.totalCount
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -80,7 +81,7 @@ fun PostCommentsSheet(
             Header(total = total, onClose = onDismiss)
 
             if (state.isEmpty()) {
-                EmptyState(modifier = Modifier.weight(1f))
+                CommentsEmptyState(modifier = Modifier.weight(1f))
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
@@ -219,33 +220,13 @@ private fun Header(
 }
 
 @Composable
-private fun EmptyState(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(
-            imageVector = AppIcon.COMMENT.image(),
-            contentDescription = null,
-            tint = AppTextSecondary,
-            modifier = Modifier.size(44.dp),
-        )
-        Text(
-            text = "No comments yet",
-            color = AppTextPrimary,
-            style = AppType.headline(20.sp),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 12.dp),
-        )
-        Text(
-            text = "Be the first to comment.",
-            color = AppTextSecondary,
-            style = AppType.body(15.sp),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 4.dp),
-        )
-    }
+private fun CommentsEmptyState(modifier: Modifier = Modifier) {
+    EmptyState(
+        icon = AppIcon.COMMENT,
+        title = "No comments yet",
+        message = "Be the first to comment.",
+        modifier = modifier,
+    )
 }
 
 private fun toggleCommentLike(

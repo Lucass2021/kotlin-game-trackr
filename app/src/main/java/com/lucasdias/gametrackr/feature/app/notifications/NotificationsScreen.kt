@@ -34,13 +34,14 @@ import com.lucasdias.gametrackr.core.model.NotificationSection
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.pagination.PaginationState
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
+import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.data.notifications.NotificationsRepository
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationFilterTabs
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationRow
-import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationsEmptyState
 import com.lucasdias.gametrackr.feature.app.notifications.components.NotificationsTopBar
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -94,11 +95,13 @@ fun NotificationsScreen(
         )
 
         if (isGuest) {
-            NotificationsEmptyState(
+            EmptyState(
+                icon = AppIcon.NOTIFICATIONS,
                 title = stringResource(R.string.notifications_guest_title),
-                subtitle = stringResource(R.string.notifications_guest_subtitle),
-                actionText = stringResource(R.string.menu_create_account),
+                message = stringResource(R.string.notifications_guest_subtitle),
+                actionTitle = stringResource(R.string.menu_create_account),
                 onAction = onCreateAccount,
+                modifier = Modifier.fillMaxSize(),
             )
         } else {
             val visible =
@@ -125,9 +128,11 @@ fun NotificationsScreen(
                     CircularProgressIndicator(color = AppPrimary)
                 }
             } else if (visible.isEmpty()) {
-                NotificationsEmptyState(
+                EmptyState(
+                    icon = AppIcon.NOTIFICATIONS,
                     title = stringResource(R.string.notifications_empty_title),
-                    subtitle = stringResource(R.string.notifications_empty_subtitle),
+                    message = stringResource(R.string.notifications_empty_subtitle),
+                    modifier = Modifier.fillMaxSize(),
                 )
             } else {
                 val listState = rememberLazyListState()

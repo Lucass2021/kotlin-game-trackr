@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -50,7 +51,9 @@ import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
 import com.lucasdias.gametrackr.core.pagination.PaginationState
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.components.pressScale
+import com.lucasdias.gametrackr.core.ui.components.rememberRemainingHeight
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -62,7 +65,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.data.community.CommunityRepository
 import com.lucasdias.gametrackr.feature.app.community.CommunityDetailTab
-import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityPostCard
 import com.lucasdias.gametrackr.feature.app.community.components.ConfirmDialog
 import com.lucasdias.gametrackr.feature.app.community.components.CreatePostButton
@@ -179,8 +181,8 @@ fun CommunityDetailScreen(
             when (tab) {
                 CommunityDetailTab.POSTS -> {
                     if (postsError && posts.isEmpty()) {
-                        item {
-                            CommunityEmptyState(
+                        item(key = EMPTY_STATE_KEY) {
+                            EmptyState(
                                 icon = AppIcon.INFO,
                                 title = "Couldn't load posts",
                                 message = "Check your connection\nand try again.",
@@ -191,11 +193,12 @@ fun CommunityDetailScreen(
                                         loadMembers()
                                     }
                                 },
+                                modifier = Modifier.heightIn(min = rememberRemainingHeight(listState, EMPTY_STATE_KEY)),
                             )
                         }
                     } else if (posts.isEmpty()) {
-                        item {
-                            CommunityEmptyState(
+                        item(key = EMPTY_STATE_KEY) {
+                            EmptyState(
                                 icon = AppIcon.COMMUNITY,
                                 title = "No posts yet",
                                 message =
@@ -206,6 +209,7 @@ fun CommunityDetailScreen(
                                     },
                                 actionTitle = if (isJoined) "Create post" else null,
                                 onAction = if (isJoined) onCreatePost else null,
+                                modifier = Modifier.heightIn(min = rememberRemainingHeight(listState, EMPTY_STATE_KEY)),
                             )
                         }
                     } else {
@@ -495,3 +499,5 @@ private fun FloatingCircle(
         )
     }
 }
+
+private const val EMPTY_STATE_KEY = "empty_state"

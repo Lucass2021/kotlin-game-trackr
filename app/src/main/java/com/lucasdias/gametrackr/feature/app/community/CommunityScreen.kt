@@ -30,10 +30,10 @@ import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
 import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityChipRow
-import com.lucasdias.gametrackr.feature.app.community.components.CommunityEmptyState
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityPostCard
 import com.lucasdias.gametrackr.feature.app.community.components.CommunitySegmentControl
 import com.lucasdias.gametrackr.feature.app.community.components.ConfirmDialog
@@ -106,7 +106,7 @@ fun CommunityScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
-                            CommunityEmptyState(
+                            EmptyState(
                                 icon = AppIcon.COMMUNITY,
                                 title = stringResource(R.string.discover_guest_title),
                                 message = stringResource(R.string.discover_guest_message),
@@ -199,7 +199,7 @@ private fun FeedContent(
             contentAlignment = Alignment.Center,
         ) {
             if (feedError) {
-                CommunityEmptyState(
+                EmptyState(
                     icon = AppIcon.INFO,
                     title = "Couldn't load feed",
                     message = "Check your connection\nand try again.",
@@ -207,7 +207,7 @@ private fun FeedContent(
                     onAction = onRetry,
                 )
             } else {
-                CommunityEmptyState(
+                EmptyState(
                     icon = AppIcon.COMMUNITY,
                     title = "Your feed is quiet",
                     message = "Join a community to see posts\nfrom other players here.",
