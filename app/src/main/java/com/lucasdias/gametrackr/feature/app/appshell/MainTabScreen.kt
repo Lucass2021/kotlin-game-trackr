@@ -48,6 +48,7 @@ import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
 import com.lucasdias.gametrackr.feature.app.help.HelpScreen
 import com.lucasdias.gametrackr.feature.app.home.HomeScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
+import com.lucasdias.gametrackr.feature.app.library.LibraryViewModel
 import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
 import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
@@ -139,7 +140,7 @@ fun MainTabScreen(
     val communityViewModel: CommunityViewModel = koinViewModel()
     var selectedCommunity by remember { mutableStateOf<Community?>(null) }
     var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
-    var libraryFilter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
+    val libraryViewModel: LibraryViewModel = koinViewModel()
     var profile by remember { mutableStateOf(ProfileMockData.profile) }
 
     val mySetupViewModel: MySetupViewModel = koinViewModel()
@@ -148,6 +149,7 @@ fun MainTabScreen(
     LaunchedEffect(user?.id) {
         profile = profile.applying(user)
         mySetupViewModel.loadFor(if (isGuest) null else user?.id)
+        libraryViewModel.loadFor(if (isGuest) null else user?.id)
     }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
@@ -157,10 +159,9 @@ fun MainTabScreen(
                 selected = selectedTab,
                 onSelect = { selectedTab = it },
                 communityViewModel = communityViewModel,
-                libraryFilter = libraryFilter,
-                onLibraryFilterChange = { libraryFilter = it },
+                libraryViewModel = libraryViewModel,
                 onStatusClick = { status ->
-                    libraryFilter = status
+                    libraryViewModel.onFilterChange(status)
                     selectedTab = AppTab.LIBRARY
                 },
                 onCreateAccount = onLogout,
@@ -457,8 +458,7 @@ private fun TabShell(
     selected: AppTab,
     onSelect: (AppTab) -> Unit,
     communityViewModel: CommunityViewModel,
-    libraryFilter: LibraryStatus?,
-    onLibraryFilterChange: (LibraryStatus?) -> Unit,
+    libraryViewModel: LibraryViewModel,
     onNotifications: () -> Unit,
     onSearch: () -> Unit,
     onViewAll: (SearchScope) -> Unit,
@@ -492,10 +492,15 @@ private fun TabShell(
                 }
 
                 AppTab.LIBRARY -> {
+                    val libraryState by libraryViewModel.uiState.collectAsStateWithLifecycle()
                     LibraryScreen(
-                        filter = libraryFilter,
-                        onFilterChange = onLibraryFilterChange,
+                        state = libraryState,
                         isGuest = isGuest,
+                        onFilterChange = libraryViewModel::onFilterChange,
+                        onRetry = libraryViewModel::load,
+                        onLoadMore = libraryViewModel::loadMore,
+                        onToggleFavorite = libraryViewModel::onToggleFavorite,
+                        onErrorShown = libraryViewModel::onErrorShown,
                         onCreateAccount = onCreateAccount,
                         onBrowseGames = onSearch,
                         onGameClick = onGameClick,

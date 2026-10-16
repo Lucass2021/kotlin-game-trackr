@@ -1,165 +1,139 @@
 package com.lucasdias.gametrackr.feature.app.library
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.model.LibraryEntry
-import com.lucasdias.gametrackr.core.model.LibraryStats
 import com.lucasdias.gametrackr.core.model.LibraryStatus
-import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
-import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
-import com.lucasdias.gametrackr.core.pagination.PaginationState
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.EmptyState
+import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.data.library.LibraryRepository
-import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.library.LibraryMockData
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryFilterChips
+import com.lucasdias.gametrackr.feature.app.library.components.LibraryList
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryStatsBar
-import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
-
-private const val ENTRIES_PAGE_SIZE = 3
 
 @Composable
 fun LibraryScreen(
-    filter: LibraryStatus?,
+    state: LibraryUiState,
+    isGuest: Boolean,
     onFilterChange: (LibraryStatus?) -> Unit,
-    isGuest: Boolean = false,
-    onCreateAccount: () -> Unit = {},
+    onRetry: () -> Unit,
+    onLoadMore: () -> Unit,
+    onToggleFavorite: (String) -> Unit,
+    onErrorShown: () -> Unit,
     modifier: Modifier = Modifier,
+    onCreateAccount: () -> Unit = {},
     onBrowseGames: () -> Unit = {},
     onGameClick: (String) -> Unit = {},
-    repository: LibraryRepository = koinInject(),
 ) {
     if (isGuest) {
         LibraryGuestState(onCreateAccount = onCreateAccount)
         return
     }
 
-    val pagination = remember { PaginationState<LibraryEntry>() }
-    var stats by remember { mutableStateOf<LibraryStats?>(null) }
-    val coroutineScope = rememberCoroutineScope()
+    Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            val stats = state.stats?.takeUnless { state.isLibraryEmpty }
+            if (stats != null) {
+                LibraryStatsBar(
+                    stats = stats,
+                    modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.sm, bottom = Spacing.md),
+                )
+            }
 
-    fun loadNextPage() {
-        if (!pagination.canLoadMore) return
-        pagination.setLoading(true)
-        coroutineScope.launch {
-            repository
-                .fetchLibrary(page = pagination.currentPage + 1, perPage = ENTRIES_PAGE_SIZE)
-                .onSuccess { pagination.append(it) }
-            pagination.setLoading(false)
-        }
-    }
+            LibraryFilterChips(
+                selection = state.filter,
+                onSelect = onFilterChange,
+                modifier =
+                    Modifier
+                        .then(if (stats == null) Modifier.padding(top = Spacing.sm) else Modifier)
+                        .padding(bottom = Spacing.sm),
+            )
 
-    LaunchedEffect(repository) {
-        loadNextPage()
-        stats = repository.fetchLibraryStats().getOrNull()
-    }
-
-    val filteredEntries = if (filter == null) pagination.items.toList() else pagination.items.filter { it.status == filter }
-
-    Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
-        val loadedStats = stats
-        if (pagination.items.isNotEmpty() && loadedStats != null) {
-            LibraryStatsBar(
-                stats = loadedStats,
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp, bottom = 16.dp),
+            LibraryContent(
+                state = state,
+                onRetry = onRetry,
+                onLoadMore = onLoadMore,
+                onToggleFavorite = onToggleFavorite,
+                onBrowseGames = onBrowseGames,
+                onGameClick = onGameClick,
             )
         }
 
-        LibraryFilterChips(
-            selection = filter,
-            onSelect = onFilterChange,
-            modifier = Modifier.padding(top = if (pagination.items.isEmpty()) 12.dp else 0.dp, bottom = 14.dp),
+        Toast(
+            message = state.errorMessage?.let { stringResource(it) },
+            onDismiss = onErrorShown,
+            modifier = Modifier.align(Alignment.TopCenter),
         )
+    }
+}
 
-        when {
-            pagination.currentPage == 0 -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = AppPrimary)
-                }
+@Composable
+private fun LibraryContent(
+    state: LibraryUiState,
+    onRetry: () -> Unit,
+    onLoadMore: () -> Unit,
+    onToggleFavorite: (String) -> Unit,
+    onBrowseGames: () -> Unit,
+    onGameClick: (String) -> Unit,
+) {
+    when {
+        state.hasError -> {
+            EmptyState(
+                icon = AppIcon.INFO,
+                title = stringResource(R.string.library_load_error_title),
+                message = stringResource(R.string.library_load_error_message),
+                actionTitle = stringResource(R.string.library_retry),
+                onAction = onRetry,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+
+        state.currentPage == 0 -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = AppPrimary)
             }
+        }
 
-            pagination.items.isEmpty() -> {
-                EmptyState(
-                    icon = AppIcon.BRAND,
-                    title = stringResource(R.string.library_empty_title),
-                    message = stringResource(R.string.library_empty_subtitle),
-                    actionTitle = stringResource(R.string.library_browse_games),
-                    actionIcon = AppIcon.FORWARD,
-                    onAction = onBrowseGames,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
+        state.isLibraryEmpty -> {
+            EmptyState(
+                icon = AppIcon.BRAND,
+                title = stringResource(R.string.library_empty_title),
+                message = stringResource(R.string.library_empty_subtitle),
+                actionTitle = stringResource(R.string.library_browse_games),
+                actionIcon = AppIcon.FORWARD,
+                onAction = onBrowseGames,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
 
-            filteredEntries.isEmpty() -> {
-                FilterEmptyState(status = filter)
-            }
+        state.entries.isEmpty() -> {
+            FilterEmptyState(status = state.filter)
+        }
 
-            else -> {
-                val listState = rememberLazyListState()
-
-                InfiniteScrollEffect(
-                    listState = listState,
-                    canLoadMore = pagination.canLoadMore,
-                    onLoadMore = ::loadNextPage,
-                )
-
-                LazyColumn(
-                    state = listState,
-                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    items(filteredEntries) { entry ->
-                        LibraryEntryRow(
-                            entry = entry,
-                            onFavorite = {
-                                val index = pagination.items.indexOfFirst { it.title == entry.title }
-                                if (index >= 0) {
-                                    pagination.items[index] = pagination.items[index].copy(isFavorite = !entry.isFavorite)
-                                }
-                            },
-                            modifier = Modifier.clickable { onGameClick(entry.slug) },
-                        )
-                    }
-
-                    if (pagination.isLoadingMore) {
-                        item { LoadingMoreIndicator() }
-                    }
-                }
-            }
+        else -> {
+            LibraryList(
+                entries = state.entries,
+                canLoadMore = state.canLoadMore,
+                isLoadingMore = state.isLoadingMore,
+                loadMoreFailed = state.loadMoreFailed,
+                onLoadMore = onLoadMore,
+                onToggleFavorite = onToggleFavorite,
+                onGameClick = onGameClick,
+            )
         }
     }
 }
@@ -188,4 +162,36 @@ private fun FilterEmptyState(status: LibraryStatus?) {
             ),
         modifier = Modifier.fillMaxSize(),
     )
+}
+
+@Preview
+@Composable
+private fun LibraryScreenPreview() {
+    AppPreview {
+        LibraryScreen(
+            state = LibraryUiState(entries = LibraryMockData.entries, stats = LibraryMockData.stats, currentPage = 1),
+            isGuest = false,
+            onFilterChange = {},
+            onRetry = {},
+            onLoadMore = {},
+            onToggleFavorite = {},
+            onErrorShown = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LibraryScreenErrorPreview() {
+    AppPreview {
+        LibraryScreen(
+            state = LibraryUiState(hasError = true),
+            isGuest = false,
+            onFilterChange = {},
+            onRetry = {},
+            onLoadMore = {},
+            onToggleFavorite = {},
+            onErrorShown = {},
+        )
+    }
 }

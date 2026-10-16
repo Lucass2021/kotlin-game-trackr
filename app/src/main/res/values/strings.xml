@@ -131,6 +131,14 @@
     <string name="library_browse_games">Browse games</string>
     <string name="library_filter_empty_title">Nothing here yet</string>
     <string name="library_filter_empty_subtitle">No games marked as \"%1$s\".</string>
+    <string name="library_load_error_title">Couldn\'t load your library</string>
+    <string name="library_load_error_message">Check your connection and try again.</string>
+    <string name="library_retry">Try again</string>
+    <string name="library_favorite_add">Add to favorites</string>
+    <string name="library_favorite_remove">Remove from favorites</string>
+    <string name="library_favorite_error">Couldn\'t update favorites. Please try again.</string>
+    <string name="load_more_error">Couldn\'t load more.</string>
+    <string name="load_more_retry">Try again</string>
 
 
     <string name="profile_guest_title">Guest</string>

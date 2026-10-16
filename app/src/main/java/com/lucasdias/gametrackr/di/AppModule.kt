@@ -39,6 +39,7 @@ import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateComm
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailViewModel
 import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
+import com.lucasdias.gametrackr.feature.app.library.LibraryViewModel
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
 import com.lucasdias.gametrackr.feature.app.profile.setup.ContentSetupPhotoEncoder
 import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupViewModel
@@ -167,5 +168,6 @@ val appModule =
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get(), androidContext()) }
         viewModel { MySetupViewModel(get()) }
         viewModel { StatsViewModel(get()) }
+        viewModel { LibraryViewModel(get()) }
         viewModel { params -> EditSetupViewModel(params.getOrNull(), get(), ContentSetupPhotoEncoder(androidContext())) }
     }

@@ -9,9 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val LABEL_SIZE = 11.sp
+private val LABEL_LETTER_SPACING = 0.6.sp
 
 @Composable
 fun LibraryStatusBadge(
@@ -21,14 +26,22 @@ fun LibraryStatusBadge(
     Text(
         text = stringResource(status.labelRes).uppercase(),
         color = status.badgeForeground,
-        fontSize = 11.sp,
+        fontSize = LABEL_SIZE,
         fontWeight = FontWeight.Bold,
-        letterSpacing = 0.6.sp,
+        letterSpacing = LABEL_LETTER_SPACING,
         maxLines = 1,
         modifier =
             modifier
                 .clip(CircleShape)
                 .background(status.badgeBackground)
-                .padding(horizontal = 10.dp, vertical = 5.dp),
+                .padding(horizontal = Spacing.xs, vertical = Spacing.xxs),
     )
+}
+
+@Preview
+@Composable
+private fun LibraryStatusBadgePreview() {
+    AppPreview {
+        LibraryStatusBadge(status = LibraryStatus.PLAYING)
+    }
 }

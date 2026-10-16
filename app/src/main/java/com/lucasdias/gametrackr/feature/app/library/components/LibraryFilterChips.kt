@@ -15,16 +15,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val BORDER_WIDTH = 1.dp
+private val LABEL_SIZE = 14.sp
 
 @Composable
 fun LibraryFilterChips(
@@ -34,7 +43,7 @@ fun LibraryFilterChips(
 ) {
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 20.dp),
+        contentPadding = PaddingValues(horizontal = Spacing.lg),
     ) {
         item {
             Chip(
@@ -64,22 +73,32 @@ private fun Chip(
     Text(
         text = label,
         color = if (isSelected) AppOnPrimary else AppTextPrimary,
-        fontSize = 14.sp,
+        fontSize = LABEL_SIZE,
         fontWeight = FontWeight.SemiBold,
         modifier =
             Modifier
-                .padding(end = 10.dp)
+                .semantics { selected = isSelected }
+                .padding(end = Spacing.xs)
                 .pressScale(interactionSource)
                 .clip(CircleShape)
                 .background(if (isSelected) AppPrimary else Color.Transparent)
                 .border(
-                    width = 1.dp,
+                    width = BORDER_WIDTH,
                     color = if (isSelected) Color.Transparent else AppOutline,
                     shape = CircleShape,
                 ).clickable(
                     interactionSource = interactionSource,
                     indication = null,
+                    role = Role.Tab,
                     onClick = onClick,
-                ).padding(horizontal = 18.dp, vertical = 9.dp),
+                ).padding(horizontal = Spacing.md, vertical = Spacing.xs),
     )
+}
+
+@Preview
+@Composable
+private fun LibraryFilterChipsPreview() {
+    AppPreview {
+        LibraryFilterChips(selection = LibraryStatus.PLAYING, onSelect = {})
+    }
 }

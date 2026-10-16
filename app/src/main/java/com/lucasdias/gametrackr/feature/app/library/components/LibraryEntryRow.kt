@@ -22,10 +22,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.LibraryEntry
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
@@ -34,7 +36,17 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.library.LibraryMockData
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
+
+private val BORDER_WIDTH = 1.dp
+private val COVER_WIDTH = 62.dp
+private val COVER_HEIGHT = 82.dp
+private val FAVORITE_ICON_SIZE = 18.dp
+private val TITLE_SIZE = 18.sp
+private val HOURS_SIZE = 15.sp
 
 @Composable
 fun LibraryEntryRow(
@@ -42,45 +54,48 @@ fun LibraryEntryRow(
     modifier: Modifier = Modifier,
     onFavorite: (() -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(18.dp)
+    val shape = RoundedCornerShape(Radius.lg)
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
                 .clip(shape)
                 .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
-                .padding(14.dp),
+                .border(BORDER_WIDTH, AppOutline, shape)
+                .padding(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        GameCoverArt(start = entry.coverStart, end = entry.coverEnd, width = 62.dp, height = 82.dp)
+        GameCoverArt(start = entry.coverStart, end = entry.coverEnd, width = COVER_WIDTH, height = COVER_HEIGHT)
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             Text(
                 text = entry.title,
                 color = AppTextPrimary,
-                style = AppType.label(18.sp),
+                style = AppType.label(TITLE_SIZE),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
                 LibraryStatusBadge(status = entry.status)
                 StarRating(rating = entry.rating)
             }
         }
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             if (onFavorite != null) {
                 val interaction = remember { MutableInteractionSource() }
-                val label = if (entry.isFavorite) "Remove from favorites" else "Add to favorites"
+                val label =
+                    stringResource(
+                        if (entry.isFavorite) R.string.library_favorite_remove else R.string.library_favorite_add,
+                    )
                 Icon(
                     imageVector = AppIcon.LIKE.image(filled = entry.isFavorite),
                     contentDescription = label,
@@ -94,16 +109,24 @@ fun LibraryEntryRow(
                                 onClickLabel = label,
                                 role = Role.Button,
                                 onClick = onFavorite,
-                            ).size(18.dp),
+                            ).size(FAVORITE_ICON_SIZE),
                 )
             }
 
             Text(
                 text = stringResource(R.string.library_hours, entry.hours),
                 color = AppTextSecondary,
-                fontSize = 15.sp,
+                fontSize = HOURS_SIZE,
                 fontWeight = FontWeight.SemiBold,
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun LibraryEntryRowPreview() {
+    AppPreview {
+        LibraryEntryRow(entry = LibraryMockData.entries[0], onFavorite = {})
     }
 }
