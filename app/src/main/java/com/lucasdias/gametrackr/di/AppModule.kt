@@ -44,6 +44,7 @@ import com.lucasdias.gametrackr.feature.app.profile.setup.ContentSetupPhotoEncod
 import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupViewModel
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
 import com.lucasdias.gametrackr.feature.app.search.SearchViewModel
+import com.lucasdias.gametrackr.feature.app.stats.StatsViewModel
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
 import com.lucasdias.gametrackr.feature.auth.forgotpassword.ForgotPasswordViewModel
 import com.lucasdias.gametrackr.feature.auth.login.LoginViewModel
@@ -165,5 +166,6 @@ val appModule =
         viewModel { CreateCommunityViewModel(get(), androidContext()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get(), androidContext()) }
         viewModel { MySetupViewModel(get()) }
+        viewModel { StatsViewModel(get()) }
         viewModel { params -> EditSetupViewModel(params.getOrNull(), get(), ContentSetupPhotoEncoder(androidContext())) }
     }

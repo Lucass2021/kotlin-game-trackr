@@ -21,9 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.BackButton
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -32,6 +34,11 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val ICON_SIZE = 22.dp
+private val TITLE_SIZE = 22.sp
+private val SUBTITLE_SIZE = 13.sp
 
 @Composable
 fun StatsTopBar(
@@ -50,8 +57,8 @@ fun StatsTopBar(
                 .fillMaxWidth()
                 .background(AppBackground)
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         BackButton(onBack = onBack)
@@ -60,13 +67,13 @@ fun StatsTopBar(
             Text(
                 text = title,
                 color = AppTextPrimary,
-                style = AppType.headline(22.sp),
+                style = AppType.headline(TITLE_SIZE),
             )
             if (subtitle != null) {
                 Text(
                     text = subtitle,
                     color = AppTextSecondary,
-                    style = AppType.body(13.sp),
+                    style = AppType.body(SUBTITLE_SIZE),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -87,8 +94,16 @@ fun StatsTopBar(
                             onClickLabel = shareLabel,
                             role = Role.Button,
                             onClick = onShare,
-                        ).size(22.dp),
+                        ).size(ICON_SIZE),
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun StatsTopBarPreview() {
+    AppPreview {
+        StatsTopBar(title = "Stats", subtitle = "Ana", onBack = {}, onShare = {})
     }
 }

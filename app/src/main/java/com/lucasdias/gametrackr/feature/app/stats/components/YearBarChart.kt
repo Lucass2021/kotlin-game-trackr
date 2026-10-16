@@ -14,14 +14,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.YearCount
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.stats.StatsMockData
 
-private val MaxBarHeight = 110.dp
+private val CHART_HEIGHT = 150.dp
+private val MAX_BAR_HEIGHT = 110.dp
+private val MIN_BAR_HEIGHT = 12.dp
+private val LABEL_SIZE = 12.sp
 
 @Composable
 fun YearBarChart(
@@ -31,8 +39,8 @@ fun YearBarChart(
     val maxCount = (years.maxOfOrNull { it.count } ?: 0).coerceAtLeast(1)
 
     Row(
-        modifier = modifier.fillMaxWidth().height(150.dp),
-        horizontalArrangement = Arrangement.spacedBy(18.dp),
+        modifier = modifier.fillMaxWidth().height(CHART_HEIGHT),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.Bottom,
     ) {
         years.forEachIndexed { index, year ->
@@ -56,21 +64,29 @@ private fun YearColumn(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Bottom),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs, Alignment.Bottom),
     ) {
         Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height((MaxBarHeight * year.count / maxCount).coerceAtLeast(12.dp))
-                    .clip(RoundedCornerShape(6.dp))
+                    .height((MAX_BAR_HEIGHT * year.count / maxCount).coerceAtLeast(MIN_BAR_HEIGHT))
+                    .clip(RoundedCornerShape(Radius.sm))
                     .background(year.tint),
         )
 
         Text(
             text = year.year,
             color = if (isCurrent) AppTextPrimary else AppTextSecondary,
-            style = AppType.label(12.sp, if (isCurrent) FontWeight.ExtraBold else FontWeight.Normal),
+            style = AppType.label(LABEL_SIZE, if (isCurrent) FontWeight.ExtraBold else FontWeight.Normal),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun YearBarChartPreview() {
+    AppPreview {
+        YearBarChart(years = StatsMockData.stats.yearsCompleted)
     }
 }

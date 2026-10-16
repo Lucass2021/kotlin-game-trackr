@@ -207,6 +207,11 @@
     <string name="stats_section_genres">Top genres</string>
     <string name="stats_section_platforms">By platform</string>
     <string name="stats_section_years">By year completed</string>
+    <string name="stats_share_message_own">Check out my gaming stats on GameTrackr!</string>
+    <string name="stats_share_message">Check out %1$s\'s gaming stats on GameTrackr!</string>
+    <string name="stats_load_error_title">Couldn\'t load stats</string>
+    <string name="stats_load_error_message">Check your connection and try again.</string>
+    <string name="stats_retry">Try again</string>
 
     <string name="sign_out">Sign out</string>
 

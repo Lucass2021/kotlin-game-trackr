@@ -8,26 +8,36 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.StatBar
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.stats.StatsMockData
+
+private val BAR_HEIGHT = 7.dp
+private val MIN_BAR_WIDTH = 8.dp
+private val LABEL_SIZE = 12.sp
+private val LABEL_LETTER_SPACING = 0.8.sp
 
 @Composable
 fun StatBarList(
     bars: List<StatBar>,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         bars.forEach { bar -> BarRow(bar) }
     }
 }
@@ -36,21 +46,21 @@ fun StatBarList(
 private fun BarRow(bar: StatBar) {
     Column(
         modifier = Modifier.fillMaxWidth().clearAndSetSemantics {},
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
             Text(
                 text = bar.label.uppercase(),
                 color = AppTextPrimary,
-                style = AppType.label(12.sp),
-                letterSpacing = 0.8.sp,
+                style = AppType.label(LABEL_SIZE),
+                letterSpacing = LABEL_LETTER_SPACING,
                 modifier = Modifier.weight(1f),
             )
             Text(
                 text = bar.value.uppercase(),
                 color = AppTextSecondary,
-                style = AppType.label(12.sp),
-                letterSpacing = 0.8.sp,
+                style = AppType.label(LABEL_SIZE),
+                letterSpacing = LABEL_LETTER_SPACING,
             )
         }
 
@@ -58,18 +68,27 @@ private fun BarRow(bar: StatBar) {
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(7.dp)
+                    .height(BAR_HEIGHT)
                     .clip(CircleShape)
                     .background(AppOutline),
         ) {
             Box(
                 modifier =
                     Modifier
-                        .fillMaxWidth(bar.fraction.coerceIn(0.03f, 1f))
+                        .widthIn(min = MIN_BAR_WIDTH)
+                        .fillMaxWidth(bar.fraction.coerceIn(0f, 1f))
                         .fillMaxHeight()
                         .clip(CircleShape)
                         .background(bar.tint),
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun StatBarListPreview() {
+    AppPreview {
+        StatBarList(bars = StatsMockData.stats.platforms)
     }
 }
