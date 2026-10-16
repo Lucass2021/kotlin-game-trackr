@@ -375,6 +375,9 @@
     <string name="achievements_stat_games">Games</string>
     <string name="achievements_empty_title">Nothing here yet</string>
     <string name="achievements_empty_message">Achievements from the games in your library show up here as you unlock them.</string>
+    <string name="achievements_load_error_title">Couldn\'t load achievements</string>
+    <string name="achievements_load_error_message">Check your connection and try again.</string>
+    <string name="achievements_retry">Try again</string>
     <string name="achievements_tier_bronze">Bronze</string>
     <string name="achievements_tier_silver">Silver</string>
     <string name="achievements_tier_gold">Gold</string>

@@ -24,10 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.AchievementsSummary
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -36,13 +38,24 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val BORDER_WIDTH = 1.dp
+private val BAR_HEIGHT = 10.dp
+private val STAT_ICON_SIZE = 16.dp
+private val COUNT_SIZE = 34.sp
+private val TOTAL_SIZE = 15.sp
+private val PERCENT_SIZE = 20.sp
+private val STAT_VALUE_SIZE = 15.sp
+private val STAT_LABEL_SIZE = 11.sp
 
 @Composable
 fun AchievementsSummaryCard(
     summary: AchievementsSummary,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(18.dp)
+    val shape = RoundedCornerShape(Radius.lg)
     val a11y = stringResource(R.string.achievements_summary_a11y, summary.unlockedCount, summary.total)
 
     Column(
@@ -51,31 +64,31 @@ fun AchievementsSummaryCard(
                 .fillMaxWidth()
                 .clip(shape)
                 .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
-                .padding(20.dp)
+                .border(BORDER_WIDTH, AppOutline, shape)
+                .padding(Spacing.lg)
                 .semantics(mergeDescendants = true) { contentDescription = a11y },
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = summary.unlockedCount.toString(),
                 color = AppPrimary,
-                style = AppType.headline(34.sp, FontWeight.ExtraBold),
+                style = AppType.headline(COUNT_SIZE, FontWeight.ExtraBold),
             )
             Text(
                 text = stringResource(R.string.achievements_summary_of, summary.total),
                 color = AppTextSecondary,
-                style = AppType.body(15.sp),
+                style = AppType.body(TOTAL_SIZE),
                 modifier = Modifier.weight(1f),
             )
             Text(
                 text = stringResource(R.string.achievements_summary_percent, summary.percent),
                 color = AppTextPrimary,
-                style = AppType.headline(20.sp),
+                style = AppType.headline(PERCENT_SIZE),
             )
         }
 
@@ -83,7 +96,7 @@ fun AchievementsSummaryCard(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(10.dp)
+                    .height(BAR_HEIGHT)
                     .clip(CircleShape)
                     .background(AppOutline),
         ) {
@@ -97,7 +110,7 @@ fun AchievementsSummaryCard(
             )
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(22.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
             MiniStat(
                 icon = AppIcon.TROPHY,
                 value = summary.platinumCount.toString(),
@@ -123,16 +136,26 @@ private fun MiniStat(
     value: String,
     label: String,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs), verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = icon.image(),
             contentDescription = null,
             tint = AppSecondary,
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier.size(STAT_ICON_SIZE),
         )
         Column {
-            Text(text = value, color = AppTextPrimary, style = AppType.label(15.sp))
-            Text(text = label, color = AppTextSecondary, style = AppType.body(11.sp))
+            Text(text = value, color = AppTextPrimary, style = AppType.label(STAT_VALUE_SIZE))
+            Text(text = label, color = AppTextSecondary, style = AppType.body(STAT_LABEL_SIZE))
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AchievementsSummaryCardPreview() {
+    AppPreview {
+        AchievementsSummaryCard(
+            summary = AchievementsSummary(unlockedCount = 42, total = 60, platinumCount = 2, completedCount = 3, gameCount = 6),
+        )
     }
 }

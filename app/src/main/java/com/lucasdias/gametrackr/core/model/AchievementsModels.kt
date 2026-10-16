@@ -68,15 +68,4 @@ data class AchievementsSummary(
     val fraction: Float get() = if (total == 0) 0f else unlockedCount.toFloat() / total
 
     val percent: Int get() = (fraction * 100).roundToInt()
-
-    companion object {
-        fun from(games: List<GameAchievements>): AchievementsSummary =
-            AchievementsSummary(
-                unlockedCount = games.sumOf { it.unlockedCount },
-                total = games.sumOf { it.total },
-                platinumCount = games.count { it.hasPlatinum },
-                completedCount = games.count { it.isComplete },
-                gameCount = games.size,
-            )
-    }
 }

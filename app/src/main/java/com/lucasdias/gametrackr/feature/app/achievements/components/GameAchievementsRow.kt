@@ -21,10 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.GameAchievements
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -33,14 +35,26 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.achievements.AchievementsMockData
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
+
+private val BORDER_WIDTH = 1.dp
+private val COVER_WIDTH = 56.dp
+private val COVER_HEIGHT = 74.dp
+private val PLATINUM_ICON_SIZE = 18.dp
+private val BAR_HEIGHT = 6.dp
+private const val IN_PROGRESS_ALPHA = 0.8f
+private val TITLE_SIZE = 16.sp
+private val DETAIL_SIZE = 12.sp
 
 @Composable
 fun GameAchievementsRow(
     game: GameAchievements,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(Radius.lg)
 
     Row(
         modifier =
@@ -48,32 +62,32 @@ fun GameAchievementsRow(
                 .fillMaxWidth()
                 .clip(shape)
                 .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
-                .padding(14.dp),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                .border(BORDER_WIDTH, AppOutline, shape)
+                .padding(Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        GameCoverArt(start = game.coverStart, end = game.coverEnd, width = 56.dp, height = 74.dp)
+        GameCoverArt(start = game.coverStart, end = game.coverEnd, width = COVER_WIDTH, height = COVER_HEIGHT)
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
             ) {
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xxxs)) {
                     Text(
                         text = game.title,
                         color = AppTextPrimary,
-                        style = AppType.label(16.sp),
+                        style = AppType.label(TITLE_SIZE),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         text = game.platform,
                         color = AppTextSecondary,
-                        style = AppType.body(12.sp),
+                        style = AppType.body(DETAIL_SIZE),
                     )
                 }
 
@@ -82,7 +96,7 @@ fun GameAchievementsRow(
                         imageVector = AppIcon.TROPHY.image(filled = true),
                         contentDescription = stringResource(R.string.achievements_platinum_earned),
                         tint = AppSecondary,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(PLATINUM_ICON_SIZE),
                     )
                 }
             }
@@ -91,7 +105,7 @@ fun GameAchievementsRow(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(6.dp)
+                        .height(BAR_HEIGHT)
                         .clip(CircleShape)
                         .background(AppOutline),
             ) {
@@ -101,7 +115,7 @@ fun GameAchievementsRow(
                             .fillMaxWidth(game.fraction)
                             .fillMaxHeight()
                             .clip(CircleShape)
-                            .background(if (game.isComplete) AppPrimary else AppSecondary.copy(alpha = 0.8f)),
+                            .background(if (game.isComplete) AppPrimary else AppSecondary.copy(alpha = IN_PROGRESS_ALPHA)),
                 )
             }
 
@@ -109,15 +123,23 @@ fun GameAchievementsRow(
                 Text(
                     text = stringResource(R.string.achievements_count_of, game.unlockedCount, game.total),
                     color = AppTextSecondary,
-                    style = AppType.body(12.sp),
+                    style = AppType.body(DETAIL_SIZE),
                     modifier = Modifier.weight(1f),
                 )
                 Text(
                     text = stringResource(R.string.achievements_summary_percent, game.percent),
                     color = if (game.isComplete) AppPrimary else AppTextSecondary,
-                    style = AppType.label(12.sp),
+                    style = AppType.label(DETAIL_SIZE),
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun GameAchievementsRowPreview() {
+    AppPreview {
+        GameAchievementsRow(game = AchievementsMockData.games[0])
     }
 }
