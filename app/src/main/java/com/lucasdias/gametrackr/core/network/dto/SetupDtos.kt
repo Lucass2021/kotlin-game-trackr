@@ -2,6 +2,7 @@ package com.lucasdias.gametrackr.core.network.dto
 
 import com.lucasdias.gametrackr.core.model.SetupImage
 import com.lucasdias.gametrackr.core.model.SetupItem
+import com.lucasdias.gametrackr.core.network.resolveMediaUrl
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -30,10 +31,10 @@ data class SetupsResponse(
     val data: List<SetupDto>,
 )
 
-fun SetupDto.toDomain() =
+fun SetupDto.toDomain(apiBaseUrl: String) =
     SetupItem(
         id = id,
         title = title,
         description = description.orEmpty(),
-        images = images.map { SetupImage(id = it.id, url = it.url) },
+        images = images.map { SetupImage(id = it.id, url = resolveMediaUrl(it.url, apiBaseUrl)) },
     )

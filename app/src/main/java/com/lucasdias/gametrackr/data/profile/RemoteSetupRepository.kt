@@ -13,14 +13,15 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class RemoteSetupRepository(
     private val api: ProfileApi,
     private val json: Json,
+    private val apiBaseUrl: String,
 ) : SetupRepository {
-    override suspend fun fetchSetups(): Result<List<SetupItem>> = apiCall(json) { api.getSetups().data.map { it.toDomain() } }
+    override suspend fun fetchSetups(): Result<List<SetupItem>> = apiCall(json) { api.getSetups().data.map { it.toDomain(apiBaseUrl) } }
 
     override suspend fun createSetup(
         title: String,
         description: String,
         images: List<SetupImageUpload>,
-    ): Result<SetupItem> = apiCall(json) { api.createSetup(setupParts(title, description, images)).data.toDomain() }
+    ): Result<SetupItem> = apiCall(json) { api.createSetup(setupParts(title, description, images)).data.toDomain(apiBaseUrl) }
 
     override suspend fun updateSetup(
         id: Int,
@@ -33,7 +34,7 @@ class RemoteSetupRepository(
             val parts =
                 setupParts(title, description, newImages) +
                     removedImageIds.map { MultipartBody.Part.createFormData(REMOVE_IMAGE_IDS_FIELD, it.toString()) }
-            api.updateSetup(id, parts).data.toDomain()
+            api.updateSetup(id, parts).data.toDomain(apiBaseUrl)
         }
 
     override suspend fun deleteSetup(id: Int): Result<Unit> = apiCall(json) { api.deleteSetup(id) }

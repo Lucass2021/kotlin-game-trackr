@@ -441,6 +441,15 @@
     <string name="setup_delete_message">The photos you added will be removed too.</string>
     <string name="setup_delete_confirm">Delete</string>
     <string name="setup_delete_cancel">Cancel</string>
+    <string name="setup_title_required">Title is required</string>
+    <string name="setup_title_too_long">Title is too long</string>
+    <string name="setup_description_too_long">Description is too long</string>
+    <string name="setup_save_error">Couldn\'t save your setup. Please try again.</string>
+    <string name="setup_delete_error">Couldn\'t delete your setup. Please try again.</string>
+    <string name="setup_photo_error">Couldn\'t read one of the photos. Please pick it again.</string>
+    <string name="setup_load_error_title">Couldn\'t load your setups</string>
+    <string name="setup_load_error_message">Check your connection and try again.</string>
+    <string name="setup_retry">Try again</string>
 
     <plurals name="search_result_count">
         <item quantity="one">%1$,d result</item>

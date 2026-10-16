@@ -40,6 +40,9 @@ import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicVie
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailViewModel
 import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
+import com.lucasdias.gametrackr.feature.app.profile.setup.ContentSetupPhotoEncoder
+import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupViewModel
+import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
 import com.lucasdias.gametrackr.feature.app.search.SearchViewModel
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
 import com.lucasdias.gametrackr.feature.auth.forgotpassword.ForgotPasswordViewModel
@@ -138,7 +141,7 @@ val appModule =
         single<CommunityRepository> { RemoteCommunityRepository(get(), get()) }
         single<AuthRepository> { RemoteAuthRepository(get(), get(), get(), get()) }
         single<ProfileRepository> { RemoteProfileRepository(get(), get()) }
-        single<SetupRepository> { RemoteSetupRepository(get(), get()) }
+        single<SetupRepository> { RemoteSetupRepository(get(), get(), baseUrl) }
         single<StatsRepository> { FakeStatsRepository() }
         single<LibraryRepository> { FakeLibraryRepository() }
         single<NotificationsRepository> { FakeNotificationsRepository() }
@@ -161,4 +164,6 @@ val appModule =
         viewModel { (communityName: String) -> CreateTopicViewModel(communityName, get()) }
         viewModel { CreateCommunityViewModel(get(), androidContext()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get(), androidContext()) }
+        viewModel { MySetupViewModel(get()) }
+        viewModel { params -> EditSetupViewModel(params.getOrNull(), get(), ContentSetupPhotoEncoder(androidContext())) }
     }

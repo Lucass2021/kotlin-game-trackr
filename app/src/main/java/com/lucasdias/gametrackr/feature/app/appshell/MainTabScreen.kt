@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -28,7 +28,6 @@ import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.SetupItem
-import com.lucasdias.gametrackr.core.model.SetupPalette
 import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.ui.components.SuccessScreen
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -53,8 +52,9 @@ import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
 import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileScreen
-import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupScreen
+import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupRoute
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupScreen
+import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
@@ -84,6 +84,8 @@ private object ShellRoutes {
     const val EDIT_PROFILE = "editprofile"
     const val MY_SETUP = "mysetup"
     const val EDIT_SETUP = "editsetup"
+    const val EDIT_SETUP_ARG_ID = "setupId"
+    const val EDIT_SETUP_ROUTE = "$EDIT_SETUP?$EDIT_SETUP_ARG_ID={$EDIT_SETUP_ARG_ID}"
     const val ACHIEVEMENTS = "achievements"
     const val ACHIEVEMENTS_ARG_OWNER = "owner"
     const val ACHIEVEMENTS_ROUTE = "$ACHIEVEMENTS?$ACHIEVEMENTS_ARG_OWNER={$ACHIEVEMENTS_ARG_OWNER}"
@@ -109,6 +111,8 @@ private object ShellRoutes {
     fun gameAchievements(gameId: Long) = "$GAME_ACHIEVEMENTS/$gameId"
 
     fun gameDetail(slug: String) = "$GAME_DETAIL?$GAME_DETAIL_ARG_SLUG=${Uri.encode(slug)}"
+
+    fun editSetup(setupId: Int? = null) = if (setupId == null) EDIT_SETUP else "$EDIT_SETUP?$EDIT_SETUP_ARG_ID=$setupId"
 
     fun userProfile(name: String) = "$USER_PROFILE?$USER_PROFILE_ARG_NAME=${Uri.encode(name)}"
 
@@ -138,11 +142,13 @@ fun MainTabScreen(
     var libraryFilter by rememberSaveable { mutableStateOf<LibraryStatus?>(null) }
     var profile by remember { mutableStateOf(ProfileMockData.profile) }
 
+    val mySetupViewModel: MySetupViewModel = koinViewModel()
+    val mySetupState by mySetupViewModel.uiState.collectAsStateWithLifecycle()
+
     LaunchedEffect(user?.id) {
         profile = profile.applying(user)
+        mySetupViewModel.loadFor(if (isGuest) null else user?.id)
     }
-    val setups = remember { mutableStateListOf<SetupItem>() }
-    var editingSetup by remember { mutableStateOf<SetupItem?>(null) }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
         composable(ShellRoutes.TABS) {
@@ -176,41 +182,36 @@ fun MainTabScreen(
                 onViewStats = { navController.navigate(ShellRoutes.stats()) },
                 profile = profile,
                 onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
-                setups = setups,
+                setups = mySetupState.setups,
                 onViewSetup = { navController.navigate(ShellRoutes.MY_SETUP) },
                 currentUserId = currentUserId,
             )
         }
         composable(ShellRoutes.MY_SETUP) {
             MySetupScreen(
-                setups = setups,
+                state = mySetupState,
                 onBack = { navController.popBackStackIfResumed() },
-                onAdd = {
-                    editingSetup =
-                        SetupItem(
-                            id = (setups.maxOfOrNull { it.id } ?: 0) + 1,
-                            title = "",
-                            description = "",
-                        )
-                    navController.navigate(ShellRoutes.EDIT_SETUP)
-                },
-                onEdit = { setup ->
-                    editingSetup = setup
-                    navController.navigate(ShellRoutes.EDIT_SETUP)
-                },
+                onAdd = { navController.navigate(ShellRoutes.editSetup()) },
+                onEdit = { setup -> navController.navigate(ShellRoutes.editSetup(setup.id)) },
+                onRetry = mySetupViewModel::load,
             )
         }
-        composable(ShellRoutes.EDIT_SETUP) {
-            val setup = editingSetup ?: return@composable
-            EditSetupScreen(
-                setup = setup,
-                isNew = setups.none { it.id == setup.id },
+        composable(
+            route = ShellRoutes.EDIT_SETUP_ROUTE,
+            arguments =
+                listOf(
+                    navArgument(ShellRoutes.EDIT_SETUP_ARG_ID) {
+                        type = NavType.StringType
+                        nullable = true
+                    },
+                ),
+        ) { backStackEntry ->
+            EditSetupRoute(
+                setupId = backStackEntry.arguments?.getString(ShellRoutes.EDIT_SETUP_ARG_ID)?.toIntOrNull(),
+                mySetupState = mySetupState,
                 onBack = { navController.popBackStackIfResumed() },
-                onSave = { updated ->
-                    val index = setups.indexOfFirst { it.id == updated.id }
-                    if (index >= 0) setups[index] = updated else setups.add(updated)
-                },
-                onDelete = { target -> setups.removeAll { it.id == target.id } },
+                onSaved = mySetupViewModel::onSetupSaved,
+                onDeleted = mySetupViewModel::onSetupDeleted,
             )
         }
         composable(ShellRoutes.EDIT_PROFILE) {

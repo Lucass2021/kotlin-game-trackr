@@ -36,7 +36,7 @@ class RemoteSetupRepositoryTest {
                 .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
                 .build()
                 .create(ProfileApi::class.java)
-        repository = RemoteSetupRepository(api, json)
+        repository = RemoteSetupRepository(api, json, API_BASE_URL)
     }
 
     @After
@@ -45,7 +45,7 @@ class RemoteSetupRepositoryTest {
     }
 
     @Test
-    fun `fetch setups maps images and picks the palette from the id`() =
+    fun `fetch setups maps images to the api host and picks the palette from the id`() =
         runBlocking {
             server.enqueue(MockResponse().setResponseCode(HTTP_OK).setBody(SETUPS_BODY))
 
@@ -54,7 +54,7 @@ class RemoteSetupRepositoryTest {
             assertEquals(SETUP_ID, setup.id)
             assertEquals(TITLE, setup.title)
             assertEquals("", setup.description)
-            assertEquals(listOf(SetupImage(id = IMAGE_ID, url = IMAGE_URL)), setup.images)
+            assertEquals(listOf(SetupImage(id = IMAGE_ID, url = RESOLVED_IMAGE_URL)), setup.images)
             assertEquals(SetupPalette.forId(SETUP_ID), setup.palette)
         }
 
@@ -121,6 +121,8 @@ class RemoteSetupRepositoryTest {
         const val DESCRIPTION = "RTX 4090"
         const val FILE_NAME = "desk.jpg"
         const val IMAGE_URL = "http://localhost:8000/storage/9/desk.jpg"
+        const val API_BASE_URL = "http://10.0.2.2:8000/api/"
+        const val RESOLVED_IMAGE_URL = "http://10.0.2.2:8000/storage/9/desk.jpg"
         const val SETUP_JSON =
             """{"id":$SETUP_ID,"user_id":1,"title":"$TITLE","description":null,""" +
                 """"images":[{"id":$IMAGE_ID,"url":"$IMAGE_URL","name":"desk","file_name":"$FILE_NAME",""" +

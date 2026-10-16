@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.core.model
 
-import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.R
@@ -13,7 +12,6 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.darkened
 import com.lucasdias.gametrackr.core.ui.theme.toAppColor
 import java.time.LocalDate
-import java.util.UUID
 import kotlin.math.roundToInt
 
 data class Profile(
@@ -131,7 +129,6 @@ data class SetupItem(
     val title: String,
     val description: String,
     val images: List<SetupImage> = emptyList(),
-    val photos: List<Uri> = emptyList(),
     val palette: SetupPalette = SetupPalette.forId(id),
 )
 

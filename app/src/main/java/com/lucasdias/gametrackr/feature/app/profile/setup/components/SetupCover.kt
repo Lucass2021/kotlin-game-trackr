@@ -1,6 +1,5 @@
-package com.lucasdias.gametrackr.feature.app.profile.setup
+package com.lucasdias.gametrackr.feature.app.profile.setup.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.lucasdias.gametrackr.core.model.SetupItem
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -47,7 +47,7 @@ fun SetupCover(
                 .border(1.dp, AppOutline, shape),
         contentAlignment = Alignment.Center,
     ) {
-        val cover = setup.photos.firstOrNull()
+        val cover = setup.images.firstOrNull()
 
         if (cover == null) {
             Icon(
@@ -57,17 +57,15 @@ fun SetupCover(
                 modifier = Modifier.size(placeholderSize.dp),
             )
         } else {
-            rememberSetupPhoto(cover)?.let { bitmap ->
-                Image(
-                    bitmap = bitmap,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
+            AsyncImage(
+                model = cover.url,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
 
-        if (setup.photos.size > 1) {
+        if (setup.images.size > 1) {
             Row(
                 modifier =
                     Modifier
@@ -86,7 +84,7 @@ fun SetupCover(
                     modifier = Modifier.size(11.dp),
                 )
                 Text(
-                    text = "${setup.photos.size}",
+                    text = "${setup.images.size}",
                     color = Color.White,
                     style = AppType.label(11.sp),
                 )
