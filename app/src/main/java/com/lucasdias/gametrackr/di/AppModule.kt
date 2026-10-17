@@ -42,6 +42,7 @@ import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicVie
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailViewModel
 import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
 import com.lucasdias.gametrackr.feature.app.library.LibraryViewModel
+import com.lucasdias.gametrackr.feature.app.notifications.NotificationsViewModel
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
 import com.lucasdias.gametrackr.feature.app.profile.setup.ContentSetupPhotoEncoder
 import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupViewModel
@@ -173,5 +174,6 @@ val appModule =
         viewModel { LibraryViewModel(get()) }
         viewModel { AchievementsViewModel(get()) }
         viewModel { (gameId: Long) -> GameAchievementsViewModel(get(), gameId) }
+        viewModel { NotificationsViewModel(get()) }
         viewModel { params -> EditSetupViewModel(params.getOrNull(), get(), ContentSetupPhotoEncoder(androidContext())) }
     }

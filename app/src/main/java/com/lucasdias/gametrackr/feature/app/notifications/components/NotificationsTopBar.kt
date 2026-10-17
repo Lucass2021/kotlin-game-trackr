@@ -23,17 +23,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.BackButton
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
+import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val TITLE_SIZE = 22.sp
+private val MENU_BUTTON_SIZE = 40.dp
+private val MENU_ICON_SIZE = 20.dp
 
 @Composable
 fun NotificationsTopBar(
@@ -49,15 +56,15 @@ fun NotificationsTopBar(
                 .fillMaxWidth()
                 .background(AppBackground)
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp, vertical = 8.dp),
+                .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
     ) {
         BackButton(onBack = onBack)
         Text(
             text = stringResource(R.string.notifications_title),
             color = AppTextPrimary,
-            style = AppType.headline(22.sp),
+            style = AppType.headline(TITLE_SIZE),
             modifier = Modifier.weight(1f),
         )
         if (showActions) {
@@ -66,13 +73,13 @@ fun NotificationsTopBar(
                 val interactionSource = remember { MutableInteractionSource() }
                 Icon(
                     imageVector = AppIcon.OVERFLOW.image(),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.notifications_more_options),
                     tint = AppTextPrimary,
                     modifier =
                         Modifier
                             .pressScale(interactionSource)
-                            .size(40.dp)
-                            .padding(9.dp)
+                            .size(MENU_BUTTON_SIZE)
+                            .padding(Spacing.xs)
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null,
@@ -89,7 +96,7 @@ fun NotificationsTopBar(
                             Icon(
                                 imageVector = AppIcon.CHECK.image(),
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(MENU_ICON_SIZE),
                             )
                         },
                         onClick = {
@@ -101,15 +108,15 @@ fun NotificationsTopBar(
                         text = {
                             Text(
                                 stringResource(R.string.notifications_clear_all),
-                                color = Color.Red,
+                                color = AppTertiary,
                             )
                         },
                         leadingIcon = {
                             Icon(
                                 imageVector = AppIcon.TRASH.image(),
                                 contentDescription = null,
-                                tint = Color.Red,
-                                modifier = Modifier.size(20.dp),
+                                tint = AppTertiary,
+                                modifier = Modifier.size(MENU_ICON_SIZE),
                             )
                         },
                         onClick = {
@@ -120,5 +127,13 @@ fun NotificationsTopBar(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun NotificationsTopBarPreview() {
+    AppPreview {
+        NotificationsTopBar(onBack = {}, onMarkAllRead = {}, onClearAll = {}, showActions = true)
     }
 }

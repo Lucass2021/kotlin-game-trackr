@@ -188,10 +188,17 @@
     <string name="notifications_accept">Accept</string>
     <string name="notifications_decline">Decline</string>
     <string name="notifications_clear_all">Clear all</string>
+    <string name="notifications_more_options">More options</string>
     <string name="notifications_empty_title">You\'re all caught up</string>
     <string name="notifications_empty_subtitle">New notifications will show up here.</string>
     <string name="notifications_guest_title">Notifications need an account</string>
     <string name="notifications_guest_subtitle">You\'re browsing as a guest. Create an account to get friend requests, replies, and messages.</string>
+    <string name="notifications_load_error_title">Couldn\'t load notifications</string>
+    <string name="notifications_load_error_message">Check your connection and try again.</string>
+    <string name="notifications_retry">Try again</string>
+    <string name="notifications_mark_all_read_error">Couldn\'t mark notifications as read. Please try again.</string>
+    <string name="notifications_clear_error">Couldn\'t clear notifications. Please try again.</string>
+    <string name="notifications_friend_request_error">Couldn\'t answer the friend request. Please try again.</string>
 
     <string name="menu_title">Menu</string>
     <string name="menu_guest_name">Guest</string>
