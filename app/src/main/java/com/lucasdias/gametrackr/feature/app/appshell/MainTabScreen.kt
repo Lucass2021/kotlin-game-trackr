@@ -51,6 +51,7 @@ import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryViewModel
 import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
 import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
+import com.lucasdias.gametrackr.feature.app.profile.ProfileViewModel
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupRoute
@@ -141,6 +142,7 @@ fun MainTabScreen(
     var selectedCommunity by remember { mutableStateOf<Community?>(null) }
     var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
     val libraryViewModel: LibraryViewModel = koinViewModel()
+    val profileViewModel: ProfileViewModel = koinViewModel()
     var profile by remember { mutableStateOf(ProfileMockData.profile) }
 
     val mySetupViewModel: MySetupViewModel = koinViewModel()
@@ -150,6 +152,7 @@ fun MainTabScreen(
         profile = profile.applying(user)
         mySetupViewModel.loadFor(if (isGuest) null else user?.id)
         libraryViewModel.loadFor(if (isGuest) null else user?.id)
+        profileViewModel.loadFor(if (isGuest) null else user?.id)
     }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
@@ -160,6 +163,7 @@ fun MainTabScreen(
                 onSelect = { selectedTab = it },
                 communityViewModel = communityViewModel,
                 libraryViewModel = libraryViewModel,
+                profileViewModel = profileViewModel,
                 onStatusClick = { status ->
                     libraryViewModel.onFilterChange(status)
                     selectedTab = AppTab.LIBRARY
@@ -459,6 +463,7 @@ private fun TabShell(
     onSelect: (AppTab) -> Unit,
     communityViewModel: CommunityViewModel,
     libraryViewModel: LibraryViewModel,
+    profileViewModel: ProfileViewModel,
     onNotifications: () -> Unit,
     onSearch: () -> Unit,
     onViewAll: (SearchScope) -> Unit,
@@ -521,8 +526,11 @@ private fun TabShell(
                 }
 
                 AppTab.PROFILE -> {
+                    val profileState by profileViewModel.uiState.collectAsStateWithLifecycle()
                     ProfileScreen(
+                        state = profileState,
                         isGuest = isGuest,
+                        onRetry = profileViewModel::load,
                         onGameClick = onGameClick,
                         onStatusClick = onStatusClick,
                         onEditProfile = onEditProfile,

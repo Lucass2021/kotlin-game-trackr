@@ -24,11 +24,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.format.abbreviated
 import com.lucasdias.gametrackr.core.model.ProfileStats
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
@@ -37,6 +39,17 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.profile.ProfileMockData
+
+private val BORDER_WIDTH = 1.dp
+private val FORWARD_ICON_SIZE = 14.dp
+private val DIVIDER_HEIGHT = 34.dp
+private val VALUE_SIZE = 19.sp
+private val CAPTION_SIZE = 12.sp
+private val LABEL_SIZE = 11.sp
+private val LABEL_TRACKING = 0.8.sp
 
 @Composable
 fun ProfileStatsBar(
@@ -44,7 +57,7 @@ fun ProfileStatsBar(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(Radius.lg)
     val interactionSource = remember { MutableInteractionSource() }
     val viewStatsLabel = stringResource(R.string.stats_view_full)
 
@@ -55,7 +68,7 @@ fun ProfileStatsBar(
                 .then(if (onClick == null) Modifier else Modifier.pressScale(interactionSource))
                 .clip(shape)
                 .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
+                .border(BORDER_WIDTH, AppOutline, shape)
                 .then(
                     if (onClick == null) {
                         Modifier
@@ -77,7 +90,7 @@ fun ProfileStatsBar(
                 imageVector = AppIcon.FORWARD.image(),
                 contentDescription = null,
                 tint = AppTextSecondary,
-                modifier = Modifier.align(Alignment.TopEnd).padding(12.dp).size(14.dp),
+                modifier = Modifier.align(Alignment.TopEnd).padding(Spacing.sm).size(FORWARD_ICON_SIZE),
             )
         }
     }
@@ -86,7 +99,7 @@ fun ProfileStatsBar(
 @Composable
 private fun StatsRow(stats: ProfileStats) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 18.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Stat(
@@ -112,7 +125,7 @@ private fun StatsRow(stats: ProfileStats) {
 
 @Composable
 private fun Divider() {
-    Box(modifier = Modifier.width(1.dp).height(34.dp).background(AppOutline))
+    Box(modifier = Modifier.width(BORDER_WIDTH).height(DIVIDER_HEIGHT).background(AppOutline))
 }
 
 @Composable
@@ -125,16 +138,16 @@ private fun Stat(
     Column(
         modifier = modifier.clearAndSetSemantics {},
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(5.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.Bottom) {
-            Text(text = value, color = AppTextPrimary, style = AppType.headline(19.sp))
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xxs), verticalAlignment = Alignment.Bottom) {
+            Text(text = value, color = AppTextPrimary, style = AppType.headline(VALUE_SIZE))
             if (caption != null) {
                 Text(
                     text = caption,
                     color = AppPrimary,
-                    style = AppType.body(12.sp),
-                    modifier = Modifier.padding(bottom = 2.dp),
+                    style = AppType.body(CAPTION_SIZE),
+                    modifier = Modifier.padding(bottom = Spacing.xxxs),
                 )
             }
         }
@@ -142,8 +155,16 @@ private fun Stat(
         Text(
             text = label.uppercase(),
             color = AppTextSecondary,
-            style = AppType.label(11.sp),
-            letterSpacing = 0.8.sp,
+            style = AppType.label(LABEL_SIZE),
+            letterSpacing = LABEL_TRACKING,
         )
+    }
+}
+
+@Preview
+@Composable
+private fun ProfileStatsBarPreview() {
+    AppPreview {
+        ProfileStatsBar(stats = ProfileMockData.stats, onClick = {})
     }
 }

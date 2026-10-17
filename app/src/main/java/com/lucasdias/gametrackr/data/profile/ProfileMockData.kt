@@ -6,6 +6,7 @@ import com.lucasdias.gametrackr.core.model.LibraryEntry
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.ProfileColor
+import com.lucasdias.gametrackr.core.model.ProfileOverview
 import com.lucasdias.gametrackr.core.model.ProfileStats
 import com.lucasdias.gametrackr.core.model.SetupItem
 import com.lucasdias.gametrackr.core.model.SetupPalette
@@ -25,6 +26,8 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import java.time.LocalDate
 
 object ProfileMockData {
+    val stats = ProfileStats(totalGames = 142, hours = 1248, platinum = 21)
+
     val profile =
         Profile(
             name = "Lucas Dias",
@@ -32,7 +35,7 @@ object ProfileMockData {
             bio = "Backlog eterno, platina ocasional. RPGs de turno e speedruns de fim de semana.",
             joinedAt = LocalDate.of(2024, 3, 15),
             avatarHex = "#8B5CF6",
-            stats = ProfileStats(totalGames = 142, hours = 1248, platinum = 21),
+            stats = stats,
         )
 
     val colors =
@@ -102,5 +105,14 @@ object ProfileMockData {
                 description = "Steam Deck OLED + Backbone",
                 palette = SetupPalette.EMERALD,
             ),
+        )
+
+    val overview =
+        ProfileOverview(
+            stats = stats,
+            breakdown = breakdown,
+            favorites = favorites,
+            currentlyPlaying = currentlyPlaying,
+            activity = activity,
         )
 }

@@ -5,11 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,10 +24,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.SetupItem
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
@@ -39,24 +38,35 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.profile.setup.components.SetupCover
 
+private val CARD_WIDTH = 160.dp
+private val CARD_HEIGHT = 120.dp
+private val BORDER_WIDTH = 1.dp
+private val ADD_ICON_SIZE = 24.dp
+private val TITLE_SIZE = 14.sp
+private val DESCRIPTION_SIZE = 12.sp
+private val ADD_LABEL_SIZE = 13.sp
+
 @Composable
-fun ProfileSetupRow(
+fun ProfileSetupSection(
     setups: List<SetupItem>,
     onSelect: (SetupItem) -> Unit,
     onAdd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (setups.isEmpty()) {
-        EmptyCard(onAdd = onAdd, modifier = modifier.padding(horizontal = 20.dp))
+        ProfileSetupEmptyCard(onAdd = onAdd, modifier = modifier.padding(horizontal = Spacing.lg))
         return
     }
 
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        contentPadding = PaddingValues(horizontal = Spacing.lg),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         items(setups, key = { it.id }) { setup ->
             SetupCard(setup = setup, onClick = { onSelect(setup) })
@@ -77,7 +87,7 @@ private fun SetupCard(
         modifier =
             Modifier
                 .pressScale(interactionSource)
-                .width(160.dp)
+                .width(CARD_WIDTH)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
@@ -85,14 +95,14 @@ private fun SetupCard(
                     role = Role.Button,
                     onClick = onClick,
                 ),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
-        SetupCover(setup = setup, modifier = Modifier.width(160.dp).height(120.dp))
+        SetupCover(setup = setup, modifier = Modifier.width(CARD_WIDTH).height(CARD_HEIGHT))
 
         Text(
             text = setup.title,
             color = AppTextPrimary,
-            style = AppType.label(14.sp),
+            style = AppType.label(TITLE_SIZE),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -100,7 +110,7 @@ private fun SetupCard(
         Text(
             text = setup.description,
             color = AppTextSecondary,
-            style = AppType.body(12.sp),
+            style = AppType.body(DESCRIPTION_SIZE),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
@@ -110,18 +120,18 @@ private fun SetupCard(
 @Composable
 private fun AddCard(onClick: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(14.dp)
+    val shape = RoundedCornerShape(Radius.md)
     val label = stringResource(R.string.setup_add)
 
     Column(
         modifier =
             Modifier
                 .pressScale(interactionSource)
-                .width(160.dp)
-                .height(120.dp)
+                .width(CARD_WIDTH)
+                .height(CARD_HEIGHT)
                 .clip(shape)
                 .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
+                .border(BORDER_WIDTH, AppOutline, shape)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
@@ -130,81 +140,30 @@ private fun AddCard(onClick: () -> Unit) {
                     onClick = onClick,
                 ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs, Alignment.CenterVertically),
     ) {
         Icon(
             imageVector = AppIcon.PLUS.image(),
             contentDescription = null,
             tint = AppPrimary,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(ADD_ICON_SIZE),
         )
-        Text(text = label, color = AppTextSecondary, style = AppType.body(13.sp))
+        Text(text = label, color = AppTextSecondary, style = AppType.body(ADD_LABEL_SIZE))
     }
 }
 
+@Preview
 @Composable
-private fun EmptyCard(
-    onAdd: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(18.dp)
+private fun ProfileSetupSectionPreview() {
+    AppPreview {
+        ProfileSetupSection(setups = ProfileMockData.setups, onSelect = {}, onAdd = {})
+    }
+}
 
-    Row(
-        modifier =
-            modifier
-                .pressScale(interactionSource)
-                .fillMaxWidth()
-                .clip(shape)
-                .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null,
-                    onClickLabel = stringResource(R.string.setup_add),
-                    role = Role.Button,
-                    onClick = onAdd,
-                ).padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(AppPrimary.copy(alpha = 0.12f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = AppIcon.DEVICES.image(),
-                contentDescription = null,
-                tint = AppPrimary,
-                modifier = Modifier.size(26.dp),
-            )
-        }
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.setup_empty_title),
-                color = AppTextPrimary,
-                style = AppType.label(15.sp),
-            )
-            Text(
-                text = stringResource(R.string.setup_profile_empty_message),
-                color = AppTextSecondary,
-                style = AppType.body(13.sp),
-            )
-        }
-
-        Icon(
-            imageVector = AppIcon.PLUS.image(),
-            contentDescription = null,
-            tint = AppPrimary,
-            modifier = Modifier.size(18.dp),
-        )
+@Preview
+@Composable
+private fun ProfileSetupSectionEmptyPreview() {
+    AppPreview {
+        ProfileSetupSection(setups = emptyList(), onSelect = {}, onAdd = {})
     }
 }

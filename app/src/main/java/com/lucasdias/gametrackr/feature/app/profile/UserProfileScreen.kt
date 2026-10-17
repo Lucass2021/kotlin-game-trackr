@@ -51,7 +51,7 @@ import com.lucasdias.gametrackr.data.profile.UserProfileMockData
 import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileActivitySection
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileBreakdownSection
-import com.lucasdias.gametrackr.feature.app.profile.components.ProfileFavoritesRow
+import com.lucasdias.gametrackr.feature.app.profile.components.ProfileFavoritesSection
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileHeader
 import com.lucasdias.gametrackr.feature.app.profile.components.ProfileStatsBar
 import org.koin.compose.koinInject
@@ -134,7 +134,7 @@ fun UserProfileScreen(
                 item {
                     SectionTitle(stringResource(R.string.profile_section_favorites))
                     Spacer(Modifier.height(14.dp))
-                    ProfileFavoritesRow(favorites = loadedOverview.favorites, onSelect = { onGameClick(it.slug) })
+                    ProfileFavoritesSection(favorites = loadedOverview.favorites, onSelect = { onGameClick(it.slug) })
                     Spacer(Modifier.height(26.dp))
                 }
 

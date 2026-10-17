@@ -25,17 +25,30 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.StatusCount
 import com.lucasdias.gametrackr.core.model.barTint
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.profile.ProfileMockData
+
+private val BORDER_WIDTH = 1.dp
+private val LABEL_WIDTH = 84.dp
+private val COUNT_WIDTH = 30.dp
+private val BAR_HEIGHT = 7.dp
+private val BAR_MIN_WIDTH = 6.dp
+private val LABEL_SIZE = 14.sp
 
 @Composable
 fun ProfileBreakdownSection(
@@ -43,7 +56,7 @@ fun ProfileBreakdownSection(
     onSelect: (LibraryStatus) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(18.dp)
+    val shape = RoundedCornerShape(Radius.lg)
     val maxCount = (breakdown.maxOfOrNull { it.count } ?: 0).coerceAtLeast(1)
 
     Column(
@@ -52,9 +65,9 @@ fun ProfileBreakdownSection(
                 .fillMaxWidth()
                 .clip(shape)
                 .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+                .border(BORDER_WIDTH, AppOutline, shape)
+                .padding(Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         breakdown.forEach { item ->
             BreakdownRow(item = item, maxCount = maxCount, onSelect = onSelect)
@@ -84,20 +97,20 @@ private fun BreakdownRow(
                     onClick = { onSelect(item.status) },
                 ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Text(
             text = label,
             color = AppTextPrimary,
-            style = AppType.body(14.sp),
-            modifier = Modifier.width(84.dp),
+            style = AppType.body(LABEL_SIZE),
+            modifier = Modifier.width(LABEL_WIDTH),
         )
 
         Box(
             modifier =
                 Modifier
                     .weight(1f)
-                    .height(7.dp)
+                    .height(BAR_HEIGHT)
                     .clip(CircleShape)
                     .background(AppOutline),
         ) {
@@ -105,7 +118,7 @@ private fun BreakdownRow(
                 modifier =
                     Modifier
                         .fillMaxHeight()
-                        .fractionWidthAtLeast(item.count.toFloat() / maxCount, 6.dp)
+                        .fractionWidthAtLeast(item.count.toFloat() / maxCount, BAR_MIN_WIDTH)
                         .clip(CircleShape)
                         .background(item.status.barTint),
             )
@@ -114,19 +127,27 @@ private fun BreakdownRow(
         Text(
             text = item.count.toString(),
             color = AppTextSecondary,
-            style = AppType.label(14.sp),
+            style = AppType.label(LABEL_SIZE),
             textAlign = TextAlign.End,
-            modifier = Modifier.width(30.dp),
+            modifier = Modifier.width(COUNT_WIDTH),
         )
     }
 }
 
 private fun Modifier.fractionWidthAtLeast(
     fraction: Float,
-    minimum: androidx.compose.ui.unit.Dp,
+    minimum: Dp,
 ) = layout { measurable, constraints ->
     val minPx = minimum.roundToPx()
     val target = (constraints.maxWidth * fraction).toInt().coerceIn(minPx, constraints.maxWidth)
     val placeable = measurable.measure(constraints.copy(minWidth = target, maxWidth = target))
     layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
+}
+
+@Preview
+@Composable
+private fun ProfileBreakdownSectionPreview() {
+    AppPreview {
+        ProfileBreakdownSection(breakdown = ProfileMockData.breakdown, onSelect = {})
+    }
 }

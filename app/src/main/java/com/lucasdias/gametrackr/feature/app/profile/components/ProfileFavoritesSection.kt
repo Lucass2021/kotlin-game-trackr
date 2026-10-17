@@ -14,24 +14,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.LibraryEntry
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
 
+private val COVER_WIDTH = 104.dp
+private val COVER_HEIGHT = 138.dp
+private val TITLE_SIZE = 13.sp
+
 @Composable
-fun ProfileFavoritesRow(
+fun ProfileFavoritesSection(
     favorites: List<LibraryEntry>,
     onSelect: (LibraryEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        contentPadding = PaddingValues(horizontal = Spacing.lg),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         items(favorites, key = { it.title }) { entry ->
             FavoriteCard(entry = entry, onSelect = { onSelect(entry) })
@@ -50,7 +58,7 @@ private fun FavoriteCard(
         modifier =
             Modifier
                 .pressScale(interactionSource)
-                .width(104.dp)
+                .width(COVER_WIDTH)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
@@ -58,21 +66,29 @@ private fun FavoriteCard(
                     role = Role.Button,
                     onClick = onSelect,
                 ),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
         GameCoverArt(
             start = entry.coverStart,
             end = entry.coverEnd,
-            width = 104.dp,
-            height = 138.dp,
+            width = COVER_WIDTH,
+            height = COVER_HEIGHT,
         )
 
         Text(
             text = entry.title,
             color = AppTextSecondary,
-            style = AppType.body(13.sp),
+            style = AppType.body(TITLE_SIZE),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
+    }
+}
+
+@Preview
+@Composable
+private fun ProfileFavoritesSectionPreview() {
+    AppPreview {
+        ProfileFavoritesSection(favorites = ProfileMockData.favorites, onSelect = {})
     }
 }

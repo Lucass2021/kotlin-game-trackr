@@ -1,281 +1,105 @@
 package com.lucasdias.gametrackr.feature.app.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.Profile
-import com.lucasdias.gametrackr.core.model.ProfileOverview
 import com.lucasdias.gametrackr.core.model.SetupItem
-import com.lucasdias.gametrackr.core.ui.anim.subtleBounce
-import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
-import com.lucasdias.gametrackr.core.ui.components.glow
-import com.lucasdias.gametrackr.core.ui.components.pressScale
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
-import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
-import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
-import com.lucasdias.gametrackr.data.profile.ProfileOverviewRepository
-import com.lucasdias.gametrackr.feature.app.library.components.LibraryEntryRow
-import com.lucasdias.gametrackr.feature.app.profile.components.ProfileActivitySection
-import com.lucasdias.gametrackr.feature.app.profile.components.ProfileBreakdownSection
-import com.lucasdias.gametrackr.feature.app.profile.components.ProfileFavoritesRow
-import com.lucasdias.gametrackr.feature.app.profile.components.ProfileHeader
-import com.lucasdias.gametrackr.feature.app.profile.components.ProfileSetupRow
-import com.lucasdias.gametrackr.feature.app.profile.components.ProfileStatsBar
-import org.koin.compose.koinInject
+import com.lucasdias.gametrackr.feature.app.profile.components.ProfileContent
+import com.lucasdias.gametrackr.feature.app.profile.components.ProfileGuestState
 
 @Composable
 fun ProfileScreen(
+    state: ProfileUiState,
     isGuest: Boolean,
-    onGameClick: (String) -> Unit,
-    onStatusClick: (LibraryStatus?) -> Unit,
-    onEditProfile: () -> Unit,
-    onCreateAccount: () -> Unit,
-    onViewStats: () -> Unit,
-    onViewSetup: () -> Unit,
+    profile: Profile,
     setups: List<SetupItem>,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
-    profile: Profile = ProfileMockData.profile,
-    repository: ProfileOverviewRepository = koinInject(),
+    onGameClick: (String) -> Unit = {},
+    onStatusClick: (LibraryStatus?) -> Unit = {},
+    onEditProfile: () -> Unit = {},
+    onCreateAccount: () -> Unit = {},
+    onViewStats: () -> Unit = {},
+    onViewSetup: () -> Unit = {},
 ) {
-    if (isGuest) {
-        GuestState(onCreateAccount = onCreateAccount, modifier = modifier)
-        return
-    }
+    val overview = state.overview
+    when {
+        isGuest -> {
+            ProfileGuestState(onCreateAccount = onCreateAccount, modifier = modifier)
+        }
 
-    var overview by remember { mutableStateOf<ProfileOverview?>(null) }
-
-    LaunchedEffect(repository) {
-        overview = repository.fetchMyOverview().getOrNull()
-    }
-
-    val loadedOverview = overview
-    if (loadedOverview == null) {
-        LoadingState(modifier)
-        return
-    }
-
-    LazyColumn(
-        modifier = modifier.fillMaxSize().background(AppBackground),
-        contentPadding = PaddingValues(bottom = 32.dp),
-    ) {
-        item {
-            val context = LocalContext.current
-            ProfileHeader(
+        overview != null -> {
+            ProfileContent(
+                overview = overview,
                 profile = profile,
-                onEdit = onEditProfile,
-                onShare = { context.shareText("Check out my gaming profile on GameTrackr!") },
-            )
-            Spacer(Modifier.height(26.dp))
-        }
-
-        item {
-            ProfileStatsBar(
-                stats = profile.stats,
-                modifier = Modifier.padding(horizontal = 20.dp),
-                onClick = onViewStats,
-            )
-            Spacer(Modifier.height(26.dp))
-        }
-
-        item {
-            SectionHeader(title = stringResource(R.string.profile_section_breakdown))
-            Spacer(Modifier.height(14.dp))
-            ProfileBreakdownSection(
-                breakdown = loadedOverview.breakdown,
-                onSelect = onStatusClick,
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-            Spacer(Modifier.height(26.dp))
-        }
-
-        item {
-            SectionHeader(
-                title = stringResource(R.string.profile_section_favorites),
-                actionTitle = stringResource(R.string.profile_section_view_all),
-                onAction = { onStatusClick(null) },
-            )
-            Spacer(Modifier.height(14.dp))
-            ProfileFavoritesRow(favorites = loadedOverview.favorites, onSelect = { onGameClick(it.slug) })
-            Spacer(Modifier.height(26.dp))
-        }
-
-        item {
-            SectionHeader(
-                title = stringResource(R.string.profile_section_currently_playing),
-                actionTitle = stringResource(R.string.profile_section_view_all),
-                onAction = { onStatusClick(LibraryStatus.PLAYING) },
-            )
-            Spacer(Modifier.height(14.dp))
-        }
-
-        items(loadedOverview.currentlyPlaying, key = { it.title }) { entry ->
-            val interactionSource = remember { MutableInteractionSource() }
-            LibraryEntryRow(
-                entry = entry,
-                modifier =
-                    Modifier
-                        .pressScale(interactionSource)
-                        .padding(horizontal = 20.dp)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null,
-                            onClickLabel = entry.title,
-                            role = Role.Button,
-                            onClick = { onGameClick(entry.slug) },
-                        ),
-            )
-            Spacer(Modifier.height(14.dp))
-        }
-
-        item {
-            SectionHeader(
-                title = stringResource(R.string.profile_section_setup),
-                actionTitle = stringResource(R.string.profile_section_view_all).takeIf { setups.isNotEmpty() },
-                onAction = onViewSetup,
-            )
-            Spacer(Modifier.height(14.dp))
-            ProfileSetupRow(
                 setups = setups,
-                onSelect = { onViewSetup() },
-                onAdd = onViewSetup,
+                onGameClick = onGameClick,
+                onStatusClick = onStatusClick,
+                onEditProfile = onEditProfile,
+                onViewStats = onViewStats,
+                onViewSetup = onViewSetup,
+                modifier = modifier,
             )
-            Spacer(Modifier.height(26.dp))
+        }
+
+        state.hasError -> {
+            EmptyState(
+                icon = AppIcon.INFO,
+                title = stringResource(R.string.profile_load_error_title),
+                message = stringResource(R.string.profile_load_error_message),
+                actionTitle = stringResource(R.string.profile_retry),
+                onAction = onRetry,
+                modifier = modifier.fillMaxSize().background(AppBackground),
+            )
+        }
+
+        else -> {
+            Box(modifier = modifier.fillMaxSize().background(AppBackground), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = AppPrimary)
+            }
         }
     }
 }
 
+@Preview
 @Composable
-private fun SectionHeader(
-    title: String,
-    actionTitle: String? = null,
-    onAction: () -> Unit = {},
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = title,
-            color = AppTextPrimary,
-            style = AppType.headline(20.sp),
-            modifier = Modifier.weight(1f),
-        )
-
-        if (actionTitle != null) {
-            Text(
-                text = actionTitle,
-                color = AppPrimary,
-                style = AppType.label(15.sp),
-                modifier =
-                    Modifier
-                        .pressScale(interactionSource)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null,
-                            role = Role.Button,
-                            onClick = onAction,
-                        ),
-            )
-        }
-    }
-}
-
-@Composable
-private fun GuestState(
-    onCreateAccount: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxSize().background(AppBackground).padding(horizontal = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .subtleBounce()
-                    .size(120.dp)
-                    .glow(color = AppPrimary, cornerRadius = 28.dp, blurRadius = 34.dp, alpha = 0.35f)
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(AppSurfaceCard),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = AppIcon.AVATAR.image(),
-                contentDescription = null,
-                tint = AppPrimary,
-                modifier = Modifier.size(56.dp),
-            )
-        }
-
-        Text(
-            text = stringResource(R.string.profile_guest_title),
-            color = AppTextPrimary,
-            style = AppType.headline(24.sp),
-            modifier = Modifier.padding(top = 28.dp),
-        )
-
-        Text(
-            text = stringResource(R.string.profile_guest_subtitle),
-            color = AppTextSecondary,
-            style = AppType.body(15.sp),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 10.dp),
-        )
-
-        PrimaryButton(
-            text = stringResource(R.string.profile_guest_action),
-            onClick = onCreateAccount,
-            modifier = Modifier.padding(top = 28.dp),
+private fun ProfileScreenLoadingPreview() {
+    AppPreview {
+        ProfileScreen(
+            state = ProfileUiState(isLoading = true),
+            isGuest = false,
+            profile = ProfileMockData.profile,
+            setups = emptyList(),
+            onRetry = {},
         )
     }
 }
 
+@Preview
 @Composable
-private fun LoadingState(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize().background(AppBackground), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(color = AppPrimary)
+private fun ProfileScreenErrorPreview() {
+    AppPreview {
+        ProfileScreen(
+            state = ProfileUiState(hasError = true),
+            isGuest = false,
+            profile = ProfileMockData.profile,
+            setups = emptyList(),
+            onRetry = {},
+        )
     }
 }

@@ -6,6 +6,7 @@ import com.lucasdias.gametrackr.core.model.ActivityKind
 import com.lucasdias.gametrackr.core.model.LibraryEntry
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.Profile
+import com.lucasdias.gametrackr.core.model.ProfileOverview
 import com.lucasdias.gametrackr.core.model.ProfileStats
 import com.lucasdias.gametrackr.core.model.StatusCount
 import com.lucasdias.gametrackr.core.model.UserProfile
@@ -62,6 +63,8 @@ object UserProfileMockData {
         )
     }
 
+    val stats = ProfileStats(totalGames = 87, hours = 934, platinum = 12)
+
     fun profile(user: UserProfile): Profile =
         Profile(
             name = user.name,
@@ -69,7 +72,7 @@ object UserProfileMockData {
             bio = "Co-op enjoyer and lore hunter. Always down for a raid night or a slow-burn RPG.",
             joinedAt = LocalDate.of(2024, 1, 15),
             avatarHex = user.avatarStart.toHexString(),
-            stats = ProfileStats(totalGames = 87, hours = 934, platinum = 12),
+            stats = stats,
         )
 
     val breakdown =
@@ -102,5 +105,14 @@ object UserProfileMockData {
             ActivityEvent(3, ActivityKind.RATED, "Helldivers 2", detail = "4 stars", timeAgo = "1w"),
             ActivityEvent(4, ActivityKind.STARTED, "Baldur's Gate 3", timeAgo = "2w"),
             ActivityEvent(5, ActivityKind.ADDED, "Metaphor: ReFantazio", timeAgo = "3w"),
+        )
+
+    val overview =
+        ProfileOverview(
+            stats = stats,
+            breakdown = breakdown,
+            favorites = favorites,
+            currentlyPlaying = currentlyPlaying,
+            activity = activity,
         )
 }

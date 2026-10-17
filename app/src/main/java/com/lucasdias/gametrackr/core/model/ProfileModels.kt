@@ -144,6 +144,7 @@ class SetupImageUpload(
 )
 
 data class ProfileOverview(
+    val stats: ProfileStats,
     val breakdown: List<StatusCount>,
     val favorites: List<LibraryEntry>,
     val currentlyPlaying: List<LibraryEntry>,
