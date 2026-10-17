@@ -12,15 +12,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Achievement
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.achievements.AchievementsMockData
+
+private val CHECK_ICON_SIZE = 12.dp
+private const val LOCKED_TIER_ALPHA = 0.5f
+private val TITLE_SIZE = 15.sp
+private val TIER_SIZE = 11.sp
+private val DETAIL_SIZE = 13.sp
+private val UNLOCKED_AT_SIZE = 12.sp
 
 @Composable
 fun AchievementRow(
@@ -42,53 +53,63 @@ fun AchievementRow(
 
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         AchievementBadge(achievement = achievement)
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(5.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = title,
                     color = if (achievement.isUnlocked) AppTextPrimary else AppTextSecondary,
-                    style = AppType.label(15.sp),
+                    style = AppType.label(TITLE_SIZE),
                     modifier = Modifier.weight(1f),
                 )
                 Text(
                     text = stringResource(achievement.tier.titleRes),
-                    color = achievement.tier.tint.copy(alpha = if (achievement.isUnlocked) 1f else 0.5f),
-                    style = AppType.body(11.sp),
+                    color = achievement.tier.tint.copy(alpha = if (achievement.isUnlocked) 1f else LOCKED_TIER_ALPHA),
+                    style = AppType.body(TIER_SIZE),
                 )
             }
 
-            Text(text = detail, color = AppTextSecondary, style = AppType.body(13.sp))
+            Text(text = detail, color = AppTextSecondary, style = AppType.body(DETAIL_SIZE))
 
             if (achievement.unlockedAt != null) {
                 Row(
-                    modifier = Modifier.padding(top = 2.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.padding(top = Spacing.xxxs),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                         imageVector = AppIcon.CHECK.image(),
                         contentDescription = null,
                         tint = AppPrimary,
-                        modifier = Modifier.size(12.dp),
+                        modifier = Modifier.size(CHECK_ICON_SIZE),
                     )
                     Text(
                         text = achievement.unlockedAt,
                         color = AppPrimary,
-                        style = AppType.body(12.sp),
+                        style = AppType.body(UNLOCKED_AT_SIZE),
                     )
                 }
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AchievementRowPreview() {
+    AppPreview {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+            AchievementsMockData.games[3].achievements.forEach { AchievementRow(achievement = it) }
         }
     }
 }

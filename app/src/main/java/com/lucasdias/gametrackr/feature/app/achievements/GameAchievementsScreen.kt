@@ -1,94 +1,114 @@
 package com.lucasdias.gametrackr.feature.app.achievements
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Achievement
 import com.lucasdias.gametrackr.core.model.GameAchievements
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
-import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
-import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.data.achievements.AchievementsRepository
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.achievements.AchievementsMockData
 import com.lucasdias.gametrackr.feature.app.achievements.components.AchievementRow
-import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
+import com.lucasdias.gametrackr.feature.app.achievements.components.GameAchievementsHeader
 import com.lucasdias.gametrackr.feature.app.stats.components.StatsSectionCard
 import com.lucasdias.gametrackr.feature.app.stats.components.StatsTopBar
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun GameAchievementsScreen(
     gameId: Long,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    repository: AchievementsRepository = koinInject(),
+    viewModel: GameAchievementsViewModel = koinViewModel { parametersOf(gameId) },
 ) {
-    var game by remember { mutableStateOf<GameAchievements?>(null) }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(gameId) {
-        game = repository.fetchGameAchievements(gameId).getOrNull()
-    }
+    LaunchedEffect(viewModel) { viewModel.loadIfNeeded() }
 
+    GameAchievementsScreen(
+        state = state,
+        onBack = onBack,
+        onRetry = viewModel::load,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun GameAchievementsScreen(
+    state: GameAchievementsUiState,
+    onBack: () -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier.fillMaxSize().background(AppBackground)) {
         StatsTopBar(
             title = stringResource(R.string.achievements_title),
-            subtitle = game?.title,
+            subtitle = state.game?.title,
             onBack = onBack,
         )
 
-        val loadedGame = game
-        if (loadedGame == null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = AppPrimary)
+        val game = state.game
+        when {
+            game != null -> {
+                GameAchievementsContent(
+                    game = game,
+                    unlocked = state.unlockedAchievements,
+                    locked = state.lockedAchievements,
+                )
             }
-        } else {
-            GameAchievementsContent(loadedGame)
+
+            state.hasError -> {
+                EmptyState(
+                    icon = AppIcon.INFO,
+                    title = stringResource(R.string.achievements_load_error_title),
+                    message = stringResource(R.string.achievements_load_error_message),
+                    actionTitle = stringResource(R.string.achievements_retry),
+                    onAction = onRetry,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+
+            else -> {
+                Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AppPrimary)
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun GameAchievementsContent(game: GameAchievements) {
-    val unlocked = game.achievements.filter { it.isUnlocked }
-    val locked = game.achievements.filterNot { it.isUnlocked }
-
+private fun GameAchievementsContent(
+    game: GameAchievements,
+    unlocked: List<Achievement>,
+    locked: List<Achievement>,
+) {
     LazyColumn(
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        contentPadding =
+            PaddingValues(start = Spacing.lg, end = Spacing.lg, top = Spacing.sm, bottom = Spacing.xxl),
+        verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
-        item { GameHeader(game) }
+        item { GameAchievementsHeader(game = game) }
 
         if (unlocked.isNotEmpty()) {
             item {
@@ -116,67 +136,31 @@ private fun GameAchievementsContent(game: GameAchievements) {
 
 @Composable
 private fun AchievementList(achievements: List<Achievement>) {
-    Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         achievements.forEach { AchievementRow(achievement = it) }
     }
 }
 
+@Preview
 @Composable
-private fun GameHeader(game: GameAchievements) {
-    val shape = RoundedCornerShape(18.dp)
+private fun GameAchievementsScreenPreview() {
+    AppPreview {
+        GameAchievementsScreen(
+            state = GameAchievementsUiState(game = AchievementsMockData.games[4]),
+            onBack = {},
+            onRetry = {},
+        )
+    }
+}
 
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(shape)
-                .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
-                .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        GameCoverArt(start = game.coverStart, end = game.coverEnd, width = 72.dp, height = 96.dp)
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(
-                text = game.title,
-                color = AppTextPrimary,
-                style = AppType.headline(20.sp),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = game.platform,
-                color = AppTextSecondary,
-                style = AppType.body(13.sp),
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(R.string.achievements_ratio, game.unlockedCount, game.total),
-                    color = AppPrimary,
-                    style = AppType.headline(18.sp),
-                )
-                Text(
-                    text = stringResource(R.string.achievements_percent_suffix, game.percent),
-                    color = AppTextSecondary,
-                    style = AppType.body(13.sp),
-                )
-                if (game.hasPlatinum) {
-                    Icon(
-                        imageVector = AppIcon.TROPHY.image(filled = true),
-                        contentDescription = stringResource(R.string.achievements_platinum_earned),
-                        tint = AppSecondary,
-                        modifier = Modifier.size(16.dp),
-                    )
-                }
-            }
-        }
+@Preview
+@Composable
+private fun GameAchievementsScreenErrorPreview() {
+    AppPreview {
+        GameAchievementsScreen(
+            state = GameAchievementsUiState(hasError = true),
+            onBack = {},
+            onRetry = {},
+        )
     }
 }

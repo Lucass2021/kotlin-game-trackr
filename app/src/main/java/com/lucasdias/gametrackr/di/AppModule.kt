@@ -35,6 +35,7 @@ import com.lucasdias.gametrackr.data.profile.SetupRepository
 import com.lucasdias.gametrackr.data.stats.FakeStatsRepository
 import com.lucasdias.gametrackr.data.stats.StatsRepository
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsViewModel
+import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsViewModel
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
@@ -171,5 +172,6 @@ val appModule =
         viewModel { StatsViewModel(get()) }
         viewModel { LibraryViewModel(get()) }
         viewModel { AchievementsViewModel(get()) }
+        viewModel { (gameId: Long) -> GameAchievementsViewModel(get(), gameId) }
         viewModel { params -> EditSetupViewModel(params.getOrNull(), get(), ContentSetupPhotoEncoder(androidContext())) }
     }

@@ -15,6 +15,8 @@ class FakeAchievementsRepository(
 ) : AchievementsRepository {
     var fetchCount = 0
         private set
+    var gameFetchCount = 0
+        private set
 
     override suspend fun fetchAchievementGames(
         filter: AchievementFilter,
@@ -27,7 +29,10 @@ class FakeAchievementsRepository(
 
     override suspend fun fetchAchievementsSummary(): Result<AchievementsSummary> = respond { summaryOf(games) }
 
-    override suspend fun fetchGameAchievements(id: Long): Result<GameAchievements> = respond { games.firstOrNull { it.id == id } ?: throw ApiError.NotFound }
+    override suspend fun fetchGameAchievements(id: Long): Result<GameAchievements> {
+        gameFetchCount++
+        return respond { games.firstOrNull { it.id == id } ?: throw ApiError.NotFound }
+    }
 
     private fun GameAchievements.matches(filter: AchievementFilter): Boolean =
         when (filter) {
