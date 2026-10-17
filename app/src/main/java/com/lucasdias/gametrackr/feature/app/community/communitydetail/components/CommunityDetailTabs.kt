@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.community.detail
+package com.lucasdias.gametrackr.feature.app.community.communitydetail.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,14 +18,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.feature.app.community.CommunityDetailTab
+
+private val DIVIDER_THICKNESS = 1.dp
+private val INDICATOR_HEIGHT = 2.dp
+private val LABEL_SIZE = 15.sp
 
 @Composable
 fun CommunityDetailTabs(
@@ -33,9 +40,9 @@ fun CommunityDetailTabs(
     onSelect: (CommunityDetailTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+    Box(modifier = modifier.fillMaxWidth().padding(horizontal = Spacing.lg)) {
         HorizontalDivider(
-            thickness = 1.dp,
+            thickness = DIVIDER_THICKNESS,
             color = AppOutline,
             modifier = Modifier.align(Alignment.BottomStart),
         )
@@ -65,15 +72,23 @@ private fun TabButton(
         Text(
             text = label,
             color = if (isSelected) AppPrimary else AppTextSecondary,
-            style = AppType.label(15.sp),
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
+            style = AppType.label(LABEL_SIZE),
+            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm),
         )
         Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(2.dp)
+                    .height(INDICATOR_HEIGHT)
                     .background(if (isSelected) AppPrimary else Color.Transparent),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun CommunityDetailTabsPreview() {
+    AppPreview {
+        CommunityDetailTabs(selection = CommunityDetailTab.POSTS, onSelect = {})
     }
 }

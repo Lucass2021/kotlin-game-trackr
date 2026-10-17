@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.community.detail
+package com.lucasdias.gametrackr.feature.app.community.communitydetail.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,43 +18,57 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Community
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.community.CommunityMockData
+
+private val BORDER_WIDTH = 1.dp
+private val DIVIDER_HEIGHT = 34.dp
+private val LIVE_DOT_SIZE = 6.dp
+private val VALUE_SIZE = 19.sp
+private val LABEL_SIZE = 11.sp
+private val LABEL_TRACKING = 0.8.sp
 
 @Composable
 fun CommunityStatsBar(
     community: Community,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(Radius.lg)
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
                 .clip(shape)
                 .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, shape)
-                .padding(vertical = 18.dp),
+                .border(BORDER_WIDTH, AppOutline, shape)
+                .padding(vertical = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Stat(value = community.members, label = "MEMBERS", modifier = Modifier.weight(1f))
+        Stat(value = community.members, label = stringResource(R.string.community_stat_members), modifier = Modifier.weight(1f))
         Divider()
-        Stat(value = community.posts, label = "POSTS", modifier = Modifier.weight(1f))
+        Stat(value = community.posts, label = stringResource(R.string.community_stat_posts), modifier = Modifier.weight(1f))
         Divider()
-        Stat(value = community.online, label = "ONLINE", isLive = true, modifier = Modifier.weight(1f))
+        Stat(value = community.online, label = stringResource(R.string.community_stat_online), isLive = true, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
 private fun Divider() {
-    Box(modifier = Modifier.width(1.dp).height(34.dp).background(AppOutline))
+    Box(modifier = Modifier.width(BORDER_WIDTH).height(DIVIDER_HEIGHT).background(AppOutline))
 }
 
 @Composable
@@ -67,23 +81,31 @@ private fun Stat(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(5.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
             Text(
                 text = value,
                 color = AppTextPrimary,
-                style = AppType.headline(19.sp),
+                style = AppType.headline(VALUE_SIZE),
             )
             if (isLive) {
-                Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(AppPrimary))
+                Box(modifier = Modifier.size(LIVE_DOT_SIZE).clip(CircleShape).background(AppPrimary))
             }
         }
         Text(
             text = label,
             color = AppTextSecondary,
-            style = AppType.label(11.sp),
-            letterSpacing = 0.8.sp,
+            style = AppType.label(LABEL_SIZE),
+            letterSpacing = LABEL_TRACKING,
         )
+    }
+}
+
+@Preview
+@Composable
+private fun CommunityStatsBarPreview() {
+    AppPreview {
+        CommunityStatsBar(community = CommunityMockData.detailCommunity)
     }
 }

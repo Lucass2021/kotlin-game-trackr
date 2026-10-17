@@ -5,6 +5,7 @@ import com.lucasdias.gametrackr.core.auth.DataStoreTokenStore
 import com.lucasdias.gametrackr.core.auth.GoogleAuth
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
+import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.UserProfile
 import com.lucasdias.gametrackr.core.network.AuthApi
@@ -38,6 +39,7 @@ import com.lucasdias.gametrackr.data.stats.StatsRepository
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsViewModel
 import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsViewModel
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
+import com.lucasdias.gametrackr.feature.app.community.communitydetail.CommunityDetailViewModel
 import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailViewModel
@@ -180,5 +182,6 @@ val appModule =
         viewModel { NotificationsViewModel(get()) }
         viewModel { ProfileViewModel(get()) }
         viewModel { (user: UserProfile) -> UserProfileViewModel(get(), user) }
+        viewModel { (community: Community) -> CommunityDetailViewModel(get(), community) }
         viewModel { params -> EditSetupViewModel(params.getOrNull(), get(), ContentSetupPhotoEncoder(androidContext())) }
     }

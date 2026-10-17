@@ -14,6 +14,7 @@ data class Community(
     val isJoined: Boolean,
     val iconStart: Color,
     val iconEnd: Color,
+    val createdMonth: String? = null,
 ) {
     val subtitle: String get() = "#$category · $members members"
     val detailSubtitle: String get() = "$members members · $posts posts · #$category"

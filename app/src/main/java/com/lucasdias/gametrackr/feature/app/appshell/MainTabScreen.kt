@@ -40,9 +40,9 @@ import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
 import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
+import com.lucasdias.gametrackr.feature.app.community.communitydetail.CommunityDetailScreen
 import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityScreen
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicScreen
-import com.lucasdias.gametrackr.feature.app.community.detail.CommunityDetailScreen
 import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScreen
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
 import com.lucasdias.gametrackr.feature.app.help.HelpScreen

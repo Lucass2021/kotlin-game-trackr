@@ -21,10 +21,13 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.abs
 
 @Serializable
@@ -176,6 +179,7 @@ fun CommunityDto.toDomain(): Community {
         isJoined = isMember ?: false,
         iconStart = colors.first,
         iconEnd = colors.second,
+        createdMonth = formatMonthYear(createdAt),
     )
 }
 
@@ -281,3 +285,19 @@ private fun Int.abbreviatedCompact(): String {
     val thousands = this / 1000.0
     return "%.1fk".format(thousands).replace(".0k", "k")
 }
+
+private fun formatMonthYear(iso: String?): String? {
+    val day = iso?.take(ISO_DATE_LENGTH) ?: return null
+    val parser =
+        SimpleDateFormat(ISO_DATE_PATTERN, Locale.ROOT).apply {
+            timeZone = TimeZone.getTimeZone(UTC)
+            isLenient = false
+        }
+    val date = runCatching { parser.parse(day) }.getOrNull() ?: return null
+    return SimpleDateFormat(MONTH_YEAR_PATTERN, Locale.ENGLISH).apply { timeZone = TimeZone.getTimeZone(UTC) }.format(date)
+}
+
+private const val ISO_DATE_LENGTH = 10
+private const val ISO_DATE_PATTERN = "yyyy-MM-dd"
+private const val MONTH_YEAR_PATTERN = "MMMM yyyy"
+private const val UTC = "UTC"

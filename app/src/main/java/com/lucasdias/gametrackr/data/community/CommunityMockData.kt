@@ -202,6 +202,7 @@ object CommunityMockData {
             isJoined = false,
             iconStart = CoverEmeraldStart,
             iconEnd = CoverEmeraldEnd,
+            createdMonth = "March 2024",
         )
 
     val communityPosts =
