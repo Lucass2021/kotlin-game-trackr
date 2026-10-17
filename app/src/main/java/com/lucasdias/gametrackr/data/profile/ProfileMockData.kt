@@ -35,7 +35,6 @@ object ProfileMockData {
             bio = "Backlog eterno, platina ocasional. RPGs de turno e speedruns de fim de semana.",
             joinedAt = LocalDate.of(2024, 3, 15),
             avatarHex = "#8B5CF6",
-            stats = stats,
         )
 
     val colors =

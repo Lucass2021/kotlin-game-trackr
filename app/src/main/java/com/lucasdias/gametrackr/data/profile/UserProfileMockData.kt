@@ -5,7 +5,6 @@ import com.lucasdias.gametrackr.core.model.ActivityEvent
 import com.lucasdias.gametrackr.core.model.ActivityKind
 import com.lucasdias.gametrackr.core.model.LibraryEntry
 import com.lucasdias.gametrackr.core.model.LibraryStatus
-import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.ProfileOverview
 import com.lucasdias.gametrackr.core.model.ProfileStats
 import com.lucasdias.gametrackr.core.model.StatusCount
@@ -24,7 +23,6 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
-import com.lucasdias.gametrackr.core.ui.theme.toHexString
 import java.time.LocalDate
 import kotlin.math.abs
 
@@ -65,15 +63,9 @@ object UserProfileMockData {
 
     val stats = ProfileStats(totalGames = 87, hours = 934, platinum = 12)
 
-    fun profile(user: UserProfile): Profile =
-        Profile(
-            name = user.name,
-            username = user.username,
-            bio = "Co-op enjoyer and lore hunter. Always down for a raid night or a slow-burn RPG.",
-            joinedAt = LocalDate.of(2024, 1, 15),
-            avatarHex = user.avatarStart.toHexString(),
-            stats = stats,
-        )
+    const val BIO = "Co-op enjoyer and lore hunter. Always down for a raid night or a slow-burn RPG."
+
+    val joinedAt: LocalDate = LocalDate.of(2024, 1, 15)
 
     val breakdown =
         listOf(

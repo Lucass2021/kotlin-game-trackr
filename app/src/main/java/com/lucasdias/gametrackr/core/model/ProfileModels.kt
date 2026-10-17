@@ -20,7 +20,6 @@ data class Profile(
     val bio: String,
     val joinedAt: LocalDate?,
     val avatarHex: String,
-    val stats: ProfileStats,
     val visibility: ProfileVisibility = ProfileVisibility.PUBLIC,
 ) {
     val avatarStart: Color get() = avatarHex.toAppColor()
@@ -149,4 +148,11 @@ data class ProfileOverview(
     val favorites: List<LibraryEntry>,
     val currentlyPlaying: List<LibraryEntry>,
     val activity: List<ActivityEvent>,
+)
+
+data class UserOverview(
+    val bio: String,
+    val joinedAt: LocalDate?,
+    val isFriend: Boolean,
+    val overview: ProfileOverview,
 )

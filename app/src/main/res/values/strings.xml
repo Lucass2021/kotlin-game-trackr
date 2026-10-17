@@ -142,7 +142,7 @@
 
 
     <string name="profile_guest_title">Guest</string>
-    <string name="profile_guest_subtitle">Create an account to build a public profile with your stats.</string>
+    <string name="profile_guest_subtitle">You\'re browsing as a guest. Create an account to build a public profile with your stats.</string>
     <string name="profile_guest_action">Create an account</string>
     <string name="profile_share_message">Check out my gaming profile on GameTrackr!</string>
     <string name="profile_load_error_title">Couldn\'t load your profile</string>
@@ -156,6 +156,11 @@
     <string name="user_profile_back">Back</string>
     <string name="user_profile_guest_add_friend">You\'re browsing as a guest. Create an account to add friends.</string>
     <string name="user_profile_guest_message">You\'re browsing as a guest. Create an account to send messages.</string>
+    <string name="user_profile_share_message">Check out %1$s\'s gaming profile on GameTrackr!</string>
+    <string name="user_profile_load_error_title">Couldn\'t load this profile</string>
+    <string name="user_profile_load_error_message">Check your connection and try again.</string>
+    <string name="user_profile_retry">Try again</string>
+    <string name="user_profile_friend_error">Couldn\'t update friends. Please try again.</string>
     <string name="profile_stat_games">Games</string>
     <string name="profile_stat_hours">Hours</string>
     <string name="profile_stat_platinum">Platinum</string>

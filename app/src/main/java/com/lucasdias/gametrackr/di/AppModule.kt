@@ -6,6 +6,7 @@ import com.lucasdias.gametrackr.core.auth.GoogleAuth
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
 import com.lucasdias.gametrackr.core.model.Profile
+import com.lucasdias.gametrackr.core.model.UserProfile
 import com.lucasdias.gametrackr.core.network.AuthApi
 import com.lucasdias.gametrackr.core.network.AuthInterceptor
 import com.lucasdias.gametrackr.core.network.CommunityApi
@@ -44,6 +45,7 @@ import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
 import com.lucasdias.gametrackr.feature.app.library.LibraryViewModel
 import com.lucasdias.gametrackr.feature.app.notifications.NotificationsViewModel
 import com.lucasdias.gametrackr.feature.app.profile.ProfileViewModel
+import com.lucasdias.gametrackr.feature.app.profile.UserProfileViewModel
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewModel
 import com.lucasdias.gametrackr.feature.app.profile.setup.ContentSetupPhotoEncoder
 import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupViewModel
@@ -177,5 +179,6 @@ val appModule =
         viewModel { (gameId: Long) -> GameAchievementsViewModel(get(), gameId) }
         viewModel { NotificationsViewModel(get()) }
         viewModel { ProfileViewModel(get()) }
+        viewModel { (user: UserProfile) -> UserProfileViewModel(get(), user) }
         viewModel { params -> EditSetupViewModel(params.getOrNull(), get(), ContentSetupPhotoEncoder(androidContext())) }
     }
