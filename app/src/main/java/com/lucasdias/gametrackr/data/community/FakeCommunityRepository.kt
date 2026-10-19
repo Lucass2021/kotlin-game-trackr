@@ -5,6 +5,9 @@ import com.lucasdias.gametrackr.core.model.CommunityMember
 import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.model.LikeStatus
 import com.lucasdias.gametrackr.core.model.PostComment
+import com.lucasdias.gametrackr.core.model.addingReply
+import com.lucasdias.gametrackr.core.model.findComment
+import com.lucasdias.gametrackr.core.model.replacingComment
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.pagination.Page
 import com.lucasdias.gametrackr.core.pagination.fakePage
@@ -15,11 +18,12 @@ class FakeCommunityRepository(
     communities: List<Community> = CommunityMockData.all,
     posts: List<CommunityPost> = CommunityMockData.communityPosts,
     private val members: List<CommunityMember> = CommunityMockData.members,
-    private val comments: List<PostComment> = CommunityMockData.comments,
+    comments: List<PostComment> = CommunityMockData.comments,
     var failure: Throwable? = null,
 ) : CommunityRepository {
     private val communities = communities.toMutableList()
     private val posts = posts.toMutableList()
+    private val comments = comments.toMutableList()
     private val joinedIds = communities.filter { it.isJoined }.map { it.id }.toMutableSet()
 
     var fetchPostsCount = 0
@@ -29,6 +33,12 @@ class FakeCommunityRepository(
     var likeCount = 0
         private set
     var deleteCount = 0
+        private set
+    var fetchCommentsCount = 0
+        private set
+    var sendCommentCount = 0
+        private set
+    var commentLikeCount = 0
         private set
 
     override suspend fun fetchCommunities(
@@ -82,7 +92,10 @@ class FakeCommunityRepository(
         }
     }
 
-    override suspend fun fetchPostComments(postId: Long): Result<List<PostComment>> = respond { comments }
+    override suspend fun fetchPostComments(postId: Long): Result<List<PostComment>> {
+        fetchCommentsCount++
+        return respond { comments.toList() }
+    }
 
     override suspend fun createPost(
         title: String,
@@ -121,22 +134,60 @@ class FakeCommunityRepository(
     override suspend fun addComment(
         postId: Long,
         comment: String,
-    ): Result<PostComment> = respond { comments.first().copy(content = comment, likes = 0, replies = emptyList()) }
+    ): Result<PostComment> {
+        sendCommentCount++
+        return respond { newComment(comment).also { comments.add(it) } }
+    }
 
     override suspend fun replyToComment(
         postId: Long,
         commentId: Long,
         comment: String,
-    ): Result<PostComment> = respond { comments.first().copy(content = comment, likes = 0, replies = emptyList()) }
+    ): Result<PostComment> {
+        sendCommentCount++
+        return respond {
+            if (comment(commentId) == null) throw ApiError.NotFound
+            newComment(comment).also { replaceComments(comments.addingReply(commentId, it)) }
+        }
+    }
 
     override suspend fun toggleCommentLike(
         postId: Long,
         commentId: Long,
-    ): Result<LikeStatus> = respond { LikeStatus(isLiked = true, likes = 1) }
+    ): Result<LikeStatus> {
+        commentLikeCount++
+        return respond {
+            val current = comment(commentId) ?: throw ApiError.NotFound
+            val liked = !current.isLiked
+            val status = LikeStatus(isLiked = liked, likes = current.likes + if (liked) 1 else -1)
+            replaceComments(comments.replacingComment(commentId) { it.copy(isLiked = status.isLiked, likes = status.likes) })
+            status
+        }
+    }
 
     fun isJoined(communityId: Long): Boolean = communityId in joinedIds
 
     fun post(id: Long): CommunityPost? = posts.firstOrNull { it.id == id }
+
+    fun comment(id: Long): PostComment? = comments.findComment(id)
+
+    private fun newComment(content: String): PostComment {
+        val nextId = (comments.flatMap { listOf(it) + it.replies }.maxOfOrNull { it.id } ?: 0) + 1
+        return CommunityMockData.comments.first().copy(
+            id = nextId,
+            author = "@you",
+            timeAgo = "now",
+            content = content,
+            likes = 0,
+            isLiked = false,
+            replies = emptyList(),
+        )
+    }
+
+    private fun replaceComments(updated: List<PostComment>) {
+        comments.clear()
+        comments.addAll(updated)
+    }
 
     private suspend fun <T> respond(block: () -> T): Result<T> {
         val error = failure

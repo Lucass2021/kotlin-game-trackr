@@ -59,10 +59,9 @@ data class PostComment(
     val avatarStart: Color,
     val avatarEnd: Color,
     val replies: List<PostComment> = emptyList(),
-    val hiddenReplies: Int = 0,
 )
 
-fun List<PostComment>.totalCount(): Int = sumOf { 1 + it.replies.size + it.hiddenReplies }
+fun List<PostComment>.totalCount(): Int = sumOf { 1 + it.replies.size }
 
 data class LikeStatus(
     val isLiked: Boolean,

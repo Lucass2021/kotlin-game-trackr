@@ -290,7 +290,6 @@ object CommunityMockData {
                             avatarEnd = CoverEmeraldEnd,
                         ),
                     ),
-                hiddenReplies = 3,
             ),
             PostComment(
                 id = 72,

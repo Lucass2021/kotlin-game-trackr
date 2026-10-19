@@ -348,6 +348,26 @@
     <string name="post_detail_guest_title">Want to join the conversation?</string>
     <string name="post_detail_guest_message">Create an account to like, comment, share, and follow other players.</string>
     <string name="post_detail_guest_action">Create an account</string>
+    <string name="post_detail_delete_action">Delete post</string>
+    <string name="post_detail_delete_title">Delete post?</string>
+    <string name="post_detail_delete_message">This action cannot be undone. The post and all its comments will be permanently deleted.</string>
+    <string name="post_detail_delete_confirm">Delete</string>
+    <string name="post_detail_delete_cancel">Cancel</string>
+    <string name="post_detail_delete_error">Couldn\'t delete this post. Please try again.</string>
+    <string name="post_detail_comment_error">Couldn\'t send your comment. Please try again.</string>
+    <string name="post_detail_share_message">Check out this discussion on GameTrackr: \"%1$s\"</string>
+    <string name="post_detail_view_profile">View %1$s\'s profile</string>
+    <string name="post_detail_comments_title">Comments</string>
+    <string name="post_detail_comments_empty_title">No comments yet</string>
+    <string name="post_detail_comments_empty_message">Be the first to comment.</string>
+    <string name="post_detail_comments_error_title">Couldn\'t load comments</string>
+    <string name="post_detail_comments_error_message">Check your connection and try again.</string>
+    <string name="post_detail_retry">Try again</string>
+    <string name="post_detail_replying_to">Replying to %1$s</string>
+    <string name="post_detail_cancel_reply">Cancel reply</string>
+    <string name="post_detail_comment_likes">%1$d likes</string>
+    <string name="post_detail_reply">Reply</string>
+    <string name="post_detail_comment_placeholder">Add a comment…</string>
 
     <string name="validation_community_required">Pick a community</string>
     <string name="validation_topic_title_required">Title is required</string>

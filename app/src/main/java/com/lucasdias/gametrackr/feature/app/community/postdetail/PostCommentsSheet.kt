@@ -1,303 +1,168 @@
 package com.lucasdias.gametrackr.feature.app.community.postdetail
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.PostComment
-import com.lucasdias.gametrackr.core.model.totalCount
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.EmptyState
-import com.lucasdias.gametrackr.core.ui.components.pressScale
+import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
-import com.lucasdias.gametrackr.core.ui.theme.AppBackground
-import com.lucasdias.gametrackr.core.ui.theme.AppOutline
+import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
-import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.data.community.CommunityRepository
-import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.feature.app.community.postdetail.components.CommentComposer
+import com.lucasdias.gametrackr.feature.app.community.postdetail.components.CommentRow
+import com.lucasdias.gametrackr.feature.app.community.postdetail.components.CommentsHeader
+import com.lucasdias.gametrackr.feature.app.community.postdetail.components.ReplyIndicator
+
+private const val SHEET_HEIGHT_FRACTION = 0.85f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostCommentsSheet(
-    postId: Long,
-    comments: List<PostComment>,
-    isGuest: Boolean = false,
-    currentUserId: Int? = null,
+    state: PostDetailUiState,
+    isGuest: Boolean,
     onDismiss: () -> Unit,
+    onRetry: () -> Unit,
+    onCommentLike: (Long) -> Unit,
+    onReplyTap: (PostComment) -> Unit,
+    onReplyCancel: () -> Unit,
+    onDraftChange: (String) -> Unit,
+    onSend: () -> Unit,
+    onToastShown: () -> Unit,
     modifier: Modifier = Modifier,
-    repository: CommunityRepository = koinInject(),
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val state = remember { comments.toMutableStateList() }
-    var draft by remember { mutableStateOf("") }
-    var replyingTo by remember { mutableStateOf<PostComment?>(null) }
-    val scope = rememberCoroutineScope()
-
-    val total = state.totalCount()
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = AppSurfaceCard,
         modifier = modifier,
     ) {
-        Column(modifier = Modifier.fillMaxHeight(0.85f)) {
-            Header(total = total, onClose = onDismiss)
+        Box(modifier = Modifier.fillMaxHeight(SHEET_HEIGHT_FRACTION)) {
+            Column {
+                CommentsHeader(total = state.commentCount, onClose = onDismiss)
+                Box(modifier = Modifier.weight(1f)) {
+                    CommentsBody(state = state, isGuest = isGuest, onRetry = onRetry, onCommentLike = onCommentLike, onReplyTap = onReplyTap)
+                }
+                if (!isGuest && state.hasLoadedComments) {
+                    state.replyingTo?.let { ReplyIndicator(author = it.author, onCancel = onReplyCancel) }
+                    CommentComposer(draft = state.draft, onDraftChange = onDraftChange, onSend = onSend)
+                }
+            }
+            Toast(
+                message = state.toastMessage?.let { stringResource(it) },
+                onDismiss = onToastShown,
+                modifier = Modifier.align(Alignment.TopCenter),
+            )
+        }
+    }
+}
 
-            if (state.isEmpty()) {
-                CommentsEmptyState(modifier = Modifier.weight(1f))
-            } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(22.dp),
-                ) {
-                    state.forEachIndexed { index, comment ->
-                        item(key = comment.id) {
-                            Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
-                                CommentRow(
-                                    comment = comment,
-                                    onLike = {
-                                        toggleCommentLike(state, index, postId, comment.id, repository, scope)
-                                    },
-                                    isGuest = isGuest,
-                                    currentUserId = currentUserId,
-                                    onReply = { replyingTo = comment },
-                                    onDelete = { state.removeAt(index) },
-                                )
+@Composable
+private fun CommentsBody(
+    state: PostDetailUiState,
+    isGuest: Boolean,
+    onRetry: () -> Unit,
+    onCommentLike: (Long) -> Unit,
+    onReplyTap: (PostComment) -> Unit,
+) {
+    when {
+        state.commentsFailed -> {
+            EmptyState(
+                icon = AppIcon.INFO,
+                title = stringResource(R.string.post_detail_comments_error_title),
+                message = stringResource(R.string.post_detail_comments_error_message),
+                actionTitle = stringResource(R.string.post_detail_retry),
+                onAction = onRetry,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
 
-                                comment.replies.forEachIndexed { replyIndex, reply ->
-                                    CommentRow(
-                                        comment = reply,
-                                        isReply = true,
-                                        onLike = { toggleReplyLike(state, index, replyIndex) },
-                                        isGuest = isGuest,
-                                        currentUserId = currentUserId,
-                                        onReply = { replyingTo = reply },
-                                        onDelete = {
-                                            val parent = state[index]
-                                            val updatedReplies = parent.replies.toMutableList()
-                                            updatedReplies.removeAt(replyIndex)
-                                            state[index] = parent.copy(replies = updatedReplies)
-                                        },
-                                    )
-                                }
+        !state.hasLoadedComments -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = AppPrimary)
+            }
+        }
 
-                                if (comment.hiddenReplies > 0) {
-                                    Text(
-                                        text = "View ${comment.hiddenReplies} more replies",
-                                        color = AppTextSecondary,
-                                        style = AppType.label(13.sp),
-                                        modifier = Modifier.padding(start = 62.dp),
-                                    )
-                                }
-                            }
+        state.comments.isEmpty() -> {
+            EmptyState(
+                icon = AppIcon.COMMENT,
+                title = stringResource(R.string.post_detail_comments_empty_title),
+                message = stringResource(R.string.post_detail_comments_empty_message),
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+
+        else -> {
+            LazyColumn(
+                contentPadding = PaddingValues(Spacing.lg),
+                verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+            ) {
+                items(state.comments, key = { it.id }) { thread ->
+                    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                        CommentRow(
+                            comment = thread,
+                            onLike = { onCommentLike(thread.id) },
+                            isGuest = isGuest,
+                            onReply = { onReplyTap(thread) },
+                        )
+                        thread.replies.forEach { reply ->
+                            CommentRow(
+                                comment = reply,
+                                onLike = { onCommentLike(reply.id) },
+                                isReply = true,
+                                isGuest = isGuest,
+                                onReply = { onReplyTap(reply) },
+                            )
                         }
                     }
                 }
             }
-
-            if (!isGuest) {
-                if (replyingTo != null) {
-                    ReplyIndicator(
-                        authorName = replyingTo!!.author,
-                        onClose = { replyingTo = null },
-                    )
-                }
-                CommentComposer(
-                    draft = draft,
-                    onDraftChange = { draft = it },
-                    onSend = {
-                        val text = draft.trim()
-                        if (text.isBlank()) return@CommentComposer
-                        draft = ""
-                        val target = replyingTo
-                        replyingTo = null
-                        scope.launch {
-                            if (target != null) {
-                                repository.replyToComment(postId, target.id, text).onSuccess { newReply ->
-                                    val parentIndex = state.indexOfFirst { it.id == target.id || it.replies.any { r -> r.id == target.id } }
-                                    if (parentIndex >= 0) {
-                                        val parent = state[parentIndex]
-                                        state[parentIndex] = parent.copy(replies = parent.replies + newReply)
-                                    }
-                                }
-                            } else {
-                                repository.addComment(postId, text).onSuccess { state.add(it) }
-                            }
-                        }
-                    },
-                )
-            }
         }
     }
 }
 
+@Preview
 @Composable
-private fun Header(
-    total: Int,
-    onClose: () -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "Comments",
-                color = AppTextPrimary,
-                style = AppType.headline(20.sp),
-            )
-            Text(
-                text = total.toString(),
-                color = AppTextSecondary,
-                style = AppType.body(15.sp),
-                modifier = Modifier.padding(start = 8.dp).weight(1f),
-            )
-            Box(
-                modifier =
-                    Modifier
-                        .pressScale(interactionSource)
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(AppBackground)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null,
-                            onClickLabel = stringResource(R.string.community_action_close),
-                            role = Role.Button,
-                            onClick = onClose,
-                        ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = AppIcon.CLOSE.image(),
-                    contentDescription = stringResource(R.string.community_action_close),
-                    tint = AppTextSecondary,
-                    modifier = Modifier.size(16.dp),
-                )
-            }
-        }
-        HorizontalDivider(thickness = 1.dp, color = AppOutline)
-    }
-}
-
-@Composable
-private fun CommentsEmptyState(modifier: Modifier = Modifier) {
-    EmptyState(
-        icon = AppIcon.COMMENT,
-        title = "No comments yet",
-        message = "Be the first to comment.",
-        modifier = modifier,
-    )
-}
-
-private fun toggleCommentLike(
-    state: SnapshotStateList<PostComment>,
-    index: Int,
-    postId: Long,
-    commentId: Long,
-    repository: CommunityRepository,
-    scope: kotlinx.coroutines.CoroutineScope,
-) {
-    val c = state[index]
-    state[index] = c.copy(isLiked = !c.isLiked, likes = c.likes + if (c.isLiked) -1 else 1)
-
-    scope.launch {
-        repository
-            .toggleCommentLike(postId, commentId)
-            .onSuccess { status ->
-                val i = state.indexOfFirst { it.id == commentId }
-                if (i >= 0) {
-                    state[i] = state[i].copy(isLiked = status.isLiked, likes = status.likes)
-                }
-            }.onFailure {
-                val i = state.indexOfFirst { it.id == commentId }
-                if (i >= 0) {
-                    state[i] = c
-                }
-            }
-    }
-}
-
-private fun toggleReplyLike(
-    state: SnapshotStateList<PostComment>,
-    index: Int,
-    replyIndex: Int,
-) {
-    val parent = state[index]
-    val replies = parent.replies.toMutableList()
-    val r = replies[replyIndex]
-    replies[replyIndex] = r.copy(isLiked = !r.isLiked, likes = r.likes + if (r.isLiked) -1 else 1)
-    state[index] = parent.copy(replies = replies)
-}
-
-@Composable
-private fun ReplyIndicator(
-    authorName: String,
-    onClose: () -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    Row(
-        modifier = Modifier.fillMaxWidth().background(AppSurfaceCard).padding(horizontal = 20.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "Replying to $authorName",
-            color = AppTextSecondary,
-            style = AppType.body(13.sp),
-            modifier = Modifier.weight(1f),
+private fun CommentsBodyPreview() {
+    AppPreview {
+        CommentsBody(
+            state = PostDetailUiState(post = CommunityMockData.detailPost, comments = CommunityMockData.comments, hasLoadedComments = true),
+            isGuest = false,
+            onRetry = {},
+            onCommentLike = {},
+            onReplyTap = {},
         )
-        Icon(
-            imageVector = AppIcon.CLOSE.image(),
-            contentDescription = stringResource(R.string.community_action_close),
-            tint = AppTextSecondary,
-            modifier =
-                Modifier
-                    .pressScale(interactionSource)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        role = Role.Button,
-                        onClick = onClose,
-                    ).size(16.dp),
+    }
+}
+
+@Preview
+@Composable
+private fun CommentsBodyErrorPreview() {
+    AppPreview {
+        CommentsBody(
+            state = PostDetailUiState(post = CommunityMockData.detailPost, commentsFailed = true),
+            isGuest = false,
+            onRetry = {},
+            onCommentLike = {},
+            onReplyTap = {},
         )
     }
 }

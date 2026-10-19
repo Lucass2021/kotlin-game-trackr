@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.community.postdetail
+package com.lucasdias.gametrackr.feature.app.community.postdetail.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,9 +28,11 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -43,8 +46,17 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverCyanStart
 import com.lucasdias.gametrackr.core.ui.theme.Inter
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.feature.app.community.CommunityOptions
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
+
+private val REACTION_SIZE = 22.sp
+private val AVATAR_SIZE = 34.dp
+private val FIELD_TEXT_SIZE = 15.sp
+private val SEND_BUTTON_SIZE = 44.dp
+private val SEND_ICON_SIZE = 20.dp
+private const val DISABLED_ALPHA = 0.4f
+private val BORDER_WIDTH = 1.dp
 
 @Composable
 fun CommentComposer(
@@ -54,86 +66,97 @@ fun CommentComposer(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth().background(AppSurfaceCard)) {
-        HorizontalDivider(thickness = 1.dp, color = AppOutline)
-
+        HorizontalDivider(thickness = BORDER_WIDTH, color = AppOutline)
         LazyRow(
-            contentPadding =
-                androidx.compose.foundation.layout
-                    .PaddingValues(horizontal = 20.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(18.dp),
+            contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             items(CommunityOptions.quickReactions) { reaction ->
                 Text(
                     text = reaction,
-                    fontSize = 22.sp,
+                    fontSize = REACTION_SIZE,
                     modifier =
                         Modifier.clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
+                            role = Role.Button,
                             onClick = { onDraftChange(draft + reaction) },
                         ),
                 )
             }
         }
-
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(start = Spacing.lg, end = Spacing.lg, bottom = Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
-            CommunityAvatar(start = CoverCyanStart, end = CoverCyanEnd, size = 34.dp)
-
+            CommunityAvatar(start = CoverCyanStart, end = CoverCyanEnd, size = AVATAR_SIZE)
             Box(
                 modifier =
                     Modifier
                         .weight(1f)
                         .clip(CircleShape)
                         .background(AppBackground)
-                        .border(1.dp, AppOutline, CircleShape)
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                        .border(BORDER_WIDTH, AppOutline, CircleShape)
+                        .padding(horizontal = Spacing.md, vertical = Spacing.xs),
             ) {
                 if (draft.isEmpty()) {
                     Text(
-                        text = "Add a comment…",
+                        text = stringResource(R.string.post_detail_comment_placeholder),
                         color = AppTextSecondary,
-                        style = AppType.body(15.sp),
+                        style = AppType.body(FIELD_TEXT_SIZE),
                     )
                 }
                 BasicTextField(
                     value = draft,
                     onValueChange = onDraftChange,
-                    textStyle = TextStyle(color = AppTextPrimary, fontFamily = Inter, fontSize = 15.sp),
+                    textStyle = TextStyle(color = AppTextPrimary, fontFamily = Inter, fontSize = FIELD_TEXT_SIZE),
                     cursorBrush = SolidColor(AppPrimary),
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
-
-            val sendInteraction = remember { MutableInteractionSource() }
-            val enabled = draft.isNotBlank()
-            Box(
-                modifier =
-                    Modifier
-                        .pressScale(sendInteraction)
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(if (enabled) AppPrimary else AppPrimary.copy(alpha = 0.4f))
-                        .clickable(
-                            interactionSource = sendInteraction,
-                            indication = null,
-                            enabled = enabled,
-                            onClickLabel = stringResource(R.string.community_action_send),
-                            role = Role.Button,
-                            onClick = onSend,
-                        ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = AppIcon.SEND.image(),
-                    contentDescription = stringResource(R.string.community_action_send),
-                    tint = AppOnPrimary,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
+            SendButton(enabled = draft.isNotBlank(), onSend = onSend)
         }
+    }
+}
+
+@Composable
+private fun SendButton(
+    enabled: Boolean,
+    onSend: () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val label = stringResource(R.string.community_action_send)
+    Box(
+        modifier =
+            Modifier
+                .pressScale(interactionSource)
+                .size(SEND_BUTTON_SIZE)
+                .clip(CircleShape)
+                .background(if (enabled) AppPrimary else AppPrimary.copy(alpha = DISABLED_ALPHA))
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    enabled = enabled,
+                    onClickLabel = label,
+                    role = Role.Button,
+                    onClick = onSend,
+                ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = AppIcon.SEND.image(),
+            contentDescription = label,
+            tint = AppOnPrimary,
+            modifier = Modifier.size(SEND_ICON_SIZE),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CommentComposerPreview() {
+    AppPreview {
+        CommentComposer(draft = "Great post!", onDraftChange = {}, onSend = {})
     }
 }
