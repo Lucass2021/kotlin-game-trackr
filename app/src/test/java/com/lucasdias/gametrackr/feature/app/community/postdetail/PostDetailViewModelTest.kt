@@ -4,7 +4,9 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.totalCount
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
+import com.lucasdias.gametrackr.data.community.PostUpdates
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -21,7 +23,7 @@ class PostDetailViewModelTest {
 
     private val post = CommunityMockData.communityPosts.first()
     private val repository = FakeCommunityRepository()
-    private val viewModel = PostDetailViewModel(repository, post)
+    private val viewModel = PostDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), post)
 
     @Test
     fun `loading shows the comments and their real count`() =
@@ -137,7 +139,7 @@ class PostDetailViewModelTest {
     @Test
     fun `deleting a post that is already gone still closes`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = PostDetailViewModel(FakeCommunityRepository(posts = emptyList()), post)
+            val viewModel = FakeCommunityRepository(posts = emptyList()).let { PostDetailViewModel(it, FakeCommunityFeedRepository(it), PostUpdates(), post) }
 
             viewModel.onDeleteConfirmed()
             advanceUntilIdle()

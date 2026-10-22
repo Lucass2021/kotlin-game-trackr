@@ -38,6 +38,7 @@ import com.lucasdias.gametrackr.feature.app.achievements.AchievementsScreen
 import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsScreen
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
+import com.lucasdias.gametrackr.feature.app.community.CommunityFeedViewModel
 import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
 import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.communitydetail.CommunityDetailScreen
@@ -139,6 +140,7 @@ fun MainTabScreen(
     val navController = rememberNavController()
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
     val communityViewModel: CommunityViewModel = koinViewModel()
+    val communityFeedViewModel: CommunityFeedViewModel = koinViewModel()
     var selectedCommunity by remember { mutableStateOf<Community?>(null) }
     var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
     val libraryViewModel: LibraryViewModel = koinViewModel()
@@ -162,6 +164,7 @@ fun MainTabScreen(
                 selected = selectedTab,
                 onSelect = { selectedTab = it },
                 communityViewModel = communityViewModel,
+                communityFeedViewModel = communityFeedViewModel,
                 libraryViewModel = libraryViewModel,
                 profileViewModel = profileViewModel,
                 onStatusClick = { status ->
@@ -282,7 +285,10 @@ fun MainTabScreen(
                 isGuest = isGuest,
                 currentUserId = currentUserId,
                 onBack = { navController.popBackStackIfResumed() },
-                onDeleted = { communityViewModel.removeCommunity(community.id) },
+                onDeleted = {
+                    communityViewModel.removeCommunity(community.id)
+                    communityFeedViewModel.onCommunityRemoved(community.id)
+                },
                 onPostClick = { post ->
                     selectedPost = post
                     navController.navigate(ShellRoutes.POST_DETAIL)
@@ -313,7 +319,7 @@ fun MainTabScreen(
                 onBack = { navController.popBackStackIfResumed() },
                 onCreateAccount = onLogout,
                 onPost = { post ->
-                    communityViewModel.feed.add(0, post)
+                    communityFeedViewModel.onPostCreated(post)
                 },
             )
         }
@@ -330,7 +336,7 @@ fun MainTabScreen(
                 },
                 onCreateAccount = onLogout,
                 onDelete = {
-                    communityViewModel.feed.removeAll { it.id == post.id }
+                    communityFeedViewModel.onPostDeleted(post.id)
                 },
             )
         }
@@ -462,6 +468,7 @@ private fun TabShell(
     selected: AppTab,
     onSelect: (AppTab) -> Unit,
     communityViewModel: CommunityViewModel,
+    communityFeedViewModel: CommunityFeedViewModel,
     libraryViewModel: LibraryViewModel,
     profileViewModel: ProfileViewModel,
     onNotifications: () -> Unit,
@@ -514,6 +521,7 @@ private fun TabShell(
 
                 AppTab.COMMUNITY -> {
                     CommunityScreen(
+                        feedViewModel = communityFeedViewModel,
                         viewModel = communityViewModel,
                         isGuest = isGuest,
                         onPostClick = onPostClick,

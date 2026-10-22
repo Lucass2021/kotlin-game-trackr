@@ -9,7 +9,9 @@ import com.lucasdias.gametrackr.core.model.addingReply
 import com.lucasdias.gametrackr.core.model.findComment
 import com.lucasdias.gametrackr.core.model.replacingComment
 import com.lucasdias.gametrackr.core.network.ApiError
+import com.lucasdias.gametrackr.data.community.CommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.CommunityRepository
+import com.lucasdias.gametrackr.data.community.PostUpdates
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +21,8 @@ import kotlinx.coroutines.launch
 
 class PostDetailViewModel(
     private val repository: CommunityRepository,
+    private val feedRepository: CommunityFeedRepository,
+    private val postUpdates: PostUpdates,
     post: CommunityPost,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(PostDetailUiState(post = post))
@@ -27,6 +31,7 @@ class PostDetailViewModel(
     private val postId = post.id
     private var commentsJob: Job? = null
     private var isPostLikePending = false
+    private var isBookmarkPending = false
     private val pendingCommentLikeIds = mutableSetOf<Long>()
 
     fun loadIfNeeded() {
@@ -59,6 +64,7 @@ class PostDetailViewModel(
                 .togglePostLike(postId)
                 .onSuccess { status ->
                     _uiState.update { it.copy(post = it.post.copy(isLiked = status.isLiked, likes = status.likes)) }
+                    postUpdates.publish(_uiState.value.post)
                 }.onFailure {
                     _uiState.update {
                         it.copy(
@@ -72,7 +78,21 @@ class PostDetailViewModel(
     }
 
     fun onBookmark() {
-        _uiState.update { it.copy(post = it.post.copy(isBookmarked = !it.post.isBookmarked)) }
+        if (isBookmarkPending) return
+        isBookmarkPending = true
+        val previous = _uiState.value.post.isBookmarked
+        _uiState.update { it.copy(post = it.post.copy(isBookmarked = !previous)) }
+        viewModelScope.launch {
+            feedRepository
+                .setBookmark(postId, !previous)
+                .onSuccess { postUpdates.publish(_uiState.value.post) }
+                .onFailure {
+                    _uiState.update {
+                        it.copy(post = it.post.copy(isBookmarked = previous), toastMessage = R.string.community_bookmark_error)
+                    }
+                }
+            isBookmarkPending = false
+        }
     }
 
     fun onCommentsOpen() {

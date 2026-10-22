@@ -4,7 +4,9 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.findComment
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
+import com.lucasdias.gametrackr.data.community.PostUpdates
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -24,7 +26,7 @@ class PostDetailViewModelActionsTest {
     private val thread = CommunityMockData.comments.first()
     private val reply = thread.replies.first()
     private val repository = FakeCommunityRepository()
-    private val viewModel = PostDetailViewModel(repository, post)
+    private val viewModel = PostDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), post)
 
     private fun TestScope.loaded() {
         viewModel.loadIfNeeded()

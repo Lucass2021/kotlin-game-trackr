@@ -3,47 +3,37 @@ package com.lucasdias.gametrackr.feature.app.community
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityPost
-import com.lucasdias.gametrackr.core.pagination.InfiniteScrollEffect
-import com.lucasdias.gametrackr.core.pagination.LoadingMoreIndicator
-import com.lucasdias.gametrackr.core.ui.components.EmptyState
-import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.Toast
+import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
-import com.lucasdias.gametrackr.feature.app.community.components.CommunityChipRow
-import com.lucasdias.gametrackr.feature.app.community.components.CommunityPostCard
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.feature.app.community.components.CommunityDiscoverSegment
+import com.lucasdias.gametrackr.feature.app.community.components.CommunityFeedContent
 import com.lucasdias.gametrackr.feature.app.community.components.CommunitySegmentControl
-import com.lucasdias.gametrackr.feature.app.community.components.ConfirmDialog
 import com.lucasdias.gametrackr.feature.app.community.components.CreatePostButton
-import com.lucasdias.gametrackr.feature.app.community.components.SuggestedCommunityCard
-import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesContent
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(
+    feedViewModel: CommunityFeedViewModel,
     viewModel: CommunityViewModel,
     isGuest: Boolean,
     onPostClick: (CommunityPost) -> Unit,
@@ -54,212 +44,137 @@ fun CommunityScreen(
     modifier: Modifier = Modifier,
     currentUserId: Int? = null,
 ) {
-    var segment by rememberSaveable { mutableStateOf(CommunitySegment.MY_FEED) }
-    var feedFilter by remember { mutableStateOf(CommunityFeedFilter.LATEST.label) }
-    var category by remember { mutableStateOf("All") }
-    var communityToLeave by remember { mutableStateOf<Community?>(null) }
-    val feedError by viewModel.feedError.collectAsStateWithLifecycle()
-    val isLoadingFeed by viewModel.isLoadingFeed.collectAsStateWithLifecycle()
+    val feedState by feedViewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        viewModel.loadFeed()
-        viewModel.loadCommunities()
-    }
+    LaunchedEffect(feedViewModel) { feedViewModel.loadIfNeeded() }
+    LaunchedEffect(viewModel) { viewModel.loadCommunities() }
+
+    CommunityScreen(
+        feedState = feedState,
+        communities = viewModel.communities,
+        isLoadingMoreCommunities = viewModel.communitiesPagination.isLoadingMore,
+        canLoadMoreCommunities = viewModel.communitiesPagination.canLoadMore,
+        isGuest = isGuest,
+        currentUserId = currentUserId,
+        modifier = modifier,
+        feedActions =
+            CommunityFeedActions(
+                onRefresh = feedViewModel::refresh,
+                onRetry = feedViewModel::load,
+                onLoadMore = feedViewModel::loadMore,
+                onFilterChange = feedViewModel::onFilterChange,
+                onPostClick = onPostClick,
+                onLike = feedViewModel::onLike,
+                onShare = { post -> context.shareText(context.getString(R.string.post_detail_share_message, post.title)) },
+                onBookmark = feedViewModel::onBookmark,
+                onCommunityClick = onCommunityClick,
+                onJoinSuggested = feedViewModel::onJoinSuggested,
+                onToastShown = feedViewModel::onToastShown,
+            ),
+        onJoinCommunity = viewModel::joinCommunity,
+        onLeaveCommunity = viewModel::leaveCommunity,
+        onLoadMoreCommunities = { viewModel.loadMoreCommunities() },
+        onCreatePost = onCreatePost,
+        onCreateCommunity = onCreateCommunity,
+        onCreateAccount = onCreateAccount,
+    )
+}
+
+@Composable
+private fun CommunityScreen(
+    feedState: CommunityFeedUiState,
+    communities: List<Community>,
+    isLoadingMoreCommunities: Boolean,
+    canLoadMoreCommunities: Boolean,
+    isGuest: Boolean,
+    currentUserId: Int?,
+    feedActions: CommunityFeedActions,
+    onJoinCommunity: (Community) -> Unit,
+    onLeaveCommunity: (Community) -> Unit,
+    onLoadMoreCommunities: () -> Unit,
+    onCreatePost: () -> Unit,
+    onCreateCommunity: () -> Unit,
+    onCreateAccount: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var segment by rememberSaveable { mutableStateOf(CommunitySegment.MY_FEED) }
 
     Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
         Column(modifier = Modifier.fillMaxSize()) {
             CommunitySegmentControl(
                 selection = segment,
                 onSelect = { segment = it },
-                modifier = Modifier.padding(top = 4.dp, bottom = 14.dp),
+                modifier = Modifier.padding(top = Spacing.xxs, bottom = Spacing.md),
             )
 
             when (segment) {
                 CommunitySegment.MY_FEED -> {
-                    FeedContent(
-                        feed = viewModel.feed,
-                        feedFilter = feedFilter,
-                        feedError = feedError,
+                    CommunityFeedContent(
+                        state = feedState,
                         isGuest = isGuest,
-                        isRefreshing = isLoadingFeed,
-                        isLoadingMore = viewModel.feedPagination.isLoadingMore,
-                        canLoadMore = viewModel.feedPagination.canLoadMore,
-                        onFilterSelect = { feedFilter = it },
-                        onPostSelect = onPostClick,
-                        onLike = { viewModel.toggleLike(it) },
-                        onBookmark = { viewModel.toggleBookmark(it) },
-                        suggestedCommunity = if (isGuest) null else viewModel.communities.firstOrNull { !it.isJoined },
-                        onCommunitySelect = onCommunityClick,
-                        onJoinSuggested = { viewModel.joinCommunity(it) },
+                        actions = feedActions,
                         onDiscover = { segment = CommunitySegment.DISCOVER },
-                        onRetry = {
-                            viewModel.loadFeed(reset = true)
-                            viewModel.loadCommunities(reset = true)
-                        },
-                        onLoadMore = { viewModel.loadMoreFeed() },
                     )
                 }
 
                 CommunitySegment.DISCOVER -> {
-                    if (isGuest) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            EmptyState(
-                                icon = AppIcon.COMMUNITY,
-                                title = stringResource(R.string.discover_guest_title),
-                                message = stringResource(R.string.discover_guest_message),
-                                actionTitle = stringResource(R.string.discover_guest_action),
-                                onAction = onCreateAccount,
-                            )
-                        }
-                    } else {
-                        DiscoverCommunitiesContent(
-                            category = category,
-                            onCategorySelect = { category = it },
-                            communities = viewModel.communities,
-                            isLoadingMore = viewModel.communitiesPagination.isLoadingMore,
-                            canLoadMore = viewModel.communitiesPagination.canLoadMore,
-                            onCommunitySelect = onCommunityClick,
-                            onJoin = { community ->
-                                if (community.isJoined) {
-                                    communityToLeave = community
-                                } else {
-                                    viewModel.joinCommunity(community)
-                                }
-                            },
-                            onLoadMore = { viewModel.loadMoreCommunities() },
-                            currentUserId = currentUserId,
-                        )
-                    }
+                    CommunityDiscoverSegment(
+                        communities = communities,
+                        isLoadingMore = isLoadingMoreCommunities,
+                        canLoadMore = canLoadMoreCommunities,
+                        isGuest = isGuest,
+                        currentUserId = currentUserId,
+                        onCommunityClick = feedActions.onCommunityClick,
+                        onJoin = onJoinCommunity,
+                        onLeave = onLeaveCommunity,
+                        onLoadMore = onLoadMoreCommunities,
+                        onCreateAccount = onCreateAccount,
+                    )
                 }
             }
         }
 
         if (!isGuest) {
-            when (segment) {
-                CommunitySegment.MY_FEED -> {
-                    CreatePostButton(
-                        onClick = onCreatePost,
-                        modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
-                    )
-                }
-
-                CommunitySegment.DISCOVER -> {
-                    CreatePostButton(
-                        onClick = onCreateCommunity,
-                        modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp),
-                        label = stringResource(R.string.community_action_create_community),
-                    )
-                }
-            }
+            val isFeed = segment == CommunitySegment.MY_FEED
+            CreatePostButton(
+                onClick = if (isFeed) onCreatePost else onCreateCommunity,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(Spacing.lg),
+                label = stringResource(if (isFeed) R.string.community_action_create_post else R.string.community_action_create_community),
+            )
         }
-    }
 
-    communityToLeave?.let { community ->
-        ConfirmDialog(
-            title = stringResource(R.string.community_leave_title),
-            message = stringResource(R.string.community_leave_message),
-            confirmLabel = stringResource(R.string.community_leave_confirm),
-            dismissLabel = stringResource(R.string.community_leave_cancel),
-            onConfirm = {
-                communityToLeave = null
-                viewModel.leaveCommunity(community)
-            },
-            onDismiss = { communityToLeave = null },
+        Toast(
+            message = feedState.toastMessage?.let { stringResource(it) },
+            onDismiss = feedActions.onToastShown,
+            modifier = Modifier.align(Alignment.TopCenter),
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Preview
 @Composable
-private fun FeedContent(
-    feed: List<CommunityPost>,
-    feedFilter: String,
-    feedError: Boolean,
-    isGuest: Boolean,
-    isRefreshing: Boolean,
-    isLoadingMore: Boolean,
-    canLoadMore: Boolean,
-    onFilterSelect: (String) -> Unit,
-    onPostSelect: (CommunityPost) -> Unit,
-    onLike: (CommunityPost) -> Unit,
-    onBookmark: (CommunityPost) -> Unit,
-    suggestedCommunity: Community?,
-    onCommunitySelect: (Community) -> Unit,
-    onJoinSuggested: (Community) -> Unit,
-    onDiscover: () -> Unit,
-    onRetry: () -> Unit,
-    onLoadMore: () -> Unit,
-) {
-    if (feed.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (feedError) {
-                EmptyState(
-                    icon = AppIcon.INFO,
-                    title = "Couldn't load feed",
-                    message = "Check your connection\nand try again.",
-                    actionTitle = "Try again",
-                    onAction = onRetry,
-                )
-            } else {
-                EmptyState(
-                    icon = AppIcon.COMMUNITY,
-                    title = "Your feed is quiet",
-                    message = "Join a community to see posts\nfrom other players here.",
-                    actionTitle = "Discover communities",
-                    onAction = onDiscover,
-                )
-            }
-        }
-        return
-    }
-
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = onRetry,
-    ) {
-        val listState = rememberLazyListState()
-
-        InfiniteScrollEffect(
-            listState = listState,
-            canLoadMore = canLoadMore,
-            onLoadMore = onLoadMore,
+private fun CommunityScreenPreview() {
+    AppPreview {
+        CommunityScreen(
+            feedState =
+                CommunityFeedUiState(
+                    posts = CommunityMockData.feed,
+                    currentPage = 1,
+                    suggestedCommunity = CommunityMockData.suggested,
+                ),
+            communities = CommunityMockData.all,
+            isLoadingMoreCommunities = false,
+            canLoadMoreCommunities = false,
+            isGuest = false,
+            currentUserId = null,
+            feedActions = CommunityFeedActions(),
+            onJoinCommunity = {},
+            onLeaveCommunity = {},
+            onLoadMoreCommunities = {},
+            onCreatePost = {},
+            onCreateCommunity = {},
+            onCreateAccount = {},
         )
-
-        LazyColumn(
-            state = listState,
-            contentPadding = PaddingValues(bottom = 96.dp),
-        ) {
-            item {
-                CommunityChipRow(
-                    titles = CommunityFeedFilter.entries.map { it.label },
-                    selection = feedFilter,
-                    onSelect = onFilterSelect,
-                )
-                Spacer(Modifier.height(16.dp))
-            }
-
-            itemsIndexed(feed, key = { _, post -> post.id }) { index, post ->
-                CommunityPostCard(
-                    post = post,
-                    isGuest = isGuest,
-                    onSelect = { onPostSelect(post) },
-                    onLike = { onLike(post) },
-                    onComment = { onPostSelect(post) },
-                    onBookmark = { onBookmark(post) },
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                )
-                Spacer(Modifier.height(16.dp))
-            }
-
-            if (isLoadingMore) {
-                item { LoadingMoreIndicator() }
-            }
-        }
     }
 }

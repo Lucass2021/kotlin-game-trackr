@@ -1,26 +1,19 @@
 package com.lucasdias.gametrackr.feature.app.community
 
-import androidx.compose.ui.graphics.Color
+import androidx.annotation.StringRes
+import com.lucasdias.gametrackr.R
 
 enum class CommunitySegment(
-    val label: String,
+    @param:StringRes val labelRes: Int,
 ) {
-    MY_FEED("Feed"),
-    DISCOVER("Discover"),
-}
-
-enum class CommunityFeedFilter(
-    val label: String,
-) {
-    LATEST("Latest"),
-    TOP_RATED("Top Rated"),
-    FOLLOWING("Following"),
+    MY_FEED(R.string.community_segment_feed),
+    DISCOVER(R.string.community_segment_discover),
 }
 
 enum class CommunityDetailTab(
-    val label: String,
+    @param:StringRes val labelRes: Int,
 ) {
-    POSTS("Posts"),
-    ABOUT("About"),
-    MEMBERS("Members"),
+    POSTS(R.string.community_detail_tab_posts),
+    ABOUT(R.string.community_detail_tab_about),
+    MEMBERS(R.string.community_detail_tab_members),
 }

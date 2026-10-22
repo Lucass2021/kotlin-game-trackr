@@ -6,8 +6,12 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.network.ApiError
+import com.lucasdias.gametrackr.data.community.CommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.CommunityRepository
+import com.lucasdias.gametrackr.data.community.CommunityUpdates
+import com.lucasdias.gametrackr.data.community.PostUpdates
 import com.lucasdias.gametrackr.feature.app.community.CommunityDetailTab
+import com.lucasdias.gametrackr.feature.app.community.PostListActions
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +21,9 @@ import kotlinx.coroutines.launch
 
 class CommunityDetailViewModel(
     private val repository: CommunityRepository,
+    private val feedRepository: CommunityFeedRepository,
+    private val postUpdates: PostUpdates,
+    private val communityUpdates: CommunityUpdates,
     private val community: Community,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CommunityDetailUiState(isJoined = community.isJoined))
@@ -25,7 +32,16 @@ class CommunityDetailViewModel(
     private var postsJob: Job? = null
     private var membersJob: Job? = null
     private var isJoinPending = false
-    private val pendingLikeIds = mutableSetOf<Long>()
+    private val postActions =
+        PostListActions(
+            scope = viewModelScope,
+            repository = repository,
+            feedRepository = feedRepository,
+            postUpdates = postUpdates,
+            posts = { _uiState.value.posts },
+            replacePost = ::replacePost,
+            showToast = { message -> _uiState.update { it.copy(toastMessage = message) } },
+        )
 
     fun loadIfNeeded() {
         val state = _uiState.value
@@ -96,26 +112,9 @@ class CommunityDetailViewModel(
         }
     }
 
-    fun onLike(postId: Long) {
-        val previous = _uiState.value.posts.firstOrNull { it.id == postId } ?: return
-        if (!pendingLikeIds.add(postId)) return
-        val liked = !previous.isLiked
-        replacePost(postId) { it.copy(isLiked = liked, likes = previous.likes + if (liked) 1 else -1) }
-        viewModelScope.launch {
-            repository
-                .togglePostLike(postId)
-                .onSuccess { status -> replacePost(postId) { it.copy(isLiked = status.isLiked, likes = status.likes) } }
-                .onFailure {
-                    replacePost(postId) { it.copy(isLiked = previous.isLiked, likes = previous.likes) }
-                    _uiState.update { it.copy(toastMessage = R.string.community_like_error) }
-                }
-            pendingLikeIds.remove(postId)
-        }
-    }
+    fun onLike(postId: Long) = postActions.onLike(postId)
 
-    fun onBookmark(postId: Long) {
-        replacePost(postId) { it.copy(isBookmarked = !it.isBookmarked) }
-    }
+    fun onBookmark(postId: Long) = postActions.onBookmark(postId)
 
     fun onToastShown() {
         _uiState.update { it.copy(toastMessage = null) }
@@ -126,6 +125,7 @@ class CommunityDetailViewModel(
         _uiState.update { it.copy(isJoined = joined) }
         viewModelScope.launch {
             val result = if (joined) repository.joinCommunity(community.id) else repository.leaveCommunity(community.id)
+            result.onSuccess { communityUpdates.publish(community.id, joined) }
             result.onFailure {
                 val message = if (joined) R.string.community_join_error else R.string.community_leave_error
                 _uiState.update { it.copy(isJoined = !joined, toastMessage = message) }

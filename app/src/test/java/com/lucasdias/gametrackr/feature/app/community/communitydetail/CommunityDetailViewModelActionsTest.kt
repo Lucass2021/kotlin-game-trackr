@@ -4,7 +4,10 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityUpdates
+import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
+import com.lucasdias.gametrackr.data.community.PostUpdates
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -23,7 +26,9 @@ class CommunityDetailViewModelActionsTest {
     private val community = CommunityMockData.detailCommunity
     private val post = CommunityMockData.communityPosts.first()
     private val repository = FakeCommunityRepository(communities = listOf(community))
-    private val viewModel = CommunityDetailViewModel(repository, community)
+    private val feedRepository = FakeCommunityFeedRepository(repository)
+    private val postUpdates = PostUpdates()
+    private val viewModel by lazy { CommunityDetailViewModel(repository, feedRepository, postUpdates, CommunityUpdates(), community) }
 
     private fun TestScope.loaded() {
         viewModel.loadIfNeeded()
@@ -150,13 +155,34 @@ class CommunityDetailViewModelActionsTest {
         }
 
     @Test
-    fun `a bookmark toggles only on screen`() =
+    fun `a bookmark is saved in the repository and a failure rolls back`() =
         runTest(mainDispatcherRule.dispatcher) {
             loaded()
 
             viewModel.onBookmark(post.id)
+            advanceUntilIdle()
 
             assertTrue(likedPost().isBookmarked)
+            assertTrue(feedRepository.isBookmarked(post.id))
+
+            feedRepository.failure = IllegalStateException()
+            viewModel.onBookmark(post.id)
+            advanceUntilIdle()
+
+            assertTrue(likedPost().isBookmarked)
+            assertEquals(R.string.community_bookmark_error, viewModel.uiState.value.toastMessage)
+        }
+
+    @Test
+    fun `a post changed in another screen is updated in the community posts`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            loaded()
+
+            postUpdates.publish(post.copy(isLiked = !post.isLiked, likes = post.likes + 1))
+            advanceUntilIdle()
+
+            assertEquals(!post.isLiked, likedPost().isLiked)
+            assertEquals(post.likes + 1, likedPost().likes)
         }
 
     private fun likedPost() =

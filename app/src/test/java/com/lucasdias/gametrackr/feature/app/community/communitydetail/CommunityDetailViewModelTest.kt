@@ -2,7 +2,10 @@ package com.lucasdias.gametrackr.feature.app.community.communitydetail
 
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityUpdates
+import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
+import com.lucasdias.gametrackr.data.community.PostUpdates
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -23,7 +26,16 @@ class CommunityDetailViewModelTest {
     @Test
     fun `load shows the posts and the members`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = CommunityDetailViewModel(FakeCommunityRepository(), community)
+            val viewModel =
+                FakeCommunityRepository().let {
+                    CommunityDetailViewModel(
+                        it,
+                        FakeCommunityFeedRepository(it),
+                        PostUpdates(),
+                        CommunityUpdates(),
+                        community,
+                    )
+                }
 
             viewModel.loadIfNeeded()
             advanceUntilIdle()
@@ -37,7 +49,10 @@ class CommunityDetailViewModelTest {
     @Test
     fun `the empty state waits for the first page`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = CommunityDetailViewModel(FakeCommunityRepository(posts = emptyList()), community)
+            val viewModel =
+                FakeCommunityRepository(
+                    posts = emptyList(),
+                ).let { CommunityDetailViewModel(it, FakeCommunityFeedRepository(it), PostUpdates(), CommunityUpdates(), community) }
 
             viewModel.loadIfNeeded()
             runCurrent()
@@ -52,7 +67,10 @@ class CommunityDetailViewModelTest {
     @Test
     fun `load failure shows the error state instead of loading forever`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = CommunityDetailViewModel(FakeCommunityRepository(failure = IllegalStateException()), community)
+            val viewModel =
+                FakeCommunityRepository(failure = IllegalStateException()).let {
+                    CommunityDetailViewModel(it, FakeCommunityFeedRepository(it), PostUpdates(), CommunityUpdates(), community)
+                }
 
             viewModel.loadIfNeeded()
             advanceUntilIdle()
@@ -65,7 +83,7 @@ class CommunityDetailViewModelTest {
     fun `a retry after a load failure reloads posts and members`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeCommunityRepository(failure = IllegalStateException())
-            val viewModel = CommunityDetailViewModel(repository, community)
+            val viewModel = CommunityDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), CommunityUpdates(), community)
             viewModel.loadIfNeeded()
             advanceUntilIdle()
 
@@ -85,7 +103,7 @@ class CommunityDetailViewModelTest {
     fun `a load more failure shows the retry row and pauses infinite scroll`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeCommunityRepository(posts = manyPosts)
-            val viewModel = CommunityDetailViewModel(repository, community)
+            val viewModel = CommunityDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), CommunityUpdates(), community)
             viewModel.loadIfNeeded()
             advanceUntilIdle()
 
@@ -108,7 +126,7 @@ class CommunityDetailViewModelTest {
     fun `a members failure shows the members error and retry loads them`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeCommunityRepository(failure = IllegalStateException())
-            val viewModel = CommunityDetailViewModel(repository, community)
+            val viewModel = CommunityDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), CommunityUpdates(), community)
             viewModel.loadIfNeeded()
             advanceUntilIdle()
 
@@ -126,7 +144,7 @@ class CommunityDetailViewModelTest {
     fun `refresh reloads the first page and keeps the posts while loading`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeCommunityRepository()
-            val viewModel = CommunityDetailViewModel(repository, community)
+            val viewModel = CommunityDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), CommunityUpdates(), community)
             viewModel.loadIfNeeded()
             advanceUntilIdle()
 
@@ -149,7 +167,7 @@ class CommunityDetailViewModelTest {
     fun `returning to the screen keeps the posts without fetching again`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeCommunityRepository()
-            val viewModel = CommunityDetailViewModel(repository, community)
+            val viewModel = CommunityDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), CommunityUpdates(), community)
             viewModel.loadIfNeeded()
             advanceUntilIdle()
 

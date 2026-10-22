@@ -15,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +34,7 @@ import com.lucasdias.gametrackr.feature.app.community.components.CommunityChipRo
 fun DiscoverCommunitiesContent(
     category: String,
     onCategorySelect: (String) -> Unit,
-    communities: SnapshotStateList<Community>,
+    communities: List<Community>,
     isLoadingMore: Boolean = false,
     canLoadMore: Boolean = false,
     onCommunitySelect: (Community) -> Unit,
