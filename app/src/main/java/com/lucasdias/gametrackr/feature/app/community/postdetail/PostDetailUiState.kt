@@ -1,6 +1,7 @@
 package com.lucasdias.gametrackr.feature.app.community.postdetail
 
 import androidx.annotation.StringRes
+import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.model.PostComment
 import com.lucasdias.gametrackr.core.model.totalCount
@@ -17,6 +18,7 @@ data class PostDetailUiState(
     val isSubmitting: Boolean = false,
     val showDeleteConfirmation: Boolean = false,
     val isDeleted: Boolean = false,
+    val communityToOpen: Community? = null,
     @param:StringRes val toastMessage: Int? = null,
 ) {
     val commentCount: Int

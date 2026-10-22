@@ -24,7 +24,9 @@ import com.lucasdias.gametrackr.data.auth.RemoteAuthRepository
 import com.lucasdias.gametrackr.data.community.CommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.CommunityRepository
 import com.lucasdias.gametrackr.data.community.CommunityUpdates
+import com.lucasdias.gametrackr.data.community.DiscoverCommunitiesRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
+import com.lucasdias.gametrackr.data.community.FakeDiscoverCommunitiesRepository
 import com.lucasdias.gametrackr.data.community.PostUpdates
 import com.lucasdias.gametrackr.data.community.RemoteCommunityRepository
 import com.lucasdias.gametrackr.data.game.GameRepository
@@ -44,10 +46,10 @@ import com.lucasdias.gametrackr.data.stats.StatsRepository
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsViewModel
 import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsViewModel
 import com.lucasdias.gametrackr.feature.app.community.CommunityFeedViewModel
-import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.communitydetail.CommunityDetailViewModel
 import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicViewModel
+import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesViewModel
 import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailViewModel
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailViewModel
 import com.lucasdias.gametrackr.feature.app.home.HomeViewModel
@@ -157,6 +159,7 @@ val appModule =
         single<GameRepository> { RemoteGameRepository(get(), get()) }
         single<CommunityRepository> { RemoteCommunityRepository(get(), get()) }
         single<CommunityFeedRepository> { FakeCommunityFeedRepository(get()) }
+        single<DiscoverCommunitiesRepository> { FakeDiscoverCommunitiesRepository(get()) }
         single { PostUpdates() }
         single { CommunityUpdates() }
         single<AuthRepository> { RemoteAuthRepository(get(), get(), get(), get()) }
@@ -169,7 +172,7 @@ val appModule =
         single<ProfileOverviewRepository> { FakeProfileOverviewRepository() }
         single { GoogleAuth(get()) }
 
-        viewModel { CommunityViewModel(get(), get()) }
+        viewModel { DiscoverCommunitiesViewModel(get(), get()) }
         viewModel { CommunityFeedViewModel(get(), get(), get(), get()) }
         viewModel { HomeViewModel(get()) }
         viewModel { SearchViewModel(get()) }

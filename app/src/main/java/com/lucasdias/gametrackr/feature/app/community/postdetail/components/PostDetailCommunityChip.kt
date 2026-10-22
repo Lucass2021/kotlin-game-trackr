@@ -16,10 +16,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -40,10 +44,12 @@ fun PostDetailCommunityChip(
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val label = stringResource(R.string.post_detail_open_community, name)
     Row(
         modifier =
             modifier
                 .pressScale(interactionSource)
+                .semantics(mergeDescendants = true) { contentDescription = label }
                 .clip(CircleShape)
                 .background(AppSurfaceCard)
                 .border(BORDER_WIDTH, AppOutline, CircleShape)

@@ -32,6 +32,7 @@ class PostDetailViewModel(
     private var commentsJob: Job? = null
     private var isPostLikePending = false
     private var isBookmarkPending = false
+    private var isCommunityPending = false
     private val pendingCommentLikeIds = mutableSetOf<Long>()
 
     fun loadIfNeeded() {
@@ -76,6 +77,21 @@ class PostDetailViewModel(
             isPostLikePending = false
         }
     }
+
+    fun onCommunityTap() {
+        val communityId = _uiState.value.post.communityId ?: return
+        if (isCommunityPending) return
+        isCommunityPending = true
+        viewModelScope.launch {
+            repository
+                .fetchCommunity(communityId)
+                .onSuccess { community -> _uiState.update { it.copy(communityToOpen = community) } }
+                .onFailure { _uiState.update { it.copy(toastMessage = R.string.post_detail_community_error) } }
+            isCommunityPending = false
+        }
+    }
+
+    fun onCommunityOpened() = _uiState.update { it.copy(communityToOpen = null) }
 
     fun onBookmark() {
         if (isBookmarkPending) return

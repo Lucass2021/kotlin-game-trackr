@@ -6,7 +6,9 @@ import com.lucasdias.gametrackr.data.community.CommunityMockData
 import com.lucasdias.gametrackr.data.community.CommunityUpdates
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
+import com.lucasdias.gametrackr.data.community.FakeDiscoverCommunitiesRepository
 import com.lucasdias.gametrackr.data.community.PostUpdates
+import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesViewModel
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -29,11 +31,11 @@ class CommunityFeedViewModelSyncTest {
     private val feed by lazy {
         CommunityFeedViewModel(FakeCommunityFeedRepository(repository), repository, PostUpdates(), communityUpdates)
     }
-    private val discover by lazy { CommunityViewModel(repository, communityUpdates) }
+    private val discover by lazy { DiscoverCommunitiesViewModel(FakeDiscoverCommunitiesRepository(repository), communityUpdates) }
 
     private fun TestScope.loaded() {
         feed.loadIfNeeded()
-        discover.loadCommunities()
+        discover.loadIfNeeded()
         advanceUntilIdle()
     }
 
@@ -43,9 +45,11 @@ class CommunityFeedViewModelSyncTest {
     fun `joining in discover updates the suggested community`() =
         runTest(mainDispatcherRule.dispatcher) {
             loaded()
-            val community = discover.communities.first { it.id == suggestion().id }
+            val community =
+                discover.uiState.value.communities
+                    .first { it.id == suggestion().id }
 
-            discover.joinCommunity(community)
+            discover.onJoinTap(community)
             advanceUntilIdle()
 
             assertTrue(suggestion().isJoined)
@@ -60,7 +64,11 @@ class CommunityFeedViewModelSyncTest {
             feed.onJoinSuggested()
             advanceUntilIdle()
 
-            assertTrue(discover.communities.first { it.id == id }.isJoined)
+            assertTrue(
+                discover.uiState.value.communities
+                    .first { it.id == id }
+                    .isJoined,
+            )
         }
 
     @Test

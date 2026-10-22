@@ -1,7 +1,8 @@
-package com.lucasdias.gametrackr.feature.app.community.discover
+package com.lucasdias.gametrackr.feature.app.community.discover.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -12,14 +13,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -28,6 +35,12 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Inter
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val BORDER_WIDTH = 1.dp
+private val ICON_SIZE = 20.dp
+private val TEXT_SIZE = 16.sp
+private val CLEAR_ICON_SIZE = 16.dp
 
 @Composable
 fun CommunitySearchField(
@@ -41,33 +54,58 @@ fun CommunitySearchField(
                 .fillMaxWidth()
                 .clip(CircleShape)
                 .background(AppSurfaceCard)
-                .border(1.dp, AppOutline, CircleShape)
-                .padding(horizontal = 18.dp, vertical = 14.dp),
+                .border(BORDER_WIDTH, AppOutline, CircleShape)
+                .padding(horizontal = Spacing.md, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         Icon(
             imageVector = AppIcon.SEARCH.image(),
             contentDescription = null,
             tint = AppTextSecondary,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(ICON_SIZE),
         )
         Box(modifier = Modifier.weight(1f)) {
             if (query.isEmpty()) {
                 Text(
-                    text = "Search communities",
+                    text = stringResource(R.string.discover_search_placeholder),
                     color = AppTextSecondary,
-                    style = AppType.body(16.sp),
+                    style = AppType.body(TEXT_SIZE),
                 )
             }
             BasicTextField(
                 value = query,
                 onValueChange = onQueryChange,
                 singleLine = true,
-                textStyle = TextStyle(color = AppTextPrimary, fontFamily = Inter, fontSize = 16.sp),
+                textStyle = TextStyle(color = AppTextPrimary, fontFamily = Inter, fontSize = TEXT_SIZE),
                 cursorBrush = SolidColor(AppPrimary),
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+        if (query.isNotEmpty()) {
+            val clearLabel = stringResource(R.string.discover_clear_search)
+            Box(
+                modifier =
+                    Modifier
+                        .minimumInteractiveComponentSize()
+                        .clickable(onClickLabel = clearLabel, role = Role.Button) { onQueryChange("") },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = AppIcon.CLOSE.image(),
+                    contentDescription = clearLabel,
+                    tint = AppTextSecondary,
+                    modifier = Modifier.size(CLEAR_ICON_SIZE),
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun CommunitySearchFieldPreview() {
+    AppPreview {
+        CommunitySearchField(query = "", onQueryChange = {}, modifier = Modifier.padding(Spacing.lg))
     }
 }

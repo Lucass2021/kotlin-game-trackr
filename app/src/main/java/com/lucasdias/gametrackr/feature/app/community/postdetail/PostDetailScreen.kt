@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.model.PostComment
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
@@ -32,7 +33,7 @@ import org.koin.core.parameter.parametersOf
 fun PostDetailScreen(
     post: CommunityPost,
     onBack: () -> Unit,
-    onCommunityClick: () -> Unit,
+    onCommunityClick: (Community) -> Unit,
     onAuthorClick: () -> Unit,
     modifier: Modifier = Modifier,
     isGuest: Boolean = false,
@@ -44,6 +45,12 @@ fun PostDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) { viewModel.loadIfNeeded() }
+    LaunchedEffect(state.communityToOpen) {
+        state.communityToOpen?.let { community ->
+            onCommunityClick(community)
+            viewModel.onCommunityOpened()
+        }
+    }
     LaunchedEffect(state.isDeleted) {
         if (state.isDeleted) {
             onDelete()
@@ -57,7 +64,7 @@ fun PostDetailScreen(
         isOwnPost = currentUserId != null && post.authorId == currentUserId,
         modifier = modifier,
         onBack = onBack,
-        onCommunityClick = onCommunityClick,
+        onCommunityClick = viewModel::onCommunityTap,
         onAuthorClick = onAuthorClick,
         onCreateAccount = onCreateAccount,
         onLike = viewModel::onLike,

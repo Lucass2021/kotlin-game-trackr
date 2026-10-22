@@ -40,10 +40,10 @@ import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
 import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
 import com.lucasdias.gametrackr.feature.app.community.CommunityFeedViewModel
 import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
-import com.lucasdias.gametrackr.feature.app.community.CommunityViewModel
 import com.lucasdias.gametrackr.feature.app.community.communitydetail.CommunityDetailScreen
 import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityScreen
 import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicScreen
+import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesViewModel
 import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScreen
 import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
 import com.lucasdias.gametrackr.feature.app.help.HelpScreen
@@ -139,7 +139,7 @@ fun MainTabScreen(
 ) {
     val navController = rememberNavController()
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
-    val communityViewModel: CommunityViewModel = koinViewModel()
+    val discoverViewModel: DiscoverCommunitiesViewModel = koinViewModel()
     val communityFeedViewModel: CommunityFeedViewModel = koinViewModel()
     var selectedCommunity by remember { mutableStateOf<Community?>(null) }
     var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
@@ -163,7 +163,7 @@ fun MainTabScreen(
                 isGuest = isGuest,
                 selected = selectedTab,
                 onSelect = { selectedTab = it },
-                communityViewModel = communityViewModel,
+                discoverViewModel = discoverViewModel,
                 communityFeedViewModel = communityFeedViewModel,
                 libraryViewModel = libraryViewModel,
                 profileViewModel = profileViewModel,
@@ -270,7 +270,7 @@ fun MainTabScreen(
             CreateCommunityScreen(
                 onBack = { navController.popBackStackIfResumed() },
                 onCreated = { community ->
-                    communityViewModel.addCommunity(community)
+                    discoverViewModel.onCommunityCreated(community)
                     selectedCommunity = community
                     navController.navigate(ShellRoutes.COMMUNITY_DETAIL) {
                         popUpTo(ShellRoutes.CREATE_COMMUNITY) { inclusive = true }
@@ -286,7 +286,7 @@ fun MainTabScreen(
                 currentUserId = currentUserId,
                 onBack = { navController.popBackStackIfResumed() },
                 onDeleted = {
-                    communityViewModel.removeCommunity(community.id)
+                    discoverViewModel.onCommunityRemoved(community.id)
                     communityFeedViewModel.onCommunityRemoved(community.id)
                 },
                 onPostClick = { post ->
@@ -330,7 +330,10 @@ fun MainTabScreen(
                 isGuest = isGuest,
                 currentUserId = currentUserId,
                 onBack = { navController.popBackStackIfResumed() },
-                onCommunityClick = { navController.navigate(ShellRoutes.COMMUNITY_DETAIL) },
+                onCommunityClick = { community ->
+                    selectedCommunity = community
+                    navController.navigate(ShellRoutes.COMMUNITY_DETAIL)
+                },
                 onAuthorClick = {
                     navController.navigate(ShellRoutes.userProfile(post.author))
                 },
@@ -467,7 +470,7 @@ private fun TabShell(
     isGuest: Boolean,
     selected: AppTab,
     onSelect: (AppTab) -> Unit,
-    communityViewModel: CommunityViewModel,
+    discoverViewModel: DiscoverCommunitiesViewModel,
     communityFeedViewModel: CommunityFeedViewModel,
     libraryViewModel: LibraryViewModel,
     profileViewModel: ProfileViewModel,
@@ -522,7 +525,7 @@ private fun TabShell(
                 AppTab.COMMUNITY -> {
                     CommunityScreen(
                         feedViewModel = communityFeedViewModel,
-                        viewModel = communityViewModel,
+                        discoverViewModel = discoverViewModel,
                         isGuest = isGuest,
                         onPostClick = onPostClick,
                         onCommunityClick = onCommunityClick,

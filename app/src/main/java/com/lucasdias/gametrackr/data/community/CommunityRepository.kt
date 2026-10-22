@@ -14,6 +14,8 @@ interface CommunityRepository {
         search: String?,
     ): Result<Page<Community>>
 
+    suspend fun fetchCommunity(id: Long): Result<Community>
+
     suspend fun fetchJoinedCommunities(): Result<List<Community>>
 
     suspend fun fetchCommunityMembers(id: Long): Result<List<CommunityMember>>

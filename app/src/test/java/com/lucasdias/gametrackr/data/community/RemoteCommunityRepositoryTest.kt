@@ -9,6 +9,8 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
@@ -75,8 +77,42 @@ class RemoteCommunityRepositoryTest {
             assertEquals(listOf(REPLY_ID, NESTED_REPLY_ID), comments.single().replies.map { it.id })
         }
 
+    @Test
+    fun `fetch community reads the membership from a joined search by title`() =
+        runBlocking {
+            server.enqueue(MockResponse().setResponseCode(HTTP_OK).setBody(COMMUNITY_BODY))
+            server.enqueue(MockResponse().setResponseCode(HTTP_OK).setBody(JOINED_BODY))
+
+            val community = repository.fetchCommunity(COMMUNITY_ID).getOrThrow()
+
+            assertTrue(community.isJoined)
+            server.takeRequest()
+            val lookup = checkNotNull(server.takeRequest().requestUrl)
+            assertEquals("/communities/joined", lookup.encodedPath)
+            assertEquals(COMMUNITY_TITLE, lookup.queryParameter("search"))
+            assertEquals(JOINED_LOOKUP_SIZE, lookup.queryParameter("per_page"))
+        }
+
+    @Test
+    fun `fetch community is not joined when the joined lookup fails`() =
+        runBlocking {
+            server.enqueue(MockResponse().setResponseCode(HTTP_OK).setBody(COMMUNITY_BODY))
+            server.enqueue(MockResponse().setResponseCode(HTTP_UNAUTHORIZED))
+
+            val community = repository.fetchCommunity(COMMUNITY_ID).getOrThrow()
+
+            assertFalse(community.isJoined)
+        }
+
     private companion object {
         const val HTTP_OK = 200
+        const val HTTP_UNAUTHORIZED = 401
+        const val COMMUNITY_ID = 5L
+        const val COMMUNITY_TITLE = "Retro Club"
+        const val JOINED_LOOKUP_SIZE = "100"
+        const val COMMUNITY_BODY = """{"id":$COMMUNITY_ID,"title":"$COMMUNITY_TITLE","slug":"retro-club","author_id":1}"""
+        const val JOINED_BODY =
+            """{"data":[$COMMUNITY_BODY],"current_page":1,"last_page":1,"per_page":100,"total":1}"""
         const val POST_ID = 7L
         const val POST_TITLE = "Best boss fight?"
         const val CURRENT_PAGE = 1

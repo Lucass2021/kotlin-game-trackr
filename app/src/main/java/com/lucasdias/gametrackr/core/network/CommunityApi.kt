@@ -28,7 +28,10 @@ interface CommunityApi {
     ): PaginatedResponse<CommunityDto>
 
     @GET("communities/joined")
-    suspend fun getJoinedCommunities(): PaginatedResponse<CommunityDto>
+    suspend fun getJoinedCommunities(
+        @Query("search") search: String? = null,
+        @Query("per_page") perPage: Int? = null,
+    ): PaginatedResponse<CommunityDto>
 
     @GET("communities/{id}")
     suspend fun getCommunity(

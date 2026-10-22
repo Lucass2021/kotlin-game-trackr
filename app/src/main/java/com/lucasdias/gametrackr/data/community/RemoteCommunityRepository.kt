@@ -15,6 +15,7 @@ import com.lucasdias.gametrackr.core.network.dto.LikeResponse
 import com.lucasdias.gametrackr.core.network.dto.PaginatedResponse
 import com.lucasdias.gametrackr.core.network.dto.toDomain
 import com.lucasdias.gametrackr.core.pagination.Page
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 
 class RemoteCommunityRepository(
@@ -26,6 +27,24 @@ class RemoteCommunityRepository(
         perPage: Int,
         search: String?,
     ): Result<Page<Community>> = apiCall(json) { api.getCommunities(search, perPage, page).toPage { it.toDomain() } }
+
+    override suspend fun fetchCommunity(id: Long): Result<Community> =
+        apiCall(json) {
+            val community = api.getCommunity(id).toDomain()
+            community.copy(isJoined = isMember(community))
+        }
+
+    private suspend fun isMember(community: Community): Boolean =
+        try {
+            api
+                .getJoinedCommunities(search = community.name, perPage = JOINED_LOOKUP_SIZE)
+                .data
+                .any { it.id.toLong() == community.id }
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            false
+        }
 
     override suspend fun fetchJoinedCommunities(): Result<List<Community>> = apiCall(json) { api.getJoinedCommunities().data.map { it.toDomain() } }
 
@@ -118,5 +137,9 @@ class RemoteCommunityRepository(
         return filter { it.parentId == null }.map { comment ->
             comment.toDomain().copy(replies = replies[comment.id].orEmpty().map { it.toDomain() })
         }
+    }
+
+    private companion object {
+        const val JOINED_LOOKUP_SIZE = 100
     }
 }

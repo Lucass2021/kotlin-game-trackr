@@ -51,6 +51,9 @@ class FakeCommunityRepository(
             fakePage(matches.map { it.copy(isJoined = it.id in joinedIds) }, page, perPage)
         }
 
+    override suspend fun fetchCommunity(id: Long): Result<Community> =
+        respond { communities.firstOrNull { it.id == id }?.copy(isJoined = id in joinedIds) ?: throw ApiError.NotFound }
+
     override suspend fun fetchJoinedCommunities(): Result<List<Community>> =
         respond { communities.filter { it.id in joinedIds }.map { it.copy(isJoined = true) } }
 

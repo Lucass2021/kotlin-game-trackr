@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -73,5 +74,37 @@ class PostDetailViewModelSyncTest {
             assertFalse(viewModel.uiState.value.post.isBookmarked)
             assertFalse(feedPost().isBookmarked)
             assertEquals(R.string.community_bookmark_error, viewModel.uiState.value.toastMessage)
+        }
+
+    @Test
+    fun `tapping the community opens the post's own community`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            val community = CommunityMockData.all.last()
+            val viewModel = PostDetailViewModel(repository, feedRepository, postUpdates, post.copy(communityId = community.id))
+
+            viewModel.onCommunityTap()
+            advanceUntilIdle()
+
+            assertEquals(
+                community.id,
+                viewModel.uiState.value.communityToOpen
+                    ?.id,
+            )
+
+            viewModel.onCommunityOpened()
+
+            assertNull(viewModel.uiState.value.communityToOpen)
+        }
+
+    @Test
+    fun `a community that cannot be loaded shows an error`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            val viewModel = PostDetailViewModel(repository, feedRepository, postUpdates, post.copy(communityId = 9_999L))
+
+            viewModel.onCommunityTap()
+            advanceUntilIdle()
+
+            assertNull(viewModel.uiState.value.communityToOpen)
+            assertEquals(R.string.post_detail_community_error, viewModel.uiState.value.toastMessage)
         }
 }

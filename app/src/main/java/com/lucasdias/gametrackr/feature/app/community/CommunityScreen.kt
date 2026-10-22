@@ -30,11 +30,14 @@ import com.lucasdias.gametrackr.feature.app.community.components.CommunityDiscov
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityFeedContent
 import com.lucasdias.gametrackr.feature.app.community.components.CommunitySegmentControl
 import com.lucasdias.gametrackr.feature.app.community.components.CreatePostButton
+import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesActions
+import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesUiState
+import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesViewModel
 
 @Composable
 fun CommunityScreen(
     feedViewModel: CommunityFeedViewModel,
-    viewModel: CommunityViewModel,
+    discoverViewModel: DiscoverCommunitiesViewModel,
     isGuest: Boolean,
     onPostClick: (CommunityPost) -> Unit,
     onCommunityClick: (Community) -> Unit,
@@ -48,13 +51,13 @@ fun CommunityScreen(
     val context = LocalContext.current
 
     LaunchedEffect(feedViewModel) { feedViewModel.loadIfNeeded() }
-    LaunchedEffect(viewModel) { viewModel.loadCommunities() }
+    val discoverState by discoverViewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(discoverViewModel) { discoverViewModel.loadIfNeeded() }
 
     CommunityScreen(
         feedState = feedState,
-        communities = viewModel.communities,
-        isLoadingMoreCommunities = viewModel.communitiesPagination.isLoadingMore,
-        canLoadMoreCommunities = viewModel.communitiesPagination.canLoadMore,
+        discoverState = discoverState,
         isGuest = isGuest,
         currentUserId = currentUserId,
         modifier = modifier,
@@ -72,9 +75,18 @@ fun CommunityScreen(
                 onJoinSuggested = feedViewModel::onJoinSuggested,
                 onToastShown = feedViewModel::onToastShown,
             ),
-        onJoinCommunity = viewModel::joinCommunity,
-        onLeaveCommunity = viewModel::leaveCommunity,
-        onLoadMoreCommunities = { viewModel.loadMoreCommunities() },
+        discoverActions =
+            DiscoverCommunitiesActions(
+                onRetry = discoverViewModel::load,
+                onLoadMore = discoverViewModel::loadMore,
+                onQueryChange = discoverViewModel::onQueryChange,
+                onCategoryChange = discoverViewModel::onCategoryChange,
+                onCommunityClick = onCommunityClick,
+                onJoinTap = discoverViewModel::onJoinTap,
+                onLeaveConfirmed = discoverViewModel::onLeaveConfirmed,
+                onLeaveDismissed = discoverViewModel::onLeaveDismissed,
+            ),
+        onDiscoverToastShown = discoverViewModel::onToastShown,
         onCreatePost = onCreatePost,
         onCreateCommunity = onCreateCommunity,
         onCreateAccount = onCreateAccount,
@@ -84,15 +96,12 @@ fun CommunityScreen(
 @Composable
 private fun CommunityScreen(
     feedState: CommunityFeedUiState,
-    communities: List<Community>,
-    isLoadingMoreCommunities: Boolean,
-    canLoadMoreCommunities: Boolean,
+    discoverState: DiscoverCommunitiesUiState,
     isGuest: Boolean,
     currentUserId: Int?,
     feedActions: CommunityFeedActions,
-    onJoinCommunity: (Community) -> Unit,
-    onLeaveCommunity: (Community) -> Unit,
-    onLoadMoreCommunities: () -> Unit,
+    discoverActions: DiscoverCommunitiesActions,
+    onDiscoverToastShown: () -> Unit,
     onCreatePost: () -> Unit,
     onCreateCommunity: () -> Unit,
     onCreateAccount: () -> Unit,
@@ -120,23 +129,18 @@ private fun CommunityScreen(
 
                 CommunitySegment.DISCOVER -> {
                     CommunityDiscoverSegment(
-                        communities = communities,
-                        isLoadingMore = isLoadingMoreCommunities,
-                        canLoadMore = canLoadMoreCommunities,
+                        state = discoverState,
+                        actions = discoverActions,
                         isGuest = isGuest,
                         currentUserId = currentUserId,
-                        onCommunityClick = feedActions.onCommunityClick,
-                        onJoin = onJoinCommunity,
-                        onLeave = onLeaveCommunity,
-                        onLoadMore = onLoadMoreCommunities,
                         onCreateAccount = onCreateAccount,
                     )
                 }
             }
         }
 
+        val isFeed = segment == CommunitySegment.MY_FEED
         if (!isGuest) {
-            val isFeed = segment == CommunitySegment.MY_FEED
             CreatePostButton(
                 onClick = if (isFeed) onCreatePost else onCreateCommunity,
                 modifier = Modifier.align(Alignment.BottomEnd).padding(Spacing.lg),
@@ -145,8 +149,8 @@ private fun CommunityScreen(
         }
 
         Toast(
-            message = feedState.toastMessage?.let { stringResource(it) },
-            onDismiss = feedActions.onToastShown,
+            message = (if (isFeed) feedState.toastMessage else discoverState.toastMessage)?.let { stringResource(it) },
+            onDismiss = if (isFeed) feedActions.onToastShown else onDiscoverToastShown,
             modifier = Modifier.align(Alignment.TopCenter),
         )
     }
@@ -163,15 +167,12 @@ private fun CommunityScreenPreview() {
                     currentPage = 1,
                     suggestedCommunity = CommunityMockData.suggested,
                 ),
-            communities = CommunityMockData.all,
-            isLoadingMoreCommunities = false,
-            canLoadMoreCommunities = false,
+            discoverState = DiscoverCommunitiesUiState(communities = CommunityMockData.all, currentPage = 1),
             isGuest = false,
             currentUserId = null,
             feedActions = CommunityFeedActions(),
-            onJoinCommunity = {},
-            onLeaveCommunity = {},
-            onLoadMoreCommunities = {},
+            discoverActions = DiscoverCommunitiesActions(),
+            onDiscoverToastShown = {},
             onCreatePost = {},
             onCreateCommunity = {},
             onCreateAccount = {},

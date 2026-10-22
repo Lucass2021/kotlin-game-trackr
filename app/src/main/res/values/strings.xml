@@ -362,6 +362,14 @@
     <string name="discover_guest_title">Account required</string>
     <string name="discover_guest_message">Create an account to discover\nand join communities.</string>
     <string name="discover_guest_action">Create an account</string>
+    <string name="discover_search_placeholder">Search communities</string>
+    <string name="discover_clear_search">Clear search</string>
+    <string name="discover_all_communities">All communities</string>
+    <string name="discover_empty_title">No communities found</string>
+    <string name="discover_empty_message">Try a different search or category.</string>
+    <string name="discover_error_title">Couldn\'t load communities</string>
+    <string name="discover_error_message">Check your connection\nand try again.</string>
+    <string name="discover_retry">Try again</string>
 
     <string name="post_detail_guest_title">Want to join the conversation?</string>
     <string name="post_detail_guest_message">Create an account to like, comment, share, and follow other players.</string>
@@ -373,6 +381,8 @@
     <string name="post_detail_delete_cancel">Cancel</string>
     <string name="post_detail_delete_error">Couldn\'t delete this post. Please try again.</string>
     <string name="post_detail_comment_error">Couldn\'t send your comment. Please try again.</string>
+    <string name="post_detail_open_community">Open community %1$s</string>
+    <string name="post_detail_community_error">Couldn\'t open this community. Please try again.</string>
     <string name="post_detail_share_message">Check out this discussion on GameTrackr: \"%1$s\"</string>
     <string name="post_detail_view_profile">View %1$s\'s profile</string>
     <string name="post_detail_comments_title">Comments</string>
