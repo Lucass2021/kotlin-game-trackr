@@ -16,9 +16,13 @@ import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.data.game.HomeMockData
 
-private val CardWidth = 150.dp
+private val COVER_HEIGHT = 200.dp
+private val NAME_SIZE = 15.sp
+private val DETAIL_SIZE = 13.sp
+private val CARD_WIDTH = 150.dp
 
 @Composable
 fun NewReleaseCard(
@@ -26,28 +30,28 @@ fun NewReleaseCard(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.width(CardWidth),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier.width(CARD_WIDTH),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
         GameCoverArt(
             start = game.coverStart,
             end = game.coverEnd,
             url = game.coverUrl,
-            width = CardWidth,
-            height = 200.dp,
+            width = CARD_WIDTH,
+            height = COVER_HEIGHT,
         )
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxxs)) {
             Text(
                 text = game.name,
                 color = AppTextPrimary,
-                style = AppType.label(15.sp),
+                style = AppType.label(NAME_SIZE),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = game.platformsLabel,
                 color = AppTextSecondary,
-                style = AppType.body(13.sp),
+                style = AppType.body(DETAIL_SIZE),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -59,6 +63,6 @@ fun NewReleaseCard(
 @Composable
 private fun NewReleaseCardPreview() {
     AppPreview {
-        NewReleaseCard(game = HomeMockData.sampleGame, modifier = Modifier.padding(20.dp))
+        NewReleaseCard(game = HomeMockData.sampleGame, modifier = Modifier.padding(Spacing.lg))
     }
 }

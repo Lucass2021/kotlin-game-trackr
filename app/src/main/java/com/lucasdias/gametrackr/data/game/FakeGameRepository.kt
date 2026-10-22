@@ -20,15 +20,26 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import com.lucasdias.gametrackr.data.FakeLatency
 import kotlinx.coroutines.delay
 
-class FakeGameRepository : GameRepository {
+class FakeGameRepository(
+    private val homeGames: List<Game> = games,
+    var newReleasesFailure: Throwable? = null,
+    var mostAnticipatedFailure: Throwable? = null,
+) : GameRepository {
+    var fetchNewReleasesCount = 0
+        private set
+    var fetchMostAnticipatedCount = 0
+        private set
+
     override suspend fun fetchNewReleases(limit: Int): Result<List<Game>> {
+        fetchNewReleasesCount++
         delay(FakeLatency.RESPONSE_DELAY_MS)
-        return Result.success(games.take(limit))
+        return newReleasesFailure?.let { Result.failure(it) } ?: Result.success(homeGames.take(limit))
     }
 
     override suspend fun fetchMostAnticipated(limit: Int): Result<List<Game>> {
+        fetchMostAnticipatedCount++
         delay(FakeLatency.RESPONSE_DELAY_MS)
-        return Result.success(games.take(limit))
+        return mostAnticipatedFailure?.let { Result.failure(it) } ?: Result.success(homeGames.take(limit))
     }
 
     override suspend fun fetchGame(slug: String): Result<GameDetail> {

@@ -1,45 +1,35 @@
 package com.lucasdias.gametrackr.feature.app.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Game
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
-import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.game.HomeMockData
 import com.lucasdias.gametrackr.feature.app.home.components.AnticipatedCard
-import com.lucasdias.gametrackr.feature.app.home.components.HomeSectionHeader
+import com.lucasdias.gametrackr.feature.app.home.components.HomeFeedSection
 import com.lucasdias.gametrackr.feature.app.home.components.NewReleaseCard
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import org.koin.androidx.compose.koinViewModel
-
-private val SectionHeight = 240.dp
 
 @Composable
 fun HomeScreen(
@@ -48,110 +38,78 @@ fun HomeScreen(
     onGameClick: (String) -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
 ) {
-    val newReleases by viewModel.newReleases.collectAsStateWithLifecycle()
-    val mostAnticipated by viewModel.mostAnticipated.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) { viewModel.load() }
+    LaunchedEffect(viewModel) { viewModel.loadIfNeeded() }
 
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(AppBackground)
-                .verticalScroll(rememberScrollState())
-                .padding(top = 12.dp, bottom = 28.dp),
-        verticalArrangement = Arrangement.spacedBy(28.dp),
-    ) {
-        FeedSection(
-            title = stringResource(R.string.home_new_releases),
-            feed = newReleases,
-            onViewAll = { onViewAll(SearchScope.NEW_RELEASES) },
-            onRetry = { viewModel.load(force = true) },
-        ) { game ->
-            NewReleaseCard(game = game, modifier = Modifier.clickable { onGameClick(game.slug) })
-        }
-
-        FeedSection(
-            title = stringResource(R.string.home_most_anticipated),
-            feed = mostAnticipated,
-            onViewAll = { onViewAll(SearchScope.MOST_ANTICIPATED) },
-            onRetry = { viewModel.load(force = true) },
-        ) { game ->
-            AnticipatedCard(game = game, modifier = Modifier.clickable { onGameClick(game.slug) })
-        }
-    }
+    HomeScreen(
+        state = state,
+        modifier = modifier,
+        onRefresh = viewModel::refresh,
+        onRetry = viewModel::onRetry,
+        onViewAll = onViewAll,
+        onGameClick = { onGameClick(it.slug) },
+        onToastShown = viewModel::onToastShown,
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FeedSection(
-    title: String,
-    feed: HomeFeed,
-    onViewAll: () -> Unit,
-    onRetry: () -> Unit,
-    card: @Composable (Game) -> Unit,
+private fun HomeScreen(
+    state: HomeUiState,
+    modifier: Modifier = Modifier,
+    onRefresh: () -> Unit = {},
+    onRetry: (HomeSection) -> Unit = {},
+    onViewAll: (SearchScope) -> Unit = {},
+    onGameClick: (Game) -> Unit = {},
+    onToastShown: () -> Unit = {},
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        HomeSectionHeader(title = title, onViewAll = onViewAll)
-        when {
-            feed.games.isEmpty() && (feed.isLoading || !feed.hasLoaded) -> {
-                SectionLoading()
-            }
+    Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
+        PullToRefreshBox(isRefreshing = state.isRefreshing, onRefresh = onRefresh) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = Spacing.sm, bottom = Spacing.xl),
+                verticalArrangement = Arrangement.spacedBy(Spacing.xl),
+            ) {
+                HomeFeedSection(
+                    title = stringResource(R.string.home_new_releases),
+                    feed = state.newReleases,
+                    onViewAll = { onViewAll(SearchScope.NEW_RELEASES) },
+                    onRetry = { onRetry(HomeSection.NEW_RELEASES) },
+                    onGameClick = onGameClick,
+                ) { game -> NewReleaseCard(game = game) }
 
-            feed.games.isEmpty() -> {
-                SectionRetry(
-                    message =
-                        stringResource(
-                            if (feed.hasError) R.string.home_feed_error else R.string.home_feed_empty,
-                            title,
-                        ),
-                    onRetry = onRetry,
-                )
-            }
-
-            else -> {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(14.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp),
-                ) {
-                    items(feed.games) { game -> card(game) }
-                }
+                HomeFeedSection(
+                    title = stringResource(R.string.home_most_anticipated),
+                    feed = state.mostAnticipated,
+                    onViewAll = { onViewAll(SearchScope.MOST_ANTICIPATED) },
+                    onRetry = { onRetry(HomeSection.MOST_ANTICIPATED) },
+                    onGameClick = onGameClick,
+                ) { game -> AnticipatedCard(game = game) }
             }
         }
-    }
-}
 
-@Composable
-private fun SectionLoading() {
-    Box(
-        modifier = Modifier.fillMaxWidth().height(SectionHeight),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator(color = AppPrimary)
-    }
-}
-
-@Composable
-private fun SectionRetry(
-    message: String,
-    onRetry: () -> Unit,
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth().height(SectionHeight).padding(horizontal = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = message,
-            color = AppTextSecondary,
-            style = AppType.body(14.sp),
-            textAlign = TextAlign.Center,
+        Toast(
+            message = state.toastMessage?.let { stringResource(it) },
+            onDismiss = onToastShown,
+            modifier = Modifier.align(Alignment.TopCenter),
         )
-        TextButton(onClick = onRetry) {
-            Text(
-                text = stringResource(R.string.home_try_again),
-                color = AppPrimary,
-                style = AppType.label(14.sp),
-            )
-        }
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    AppPreview {
+        HomeScreen(
+            state =
+                HomeUiState(
+                    newReleases = HomeFeed(games = listOf(HomeMockData.sampleGame), hasLoaded = true),
+                    mostAnticipated = HomeFeed(hasLoaded = true, hasError = true),
+                ),
+        )
     }
 }

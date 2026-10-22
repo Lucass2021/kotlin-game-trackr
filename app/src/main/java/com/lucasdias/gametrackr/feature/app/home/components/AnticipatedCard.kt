@@ -23,9 +23,14 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.data.game.HomeMockData
 
-private val CardWidth = 170.dp
+private val COVER_HEIGHT = 227.dp
+private val NAME_SIZE = 15.sp
+private val DETAIL_SIZE = 13.sp
+private val CARD_WIDTH = 170.dp
 
 @Composable
 fun AnticipatedCard(
@@ -33,43 +38,43 @@ fun AnticipatedCard(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.width(CardWidth),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier.width(CARD_WIDTH),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
         Box {
             GameCoverArt(
                 start = game.coverStart,
                 end = game.coverEnd,
                 url = game.coverUrl,
-                width = CardWidth,
-                height = 227.dp,
+                width = CARD_WIDTH,
+                height = COVER_HEIGHT,
             )
             Text(
                 text = game.year,
                 color = AppOnPrimary,
-                style = AppType.label(13.sp),
+                style = AppType.label(DETAIL_SIZE),
                 modifier =
                     Modifier
                         .align(Alignment.BottomStart)
-                        .padding(12.dp)
+                        .padding(Spacing.sm)
                         .background(
                             if (game.releaseDate == null) AppSecondary else AppPrimary,
-                            RoundedCornerShape(8.dp),
-                        ).padding(horizontal = 10.dp, vertical = 5.dp),
+                            RoundedCornerShape(Radius.sm),
+                        ).padding(horizontal = Spacing.xs, vertical = Spacing.xxs),
             )
         }
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxxs)) {
             Text(
                 text = game.name,
                 color = AppTextPrimary,
-                style = AppType.label(15.sp),
+                style = AppType.label(NAME_SIZE),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = game.platformsLabel,
                 color = AppTextSecondary,
-                style = AppType.body(13.sp),
+                style = AppType.body(DETAIL_SIZE),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -81,6 +86,6 @@ fun AnticipatedCard(
 @Composable
 private fun AnticipatedCardPreview() {
     AppPreview {
-        AnticipatedCard(game = HomeMockData.sampleGame, modifier = Modifier.padding(20.dp))
+        AnticipatedCard(game = HomeMockData.sampleGame, modifier = Modifier.padding(Spacing.lg))
     }
 }
