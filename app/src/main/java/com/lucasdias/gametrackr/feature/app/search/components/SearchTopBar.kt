@@ -24,9 +24,11 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.BackButton
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
@@ -36,6 +38,11 @@ import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val BORDER_WIDTH = 1.dp
+private val ICON_SIZE = 18.dp
+private val TEXT_SIZE = 16.sp
 
 @Composable
 fun SearchTopBar(
@@ -50,7 +57,7 @@ fun SearchTopBar(
                 .fillMaxWidth()
                 .background(AppBackground)
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp, vertical = 8.dp),
+                .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         BackButton(onBack = onBack)
@@ -61,16 +68,16 @@ fun SearchTopBar(
                     .weight(1f)
                     .clip(CircleShape)
                     .background(AppSurfaceCard)
-                    .border(1.dp, AppOutline, CircleShape)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .border(BORDER_WIDTH, AppOutline, CircleShape)
+                    .padding(horizontal = Spacing.md, vertical = Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
             Icon(
                 imageVector = AppIcon.SEARCH.image(),
                 contentDescription = null,
                 tint = AppTextSecondary,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(ICON_SIZE),
             )
 
             Box(modifier = Modifier.weight(1f)) {
@@ -78,19 +85,27 @@ fun SearchTopBar(
                     Text(
                         text = stringResource(R.string.search_placeholder),
                         color = AppTextSecondary,
-                        style = AppType.body(16.sp),
+                        style = AppType.body(TEXT_SIZE),
                     )
                 }
                 BasicTextField(
                     value = query,
                     onValueChange = onQueryChange,
                     singleLine = true,
-                    textStyle = AppType.body(16.sp).copy(color = AppTextPrimary),
+                    textStyle = AppType.body(TEXT_SIZE).copy(color = AppTextPrimary),
                     cursorBrush = SolidColor(AppPrimary),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SearchTopBarPreview() {
+    AppPreview {
+        SearchTopBar(query = "", onQueryChange = {}, onBack = {})
     }
 }

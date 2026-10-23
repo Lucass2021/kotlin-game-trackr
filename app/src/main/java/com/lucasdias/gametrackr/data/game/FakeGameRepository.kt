@@ -24,7 +24,16 @@ class FakeGameRepository(
     private val homeGames: List<Game> = games,
     var newReleasesFailure: Throwable? = null,
     var mostAnticipatedFailure: Throwable? = null,
+    private val searchResults: List<Game> = games,
+    var searchFailure: Throwable? = null,
 ) : GameRepository {
+    var searchCount = 0
+        private set
+    var lastSearch: String? = null
+        private set
+    var lastPlatformSlug: String? = null
+        private set
+
     var fetchNewReleasesCount = 0
         private set
     var fetchMostAnticipatedCount = 0
@@ -52,34 +61,38 @@ class FakeGameRepository(
         perPage: Int,
         search: String?,
         platformSlug: String?,
-    ): Result<Page<Game>> {
-        delay(FakeLatency.RESPONSE_DELAY_MS)
-        return Result.success(fakePage(games, page, perPage))
-    }
+    ): Result<Page<Game>> = search(page, perPage, search, platformSlug)
 
     override suspend fun fetchAllMostAnticipated(
         page: Int,
         perPage: Int,
         search: String?,
         platformSlug: String?,
-    ): Result<Page<Game>> {
-        delay(FakeLatency.RESPONSE_DELAY_MS)
-        return Result.success(fakePage(games, page, perPage))
-    }
+    ): Result<Page<Game>> = search(page, perPage, search, platformSlug)
 
     override suspend fun searchGames(
         page: Int,
         perPage: Int,
         search: String?,
         platformSlug: String?,
-    ): Result<Page<Game>> {
-        delay(FakeLatency.RESPONSE_DELAY_MS)
-        return Result.success(fakePage(games, page, perPage))
-    }
+    ): Result<Page<Game>> = search(page, perPage, search, platformSlug)
 
     override suspend fun fetchPlatforms(): Result<List<GamePlatform>> {
         delay(FakeLatency.RESPONSE_DELAY_MS)
         return Result.success(HomeMockData.platforms)
+    }
+
+    private suspend fun search(
+        page: Int,
+        perPage: Int,
+        search: String?,
+        platformSlug: String?,
+    ): Result<Page<Game>> {
+        searchCount++
+        lastSearch = search
+        lastPlatformSlug = platformSlug
+        delay(FakeLatency.RESPONSE_DELAY_MS)
+        return searchFailure?.let { Result.failure(it) } ?: Result.success(fakePage(searchResults, page, perPage))
     }
 
     companion object {

@@ -61,6 +61,7 @@ import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileViewM
 import com.lucasdias.gametrackr.feature.app.profile.setup.ContentSetupPhotoEncoder
 import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupViewModel
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
+import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchViewModel
 import com.lucasdias.gametrackr.feature.app.stats.StatsViewModel
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
@@ -175,7 +176,7 @@ val appModule =
         viewModel { DiscoverCommunitiesViewModel(get(), get()) }
         viewModel { CommunityFeedViewModel(get(), get(), get(), get()) }
         viewModel { HomeViewModel(get()) }
-        viewModel { SearchViewModel(get()) }
+        viewModel { (scope: SearchScope) -> SearchViewModel(scope, get()) }
         viewModel { (slug: String) -> GameDetailViewModel(get(), slug) }
         viewModel { AuthViewModel(get(), get()) }
         viewModel { LoginViewModel(get(), get(), androidContext()) }

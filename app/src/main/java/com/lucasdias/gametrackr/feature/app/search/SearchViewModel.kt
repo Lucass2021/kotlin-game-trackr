@@ -7,116 +7,143 @@ import com.lucasdias.gametrackr.core.model.GamePlatform
 import com.lucasdias.gametrackr.core.pagination.FeedCache
 import com.lucasdias.gametrackr.core.pagination.FeedKey
 import com.lucasdias.gametrackr.core.pagination.Page
-import com.lucasdias.gametrackr.core.pagination.PaginationState
+import com.lucasdias.gametrackr.core.pagination.PaginationSnapshot
 import com.lucasdias.gametrackr.data.game.GameRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
+    scope: SearchScope,
     private val repository: GameRepository,
+    private val cache: FeedCache = FeedCache(),
 ) : ViewModel() {
-    val pagination = PaginationState<Game>()
+    private val _uiState = MutableStateFlow(SearchUiState(scope = scope))
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
-    val games get() = pagination.items
+    private var pageJob: Job? = null
+    private var searchJob: Job? = null
+    private var appliedKey = FeedKey(scope, search = null, platform = null)
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    fun loadIfNeeded() {
+        if (_uiState.value.platforms.isEmpty()) loadPlatforms()
+        val state = _uiState.value
+        if (state.currentPage > 0 || state.isLoading) return
+        load()
+    }
 
-    private val _hasLoaded = MutableStateFlow(false)
-    val hasLoaded: StateFlow<Boolean> = _hasLoaded.asStateFlow()
+    fun load() {
+        searchJob?.cancel()
+        _uiState.update { it.copy(isSearchPending = false) }
+        applyFilters()
+    }
 
-    private val _hasError = MutableStateFlow(false)
-    val hasError: StateFlow<Boolean> = _hasError.asStateFlow()
+    fun loadMore() {
+        val state = _uiState.value
+        if (state.currentPage == 0 || state.currentPage >= state.lastPage) return
+        if (state.isLoading || state.isLoadingMore || state.isSearchPending) return
+        loadPage(state.currentPage + 1)
+    }
 
-    private val _appliedSearch = MutableStateFlow("")
-    val appliedSearch: StateFlow<String> = _appliedSearch.asStateFlow()
+    fun onQueryChange(query: String) {
+        _uiState.update { it.copy(query = query, isSearchPending = true) }
+        searchJob?.cancel()
+        searchJob =
+            viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_MS)
+                _uiState.update { it.copy(isSearchPending = false) }
+                if (currentKey() != appliedKey || _uiState.value.hasError) applyFilters()
+            }
+    }
 
-    private val _platforms = MutableStateFlow<List<GamePlatform>>(emptyList())
-    val platforms: StateFlow<List<GamePlatform>> = _platforms.asStateFlow()
+    fun onPlatformChange(platformSlug: String?) {
+        if (platformSlug == _uiState.value.platformSlug) return
+        _uiState.update { it.copy(platformSlug = platformSlug) }
+        load()
+    }
 
-    private val cache = FeedCache()
-    private var scope: SearchScope = SearchScope.ALL
-    private var platform: GamePlatform? = null
-    private var generation = 0
+    fun onClearFilters() {
+        _uiState.update { it.copy(query = "", platformSlug = null) }
+        load()
+    }
 
-    private val key get() = FeedKey(scope, _appliedSearch.value.ifEmpty { null }, platform)
-
-    init {
+    private fun loadPlatforms() {
         viewModelScope.launch {
-            _platforms.value = repository.fetchPlatforms().getOrDefault(emptyList())
+            repository.fetchPlatforms().onSuccess { platforms -> _uiState.update { it.copy(platforms = platforms) } }
         }
     }
 
-    fun applyFilters(
-        scope: SearchScope,
-        search: String,
-        platform: GamePlatform?,
-    ) {
-        this.scope = scope
-        this.platform = platform
-        _appliedSearch.value = search
-        generation += 1
+    private fun currentKey(): FeedKey {
+        val state = _uiState.value
+        return FeedKey(
+            scope = state.scope,
+            search = state.query.trim().ifBlank { null },
+            platform = state.platforms.firstOrNull { it.slug == state.platformSlug },
+        )
+    }
 
-        val cached = cache.snapshot(key)
-        if (cached != null) {
-            pagination.restore(cached)
-            pagination.setLoading(false)
-            _isLoading.value = false
-            _hasError.value = false
-            _hasLoaded.value = true
+    private fun applyFilters() {
+        appliedKey = currentKey()
+        val cached = cache.snapshot(appliedKey)
+        if (cached == null) {
+            loadPage(1)
             return
         }
-
-        load(reset = true)
+        pageJob?.cancel()
+        _uiState.update { it.withSnapshot(cached).copy(isLoading = false, isLoadingMore = false, hasError = false, loadMoreFailed = false) }
     }
 
-    fun loadMore() = load(reset = false)
-
-    private fun load(reset: Boolean) {
-        if (reset) {
-            _isLoading.value = true
-            _hasError.value = false
-            pagination.reset()
-        } else {
-            if (!pagination.canLoadMore) return
+    private fun loadPage(page: Int) {
+        pageJob?.cancel()
+        _uiState.update {
+            if (page == 1) {
+                it.copy(games = emptyList(), currentPage = 0, lastPage = 1, total = 0, isLoading = true, isLoadingMore = false)
+            } else {
+                it.copy(isLoadingMore = true)
+            }.copy(hasError = false, loadMoreFailed = false)
         }
-        pagination.setLoading(true)
-
-        val requestGeneration = generation
-        val nextPage = pagination.currentPage + 1
-        val search = _appliedSearch.value.ifEmpty { null }
-        val platformSlug = platform?.slug
-
-        viewModelScope.launch {
-            val result = fetchPage(nextPage, search, platformSlug)
-            if (requestGeneration != generation) return@launch
-            result
-                .onSuccess { page ->
-                    pagination.append(page)
-                    cache.store(key, pagination.snapshot())
-                }.onFailure { if (reset) _hasError.value = true }
-            if (reset) {
-                _isLoading.value = false
-                _hasLoaded.value = true
+        val key = appliedKey
+        pageJob =
+            viewModelScope.launch {
+                fetch(key, page)
+                    .onSuccess { result ->
+                        _uiState.update { state ->
+                            val games = if (page == 1) result.items else state.games + result.items
+                            state
+                                .withSnapshot(PaginationSnapshot(games, result.currentPage, result.lastPage, result.total))
+                                .copy(isLoading = false, isLoadingMore = false)
+                        }
+                        cache.store(key, _uiState.value.snapshot())
+                    }.onFailure {
+                        _uiState.update {
+                            it.copy(isLoading = false, isLoadingMore = false, hasError = page == 1, loadMoreFailed = page > 1)
+                        }
+                    }
             }
-            pagination.setLoading(false)
+    }
+
+    private suspend fun fetch(
+        key: FeedKey,
+        page: Int,
+    ): Result<Page<Game>> {
+        val platformSlug = key.platform?.slug
+        return when (key.scope) {
+            SearchScope.MOST_ANTICIPATED -> repository.fetchAllMostAnticipated(page, SearchUiState.PAGE_SIZE, key.search, platformSlug)
+            SearchScope.NEW_RELEASES -> repository.fetchAllNewReleases(page, SearchUiState.PAGE_SIZE, key.search, platformSlug)
+            SearchScope.ALL -> repository.searchGames(page, SearchUiState.PAGE_SIZE, key.search, platformSlug)
         }
     }
 
-    private suspend fun fetchPage(
-        page: Int,
-        search: String?,
-        platformSlug: String?,
-    ): Result<Page<Game>> =
-        when (scope) {
-            SearchScope.MOST_ANTICIPATED -> repository.fetchAllMostAnticipated(page, PER_PAGE, search, platformSlug)
-            SearchScope.NEW_RELEASES -> repository.fetchAllNewReleases(page, PER_PAGE, search, platformSlug)
-            SearchScope.ALL -> repository.searchGames(page, PER_PAGE, search, platformSlug)
-        }
+    private fun SearchUiState.withSnapshot(snapshot: PaginationSnapshot<Game>): SearchUiState =
+        copy(games = snapshot.items, currentPage = snapshot.currentPage, lastPage = snapshot.lastPage, total = snapshot.total)
+
+    private fun SearchUiState.snapshot(): PaginationSnapshot<Game> = PaginationSnapshot(games, currentPage, lastPage, total)
 
     private companion object {
-        const val PER_PAGE = 20
+        const val SEARCH_DEBOUNCE_MS = 300L
     }
 }

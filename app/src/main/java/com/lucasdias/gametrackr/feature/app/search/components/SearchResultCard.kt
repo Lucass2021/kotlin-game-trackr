@@ -17,8 +17,13 @@ import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.data.game.HomeMockData
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
+
+private const val COVER_ASPECT_RATIO = 0.72f
+private val NAME_SIZE = 16.sp
+private val DETAIL_SIZE = 14.sp
 
 @Composable
 fun SearchResultCard(
@@ -27,26 +32,26 @@ fun SearchResultCard(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
         GameCoverArt(
             start = game.coverStart,
             end = game.coverEnd,
             url = game.coverUrl,
-            modifier = Modifier.fillMaxWidth().aspectRatio(0.72f),
+            modifier = Modifier.fillMaxWidth().aspectRatio(COVER_ASPECT_RATIO),
         )
-        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxxs)) {
             Text(
                 text = game.name,
                 color = AppTextPrimary,
-                style = AppType.label(16.sp),
+                style = AppType.label(NAME_SIZE),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = "${game.year} • ${game.platformsLabel}",
                 color = AppTextSecondary,
-                style = AppType.body(14.sp),
+                style = AppType.body(DETAIL_SIZE),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -58,6 +63,6 @@ fun SearchResultCard(
 @Composable
 private fun SearchResultCardPreview() {
     AppPreview {
-        SearchResultCard(game = HomeMockData.sampleGame, modifier = Modifier.padding(20.dp))
+        SearchResultCard(game = HomeMockData.sampleGame, modifier = Modifier.padding(Spacing.lg))
     }
 }
