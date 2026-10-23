@@ -428,12 +428,13 @@
     <string name="validation_community_description_required">Description is required</string>
     <string name="validation_community_description_too_short">At least 10 characters</string>
     <string name="validation_community_description_too_long">Description is too long</string>
-    <string name="validation_name_too_long">Name is too long</string>
+    <string name="validation_name_too_long">Name must be at most %1$d characters</string>
+    <string name="validation_display_name_required">Name is required</string>
     <string name="validation_username_required">Username is required</string>
     <string name="validation_username_too_short">At least 3 characters</string>
-    <string name="validation_username_too_long">Username is too long</string>
+    <string name="validation_username_too_long">Username must be at most %1$d characters</string>
     <string name="validation_username_invalid">Only letters, numbers and underscore</string>
-    <string name="validation_bio_too_long">Bio is too long</string>
+    <string name="validation_bio_too_long">Bio must be at most %1$d characters</string>
 
     <string name="edit_profile_title">Edit profile</string>
     <string name="edit_profile_back">Back</string>
@@ -450,6 +451,9 @@
     <string name="edit_profile_discard_title">Discard your changes?</string>
     <string name="edit_profile_discard_confirm">Discard</string>
     <string name="edit_profile_discard_cancel">Keep editing</string>
+    <string name="edit_profile_colors_error">Couldn\'t load colors.</string>
+    <string name="edit_profile_try_again">Try again</string>
+    <string name="edit_profile_saving">Saving</string>
     <string name="edit_profile_visibility_public">Public</string>
     <string name="edit_profile_visibility_public_detail">Anyone can find you and see your library and stats.</string>
     <string name="edit_profile_visibility_private">Private</string>

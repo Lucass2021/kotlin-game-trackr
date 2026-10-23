@@ -11,6 +11,7 @@ import com.lucasdias.gametrackr.core.model.ProfileStats
 import com.lucasdias.gametrackr.core.model.SetupItem
 import com.lucasdias.gametrackr.core.model.SetupPalette
 import com.lucasdias.gametrackr.core.model.StatusCount
+import com.lucasdias.gametrackr.core.model.User
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
@@ -35,6 +36,17 @@ object ProfileMockData {
             bio = "Backlog eterno, platina ocasional. RPGs de turno e speedruns de fim de semana.",
             joinedAt = LocalDate.of(2024, 3, 15),
             avatarHex = "#8B5CF6",
+        )
+
+    val user =
+        User(
+            id = 1,
+            name = profile.name,
+            email = "player@example.com",
+            username = profile.username.removePrefix("@"),
+            profileColor = profile.avatarHex,
+            bio = profile.bio,
+            createdAt = profile.joinedAt,
         )
 
     val colors =

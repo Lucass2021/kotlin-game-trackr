@@ -3,15 +3,21 @@ package com.lucasdias.gametrackr.feature.auth
 import android.content.Context
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.ApiError
+import com.lucasdias.gametrackr.core.ui.text.UiText
+import com.lucasdias.gametrackr.core.ui.text.asString
 
-fun ApiError.toMessage(context: Context): String =
+fun ApiError.toMessage(context: Context): String = toUiText().asString(context)
+
+fun ApiError.toUiText(): UiText =
     when (this) {
-        ApiError.Network -> context.getString(R.string.error_network)
-        ApiError.Unauthorized -> context.getString(R.string.error_invalid_credentials)
-        is ApiError.Forbidden -> context.getString(R.string.error_forbidden)
-        ApiError.NotFound -> context.getString(R.string.error_not_found)
-        is ApiError.BadRequest -> errorMessage
-        is ApiError.Validation -> firstMessage ?: context.getString(R.string.error_generic)
-        is ApiError.Server -> context.getString(R.string.error_generic)
-        is ApiError.Unknown -> context.getString(R.string.error_generic)
+        ApiError.Network -> UiText.Resource(R.string.error_network)
+        ApiError.Unauthorized -> UiText.Resource(R.string.error_invalid_credentials)
+        is ApiError.Forbidden -> UiText.Resource(R.string.error_forbidden)
+        ApiError.NotFound -> UiText.Resource(R.string.error_not_found)
+        is ApiError.BadRequest -> UiText.Raw(errorMessage)
+        is ApiError.Validation -> firstMessage?.let(UiText::Raw) ?: UiText.Resource(R.string.error_generic)
+        is ApiError.Server -> UiText.Resource(R.string.error_generic)
+        is ApiError.Unknown -> UiText.Resource(R.string.error_generic)
     }
+
+fun Throwable.toUiText(): UiText = (this as? ApiError)?.toUiText() ?: UiText.Resource(R.string.error_generic)

@@ -1,16 +1,12 @@
 package com.lucasdias.gametrackr.feature.app.profile.editprofile
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.ProfileVisibility
-import com.lucasdias.gametrackr.core.model.User
-import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.profile.ProfileRepository
-import com.lucasdias.gametrackr.feature.auth.toMessage
+import com.lucasdias.gametrackr.feature.auth.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,138 +14,78 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class EditProfileViewModel(
-    private val original: Profile,
+    original: Profile,
     private val repository: ProfileRepository,
     private val sessionManager: SessionManager,
-    private val context: Context,
 ) : ViewModel() {
-    private val _uiState =
-        MutableStateFlow(
-            EditProfileUiState(
-                name = original.name,
-                username = original.username.removePrefix("@"),
-                bio = original.bio,
-                avatarHex = original.avatarHex,
-                visibility = original.visibility,
-            ),
-        )
+    private val _uiState = MutableStateFlow(EditProfileUiState(original = original))
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
 
-    private var submitted = false
-
     init {
+        loadColorsIfNeeded()
+    }
+
+    fun loadColorsIfNeeded() {
+        if (_uiState.value.colors.isNotEmpty()) return
+        loadColors()
+    }
+
+    fun loadColors() {
+        if (_uiState.value.isLoadingColors) return
+        _uiState.update { it.copy(isLoadingColors = true, colorsFailed = false) }
         viewModelScope.launch {
-            val colors = repository.fetchColors().getOrDefault(emptyList())
-            _uiState.update { it.copy(colors = colors) }
+            repository
+                .fetchColors()
+                .onSuccess { colors -> _uiState.update { it.copy(colors = colors, isLoadingColors = false) } }
+                .onFailure { _uiState.update { it.copy(isLoadingColors = false, colorsFailed = true) } }
         }
     }
 
     fun onNameChange(value: String) {
         _uiState.update { it.copy(name = value) }
-        revalidate()
     }
 
     fun onUsernameChange(value: String) {
         _uiState.update { it.copy(username = value) }
-        revalidate()
     }
 
     fun onBioChange(value: String) {
         _uiState.update { it.copy(bio = value) }
-        revalidate()
     }
 
     fun onAvatarColorChange(value: String) {
         _uiState.update { it.copy(avatarHex = value) }
     }
 
-    fun onErrorShown() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
     fun onVisibilityChange(value: ProfileVisibility) {
         _uiState.update { it.copy(visibility = value) }
     }
 
-    fun hasChanges(): Boolean {
-        val state = _uiState.value
-        return state.name.trim() != original.name ||
-            "@${state.normalizedUsername}" != original.username ||
-            state.bio.trim() != original.bio ||
-            state.avatarHex != original.avatarHex ||
-            state.visibility != original.visibility
-    }
+    fun onSave() {
+        val current = _uiState.value
+        if (current.isSaving || current.savedProfile != null) return
+        _uiState.update { it.copy(isSubmitted = true) }
+        if (!current.canSave) return
 
-    fun onSave(onSaved: (Profile) -> Unit) {
-        submitted = true
-        revalidate()
-        val state = _uiState.value
-        if (!state.canSave || state.isSaving) return
-
+        _uiState.update { it.copy(isSaving = true, toastMessage = null) }
         viewModelScope.launch {
-            _uiState.update { it.copy(isSaving = true, errorMessage = null) }
-            val result =
-                repository.updateProfile(
-                    name = state.name.trim(),
-                    username = state.normalizedUsername,
-                    profileColor = state.avatarHex,
-                    bio = state.bio.trim(),
-                    visibility = state.visibility,
-                )
-            _uiState.update { it.copy(isSaving = false) }
-
-            result
-                .onSuccess { user -> onSaved(updatedProfile(state, user)) }
-                .onFailure { error -> _uiState.update { it.copy(errorMessage = messageFor(error)) } }
+            repository
+                .updateProfile(
+                    name = current.trimmedName,
+                    username = current.normalizedUsername,
+                    profileColor = current.avatarHex,
+                    bio = current.trimmedBio,
+                    visibility = current.visibility,
+                ).onSuccess { user ->
+                    sessionManager.setAuthenticated(user)
+                    _uiState.update { it.copy(isSaving = false, savedProfile = current.updatedProfile().applying(user)) }
+                }.onFailure { error ->
+                    _uiState.update { it.copy(isSaving = false, toastMessage = error.toUiText()) }
+                }
         }
     }
 
-    private fun updatedProfile(
-        state: EditProfileUiState,
-        user: User,
-    ): Profile {
-        sessionManager.setAuthenticated(user)
-        return original
-            .copy(
-                name = state.name.trim(),
-                username = "@${state.normalizedUsername}",
-                bio = state.bio.trim(),
-                avatarHex = state.avatarHex,
-                visibility = state.visibility,
-            ).applying(user)
+    fun onToastShown() {
+        _uiState.update { it.copy(toastMessage = null) }
     }
-
-    private fun messageFor(error: Throwable): String = (error as? ApiError)?.toMessage(context) ?: context.getString(R.string.error_generic)
-
-    private fun revalidate() {
-        if (!submitted) return
-        _uiState.update {
-            it.copy(
-                nameError = nameErrorFor(it.name),
-                usernameError = usernameErrorFor(it.normalizedUsername),
-                bioError = bioErrorFor(it.bio),
-            )
-        }
-    }
-
-    private fun nameErrorFor(name: String): Int? {
-        val trimmed = name.trim()
-        return when {
-            trimmed.isEmpty() -> R.string.validation_name_required
-            trimmed.length < 3 -> R.string.validation_name_too_short
-            trimmed.length > EditProfileUiState.NAME_LIMIT -> R.string.validation_name_too_long
-            else -> null
-        }
-    }
-
-    private fun usernameErrorFor(username: String): Int? =
-        when {
-            username.isEmpty() -> R.string.validation_username_required
-            username.length < 3 -> R.string.validation_username_too_short
-            username.length > EditProfileUiState.USERNAME_LIMIT -> R.string.validation_username_too_long
-            username.any { it !in EditProfileUiState.USERNAME_ALPHABET } -> R.string.validation_username_invalid
-            else -> null
-        }
-
-    private fun bioErrorFor(bio: String): Int? = if (bio.trim().length > EditProfileUiState.BIO_LIMIT) R.string.validation_bio_too_long else null
 }

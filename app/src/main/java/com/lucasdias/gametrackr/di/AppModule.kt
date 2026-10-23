@@ -192,7 +192,7 @@ val appModule =
         }
         viewModel { (communityName: String) -> CreateTopicViewModel(communityName, get()) }
         viewModel { CreateCommunityViewModel(get(), androidContext()) }
-        viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get(), androidContext()) }
+        viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get()) }
         viewModel { MySetupViewModel(get()) }
         viewModel { StatsViewModel(get()) }
         viewModel { LibraryViewModel(get(), get()) }

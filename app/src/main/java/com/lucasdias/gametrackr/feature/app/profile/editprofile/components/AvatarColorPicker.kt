@@ -2,7 +2,6 @@ package com.lucasdias.gametrackr.feature.app.profile.editprofile.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lucasdias.gametrackr.core.model.ProfileColor
@@ -30,6 +32,7 @@ import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.core.ui.theme.darkened
 import com.lucasdias.gametrackr.core.ui.theme.toAppColor
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
@@ -46,8 +49,8 @@ fun AvatarColorPicker(
             modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(vertical = 3.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(vertical = Spacing.xxxs),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         colors.forEach { palette ->
             Swatch(
@@ -71,23 +74,23 @@ private fun Swatch(
         modifier =
             Modifier
                 .pressScale(interaction)
-                .size(46.dp)
+                .size(SWATCH_SIZE)
                 .clip(CircleShape)
                 .background(
                     Brush.linearGradient(
                         listOf(color.hex.toAppColor(), color.hex.toAppColor().darkened(GRADIENT_DEPTH)),
                     ),
                 ).border(
-                    width = if (isSelected) 2.dp else 1.dp,
+                    width = if (isSelected) SELECTED_BORDER_WIDTH else BORDER_WIDTH,
                     color = if (isSelected) AppPrimary else AppOutline,
                     shape = CircleShape,
-                ).clickable(
+                ).selectable(
+                    selected = isSelected,
                     interactionSource = interaction,
                     indication = null,
-                    onClickLabel = color.name,
                     role = Role.RadioButton,
                     onClick = onClick,
-                ),
+                ).semantics { contentDescription = color.name },
         contentAlignment = Alignment.Center,
     ) {
         if (isSelected) {
@@ -95,13 +98,17 @@ private fun Swatch(
                 imageVector = AppIcon.CHECK.image(),
                 contentDescription = null,
                 tint = AppTextPrimary,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(CHECK_SIZE),
             )
         }
     }
 }
 
 private const val GRADIENT_DEPTH = 0.28f
+private val SWATCH_SIZE = 46.dp
+private val CHECK_SIZE = 20.dp
+private val BORDER_WIDTH = 1.dp
+private val SELECTED_BORDER_WIDTH = 2.dp
 
 @Preview
 @Composable
@@ -111,7 +118,7 @@ private fun AvatarColorPickerPreview() {
             colors = ProfileMockData.colors,
             selection = ProfileMockData.colors.first().hex,
             onSelect = {},
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(Spacing.lg),
         )
     }
 }
