@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,8 +48,8 @@ private val BODY_LINE_HEIGHT = 22.sp
 private val TOGGLE_SIZE = 14.sp
 private val CARET_SIZE = 12.dp
 private val BORDER_WIDTH = 1.dp
-private const val COLLAPSED_LINES = 3
 private const val EXPANDED_ROTATION = 180f
+private const val SHORT_ABOUT_PREVIEW = "A short summary that fits without Read more."
 
 @Composable
 fun GameAboutSection(
@@ -56,6 +57,7 @@ fun GameAboutSection(
     modifier: Modifier = Modifier,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
+    var collapsible by remember(about) { mutableStateOf<Boolean?>(null) }
     val shape = RoundedCornerShape(Radius.lg)
 
     Column(
@@ -80,28 +82,41 @@ fun GameAboutSection(
                 color = AppTextSecondary,
                 style = AppType.body(BODY_SIZE),
                 lineHeight = BODY_LINE_HEIGHT,
-                maxLines = if (expanded) Int.MAX_VALUE else COLLAPSED_LINES,
+                maxLines = GameAboutLines.maxLines(expanded, collapsible),
                 overflow = TextOverflow.Ellipsis,
+                onTextLayout = { result ->
+                    if (collapsible == null) collapsible = result.hasVisualOverflow
+                },
             )
 
-            Row(
-                modifier = Modifier.clickable(role = Role.Button) { expanded = !expanded },
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(if (expanded) R.string.game_detail_read_less else R.string.game_detail_read_more),
-                    color = AppSecondary,
-                    style = AppType.label(TOGGLE_SIZE),
-                )
-                Icon(
-                    imageVector = AppIcon.CARET_DOWN.image(),
-                    contentDescription = null,
-                    tint = AppSecondary,
-                    modifier = Modifier.size(CARET_SIZE).rotate(if (expanded) EXPANDED_ROTATION else 0f),
-                )
+            if (GameAboutLines.showsToggle(collapsible)) {
+                AboutToggle(expanded = expanded, onClick = { expanded = !expanded })
             }
         }
+    }
+}
+
+@Composable
+private fun AboutToggle(
+    expanded: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.clickable(role = Role.Button, onClick = onClick),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(if (expanded) R.string.game_detail_read_less else R.string.game_detail_read_more),
+            color = AppSecondary,
+            style = AppType.label(TOGGLE_SIZE),
+        )
+        Icon(
+            imageVector = AppIcon.CARET_DOWN.image(),
+            contentDescription = null,
+            tint = AppSecondary,
+            modifier = Modifier.size(CARET_SIZE).rotate(if (expanded) EXPANDED_ROTATION else 0f),
+        )
     }
 }
 
@@ -110,5 +125,13 @@ fun GameAboutSection(
 private fun GameAboutSectionPreview() {
     AppPreview {
         GameAboutSection(about = FakeGameRepository.gameDetail.about)
+    }
+}
+
+@Preview
+@Composable
+private fun GameAboutSectionShortPreview() {
+    AppPreview {
+        GameAboutSection(about = SHORT_ABOUT_PREVIEW)
     }
 }
