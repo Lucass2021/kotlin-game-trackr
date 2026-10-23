@@ -14,6 +14,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.FormField
+import com.lucasdias.gametrackr.core.ui.components.FormTextField
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileActions
@@ -39,7 +41,7 @@ fun EditProfileForm(
     ) {
         EditProfilePreviewCard(name = state.previewName, username = state.previewUsername, avatarHex = state.avatarHex)
 
-        EditProfileField(label = stringResource(R.string.edit_profile_field_avatar)) {
+        FormField(label = stringResource(R.string.edit_profile_field_avatar)) {
             if (state.colorsFailed) {
                 AvatarColorsRetry(onRetry = actions.onRetryColors)
             } else {
@@ -47,16 +49,16 @@ fun EditProfileForm(
             }
         }
 
-        EditProfileField(label = stringResource(R.string.edit_profile_field_name), error = state.nameError) {
-            ProfileTextField(
+        FormField(label = stringResource(R.string.edit_profile_field_name), error = state.nameError) {
+            FormTextField(
                 value = state.name,
                 onValueChange = actions.onNameChange,
                 placeholder = stringResource(R.string.edit_profile_name_placeholder),
             )
         }
 
-        EditProfileField(label = stringResource(R.string.edit_profile_field_username), error = state.usernameError) {
-            ProfileTextField(
+        FormField(label = stringResource(R.string.edit_profile_field_username), error = state.usernameError) {
+            FormTextField(
                 value = state.username,
                 onValueChange = actions.onUsernameChange,
                 placeholder = stringResource(R.string.edit_profile_username_placeholder),
@@ -65,12 +67,12 @@ fun EditProfileForm(
             )
         }
 
-        EditProfileField(
+        FormField(
             label = stringResource(R.string.edit_profile_field_bio),
             error = state.bioError,
             counter = state.bioRemaining.takeIf { it <= BIO_COUNTER_THRESHOLD },
         ) {
-            ProfileTextField(
+            FormTextField(
                 value = state.bio,
                 onValueChange = actions.onBioChange,
                 placeholder = stringResource(R.string.edit_profile_bio_placeholder),
@@ -78,7 +80,7 @@ fun EditProfileForm(
             )
         }
 
-        EditProfileField(label = stringResource(R.string.edit_profile_field_visibility)) {
+        FormField(label = stringResource(R.string.edit_profile_field_visibility)) {
             VisibilitySelector(selection = state.visibility, onSelect = actions.onVisibilityChange)
         }
     }

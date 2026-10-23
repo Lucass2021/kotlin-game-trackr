@@ -26,6 +26,8 @@ class FakeCommunityRepository(
     private val comments = comments.toMutableList()
     private val joinedIds = communities.filter { it.isJoined }.map { it.id }.toMutableSet()
 
+    var createCommunityCount = 0
+        private set
     var fetchPostsCount = 0
         private set
     var fetchMembersCount = 0
@@ -65,15 +67,23 @@ class FakeCommunityRepository(
     override suspend fun createCommunity(
         title: String,
         description: String,
-    ): Result<Community> =
-        respond {
+    ): Result<Community> {
+        createCommunityCount++
+        return respond {
             val base = communities.first()
             val created =
-                base.copy(id = (communities.maxOf { it.id } + 1), name = title, description = description, isJoined = true)
+                base.copy(
+                    id = (communities.maxOf { it.id } + 1),
+                    name = title,
+                    description = description,
+                    isJoined = true,
+                    members = CREATOR_MEMBER_COUNT,
+                )
             communities.add(0, created)
             joinedIds.add(created.id)
             created
         }
+    }
 
     override suspend fun deleteCommunity(id: Long): Result<Unit> {
         deleteCount++

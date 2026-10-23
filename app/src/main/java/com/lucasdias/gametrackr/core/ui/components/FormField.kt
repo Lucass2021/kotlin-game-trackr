@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.profile.editprofile.components
+package com.lucasdias.gametrackr.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.text.UiText
 import com.lucasdias.gametrackr.core.ui.text.asString
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
@@ -21,13 +20,14 @@ import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.SectionLabel
 
 private val COUNTER_SIZE = 12.sp
-private val ERROR_SIZE = 13.sp
+private val MESSAGE_SIZE = 13.sp
 
 @Composable
-fun EditProfileField(
+fun FormField(
     label: String,
     modifier: Modifier = Modifier,
     error: UiText? = null,
+    hint: String? = null,
     counter: Int? = null,
     content: @Composable () -> Unit,
 ) {
@@ -45,25 +45,32 @@ fun EditProfileField(
 
         content()
 
-        if (error != null) {
-            Text(
-                text = error.asString(),
-                color = AppTertiary,
-                style = AppType.body(ERROR_SIZE),
-            )
+        when {
+            error != null -> Text(text = error.asString(), color = AppTertiary, style = AppType.body(MESSAGE_SIZE))
+            hint != null -> Text(text = hint, color = AppTextSecondary, style = AppType.body(MESSAGE_SIZE))
         }
     }
 }
 
 @Preview
 @Composable
-private fun EditProfileFieldPreview() {
+private fun FormFieldPreview() {
     AppPreview {
-        EditProfileField(
+        FormField(
             label = "Bio",
             error = UiText.Resource(R.string.validation_bio_too_long, listOf(1000)),
             counter = -12,
         ) {
+            Text(text = "Field content", color = AppTextSecondary)
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun FormFieldHintPreview() {
+    AppPreview {
+        FormField(label = "Name", hint = "No spaces — this is how the community is listed.") {
             Text(text = "Field content", color = AppTextSecondary)
         }
     }

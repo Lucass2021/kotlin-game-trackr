@@ -363,7 +363,7 @@
 
     <string name="create_community_title">New community</string>
     <string name="create_community_submit">Create</string>
-    <string name="create_community_submitting">Creating…</string>
+    <string name="create_community_submitting">Creating</string>
     <string name="create_community_field_name">Name</string>
     <string name="create_community_field_description">Description</string>
     <string name="create_community_name_placeholder">RetroCollectors</string>
@@ -424,10 +424,10 @@
     <string name="validation_topic_body_too_long">Body is too long</string>
     <string name="validation_community_name_required">Name is required</string>
     <string name="validation_community_name_too_short">At least 3 characters</string>
-    <string name="validation_community_name_too_long">Name is too long</string>
+    <string name="validation_community_name_too_long">Name must be at most %1$d characters</string>
     <string name="validation_community_description_required">Description is required</string>
     <string name="validation_community_description_too_short">At least 10 characters</string>
-    <string name="validation_community_description_too_long">Description is too long</string>
+    <string name="validation_community_description_too_long">Description must be at most %1$d characters</string>
     <string name="validation_name_too_long">Name must be at most %1$d characters</string>
     <string name="validation_display_name_required">Name is required</string>
     <string name="validation_username_required">Username is required</string>
@@ -449,8 +449,8 @@
     <string name="edit_profile_username_prefix">\@</string>
     <string name="edit_profile_bio_placeholder">Tell other players what you\'re into...</string>
     <string name="edit_profile_discard_title">Discard your changes?</string>
-    <string name="edit_profile_discard_confirm">Discard</string>
-    <string name="edit_profile_discard_cancel">Keep editing</string>
+    <string name="discard_confirm">Discard</string>
+    <string name="discard_cancel">Keep editing</string>
     <string name="edit_profile_colors_error">Couldn\'t load colors.</string>
     <string name="edit_profile_try_again">Try again</string>
     <string name="edit_profile_saving">Saving</string>

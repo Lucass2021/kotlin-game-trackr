@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.profile.editprofile.components
+package com.lucasdias.gametrackr.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,9 +19,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
@@ -32,24 +32,26 @@ import com.lucasdias.gametrackr.feature.app.addtolibrary.components.fieldBox
 private val TEXT_SIZE = 16.sp
 private val LINE_HEIGHT = 22.sp
 private val SINGLE_LINE_HEIGHT = 50.dp
-private val MULTI_LINE_MIN_HEIGHT = 110.dp
-private const val MULTI_LINE_MAX_LINES = 6
+private val DEFAULT_MULTI_LINE_MIN_HEIGHT = 110.dp
+private const val DEFAULT_MULTI_LINE_MAX_LINES = 6
 
 @Composable
-fun ProfileTextField(
+fun FormTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
     prefix: String? = null,
     singleLine: Boolean = true,
+    multiLineMinHeight: Dp = DEFAULT_MULTI_LINE_MIN_HEIGHT,
+    multiLineMaxLines: Int = DEFAULT_MULTI_LINE_MAX_LINES,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.Sentences,
 ) {
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
         singleLine = singleLine,
-        maxLines = if (singleLine) 1 else MULTI_LINE_MAX_LINES,
+        maxLines = if (singleLine) 1 else multiLineMaxLines,
         keyboardOptions =
             KeyboardOptions(
                 capitalization = capitalization,
@@ -65,7 +67,7 @@ fun ProfileTextField(
                     if (singleLine) {
                         Modifier.height(SINGLE_LINE_HEIGHT).padding(horizontal = Spacing.sm)
                     } else {
-                        Modifier.heightIn(min = MULTI_LINE_MIN_HEIGHT).padding(Spacing.sm)
+                        Modifier.heightIn(min = multiLineMinHeight).padding(Spacing.sm)
                     },
                 ),
         decorationBox = { inner ->
@@ -89,12 +91,12 @@ fun ProfileTextField(
 
 @Preview
 @Composable
-private fun ProfileTextFieldPreview() {
+private fun FormTextFieldPreview() {
     AppPreview {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-            ProfileTextField(value = "", onValueChange = {}, placeholder = "How should we call you?")
-            ProfileTextField(value = "lucasdias", onValueChange = {}, placeholder = "", prefix = "@")
-            ProfileTextField(value = "", onValueChange = {}, placeholder = "Tell other players...", singleLine = false)
+            FormTextField(value = "", onValueChange = {}, placeholder = "How should we call you?")
+            FormTextField(value = "lucasdias", onValueChange = {}, placeholder = "", prefix = "@")
+            FormTextField(value = "", onValueChange = {}, placeholder = "Tell other players...", singleLine = false)
         }
     }
 }

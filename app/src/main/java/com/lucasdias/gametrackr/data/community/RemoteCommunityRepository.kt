@@ -60,7 +60,14 @@ class RemoteCommunityRepository(
     override suspend fun createCommunity(
         title: String,
         description: String,
-    ): Result<Community> = apiCall(json) { api.createCommunity(CreateCommunityRequest(title, description)).community.toDomain() }
+    ): Result<Community> =
+        apiCall(json) {
+            api
+                .createCommunity(CreateCommunityRequest(title, description))
+                .community
+                .toDomain()
+                .copy(isJoined = true, members = CREATOR_MEMBER_COUNT)
+        }
 
     override suspend fun deleteCommunity(id: Long): Result<Unit> = apiCall(json) { api.deleteCommunity(id) }.map { }
 

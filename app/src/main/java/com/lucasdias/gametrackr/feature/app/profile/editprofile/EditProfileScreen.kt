@@ -15,17 +15,19 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.DiscardChangesDialog
+import com.lucasdias.gametrackr.core.ui.components.FormHeader
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.text.asString
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
-import com.lucasdias.gametrackr.feature.app.profile.editprofile.components.DiscardChangesDialog
 import com.lucasdias.gametrackr.feature.app.profile.editprofile.components.EditProfileForm
-import com.lucasdias.gametrackr.feature.app.profile.editprofile.components.EditProfileHeader
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -78,6 +80,7 @@ fun EditProfileScreen(
 
     if (showDiscardConfirm) {
         DiscardChangesDialog(
+            title = stringResource(R.string.edit_profile_discard_title),
             onDiscard = {
                 showDiscardConfirm = false
                 onBack()
@@ -95,7 +98,15 @@ fun EditProfileContent(
 ) {
     Box(modifier = modifier.fillMaxSize().background(AppBackground)) {
         Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
-            EditProfileHeader(isSaving = state.isSaving, onBack = actions.onBack, onSave = actions.onSave)
+            FormHeader(
+                title = stringResource(R.string.edit_profile_title),
+                actionLabel = stringResource(R.string.edit_profile_save),
+                closeLabel = stringResource(R.string.edit_profile_back),
+                savingLabel = stringResource(R.string.edit_profile_saving),
+                isSaving = state.isSaving,
+                onClose = actions.onBack,
+                onAction = actions.onSave,
+            )
             EditProfileForm(state = state, actions = actions)
         }
 

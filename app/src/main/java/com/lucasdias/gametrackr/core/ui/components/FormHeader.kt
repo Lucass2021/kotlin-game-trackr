@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.profile.editprofile.components
+package com.lucasdias.gametrackr.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,16 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.ui.components.AppPreview
-import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -36,25 +32,28 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 
-private val BACK_SIZE = 40.dp
-private val BACK_ICON_SIZE = 22.dp
+private val CLOSE_SIZE = 40.dp
+private val CLOSE_ICON_SIZE = 22.dp
 private val TITLE_SIZE = 20.sp
-private val SAVE_HEIGHT = 38.dp
-private val SAVE_TEXT_SIZE = 15.sp
+private val ACTION_HEIGHT = 38.dp
+private val ACTION_TEXT_SIZE = 15.sp
 private val SPINNER_SIZE = 18.dp
 private val SPINNER_STROKE = 2.dp
 
 @Composable
-fun EditProfileHeader(
+fun FormHeader(
+    title: String,
+    actionLabel: String,
+    closeLabel: String,
+    savingLabel: String,
     isSaving: Boolean,
-    onBack: () -> Unit,
-    onSave: () -> Unit,
+    onClose: () -> Unit,
+    onAction: () -> Unit,
     modifier: Modifier = Modifier,
+    closeIcon: AppIcon = AppIcon.BACK,
 ) {
-    val backInteraction = remember { MutableInteractionSource() }
-    val saveInteraction = remember { MutableInteractionSource() }
-    val backLabel = stringResource(R.string.edit_profile_back)
-    val savingLabel = stringResource(R.string.edit_profile_saving)
+    val closeInteraction = remember { MutableInteractionSource() }
+    val actionInteraction = remember { MutableInteractionSource() }
 
     Row(
         modifier = modifier.fillMaxWidth().padding(horizontal = Spacing.md, vertical = Spacing.sm),
@@ -64,28 +63,28 @@ fun EditProfileHeader(
         Box(
             modifier =
                 Modifier
-                    .pressScale(backInteraction)
-                    .size(BACK_SIZE)
+                    .pressScale(closeInteraction)
+                    .size(CLOSE_SIZE)
                     .clip(CircleShape)
                     .clickable(
-                        interactionSource = backInteraction,
+                        interactionSource = closeInteraction,
                         indication = null,
-                        onClickLabel = backLabel,
+                        onClickLabel = closeLabel,
                         role = Role.Button,
-                        onClick = onBack,
+                        onClick = onClose,
                     ),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = AppIcon.BACK.image(),
-                contentDescription = backLabel,
+                imageVector = closeIcon.image(),
+                contentDescription = closeLabel,
                 tint = AppTextPrimary,
-                modifier = Modifier.size(BACK_ICON_SIZE),
+                modifier = Modifier.size(CLOSE_ICON_SIZE),
             )
         }
 
         Text(
-            text = stringResource(R.string.edit_profile_title),
+            text = title,
             color = AppTextPrimary,
             style = AppType.headline(TITLE_SIZE),
             modifier = Modifier.weight(1f),
@@ -94,22 +93,22 @@ fun EditProfileHeader(
         Box(
             modifier =
                 Modifier
-                    .pressScale(saveInteraction)
-                    .height(SAVE_HEIGHT)
+                    .pressScale(actionInteraction)
+                    .height(ACTION_HEIGHT)
                     .clip(CircleShape)
                     .background(AppPrimary)
                     .clickable(
-                        interactionSource = saveInteraction,
+                        interactionSource = actionInteraction,
                         indication = null,
                         role = Role.Button,
-                        onClick = onSave,
+                        onClick = onAction,
                     ).padding(horizontal = Spacing.lg),
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = stringResource(R.string.edit_profile_save),
+                text = actionLabel,
                 color = if (isSaving) AppPrimary else AppOnPrimary,
-                style = AppType.label(SAVE_TEXT_SIZE),
+                style = AppType.label(ACTION_TEXT_SIZE),
             )
             if (isSaving) {
                 CircularProgressIndicator(
@@ -124,16 +123,33 @@ fun EditProfileHeader(
 
 @Preview
 @Composable
-private fun EditProfileHeaderPreview() {
+private fun FormHeaderPreview() {
     AppPreview {
-        EditProfileHeader(isSaving = false, onBack = {}, onSave = {})
+        FormHeader(
+            title = "Edit profile",
+            actionLabel = "Save",
+            closeLabel = "Back",
+            savingLabel = "Saving",
+            isSaving = false,
+            onClose = {},
+            onAction = {},
+        )
     }
 }
 
 @Preview
 @Composable
-private fun EditProfileHeaderSavingPreview() {
+private fun FormHeaderSavingPreview() {
     AppPreview {
-        EditProfileHeader(isSaving = true, onBack = {}, onSave = {})
+        FormHeader(
+            title = "New community",
+            actionLabel = "Create",
+            closeLabel = "Close",
+            savingLabel = "Creating",
+            isSaving = true,
+            onClose = {},
+            onAction = {},
+            closeIcon = AppIcon.CLOSE,
+        )
     }
 }

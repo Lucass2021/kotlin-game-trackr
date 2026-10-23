@@ -7,6 +7,8 @@ import com.lucasdias.gametrackr.core.model.LikeStatus
 import com.lucasdias.gametrackr.core.model.PostComment
 import com.lucasdias.gametrackr.core.pagination.Page
 
+const val CREATOR_MEMBER_COUNT = "1"
+
 interface CommunityRepository {
     suspend fun fetchCommunities(
         page: Int,

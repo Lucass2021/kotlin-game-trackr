@@ -104,8 +104,21 @@ class RemoteCommunityRepositoryTest {
             assertFalse(community.isJoined)
         }
 
+    @Test
+    fun `created community has the creator as its only member`() =
+        runBlocking {
+            server.enqueue(MockResponse().setResponseCode(HTTP_CREATED).setBody(CREATE_COMMUNITY_BODY))
+
+            val community = repository.createCommunity(title = COMMUNITY_TITLE, description = DESCRIPTION).getOrThrow()
+
+            assertTrue(community.isJoined)
+            assertEquals(CREATOR_MEMBER_COUNT, community.members)
+        }
+
     private companion object {
         const val HTTP_OK = 200
+        const val HTTP_CREATED = 201
+        const val DESCRIPTION = "A club for retro games."
         const val HTTP_UNAUTHORIZED = 401
         const val COMMUNITY_ID = 5L
         const val COMMUNITY_TITLE = "Retro Club"
@@ -131,6 +144,7 @@ class RemoteCommunityRepositoryTest {
                 """{"id":$ROOT_COMMENT_ID,"content":"Root","author_id":1,"post_id":$POST_ID},""" +
                 """{"id":$REPLY_ID,"content":"Reply","author_id":1,"post_id":$POST_ID,"parent_id":$ROOT_COMMENT_ID},""" +
                 """{"id":$NESTED_REPLY_ID,"content":"Nested","author_id":1,"post_id":$POST_ID,"parent_id":$REPLY_ID}]}"""
+        const val CREATE_COMMUNITY_BODY = """{"community":$COMMUNITY_BODY,"message":"Community created successfully"}"""
         const val LIKE_BODY = """{"message":"Post liked","is_liked":true,"likes":$LIKES}"""
     }
 }

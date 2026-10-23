@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.profile.editprofile.components
+package com.lucasdias.gametrackr.core.ui.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -8,7 +8,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
@@ -19,6 +18,7 @@ private val TITLE_SIZE = 18.sp
 
 @Composable
 fun DiscardChangesDialog(
+    title: String,
     onDiscard: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -26,20 +26,16 @@ fun DiscardChangesDialog(
         onDismissRequest = onDismiss,
         containerColor = AppBackground,
         title = {
-            Text(
-                text = stringResource(R.string.edit_profile_discard_title),
-                color = AppTextPrimary,
-                style = AppType.headline(TITLE_SIZE),
-            )
+            Text(text = title, color = AppTextPrimary, style = AppType.headline(TITLE_SIZE))
         },
         confirmButton = {
             TextButton(onClick = onDiscard) {
-                Text(text = stringResource(R.string.edit_profile_discard_confirm), color = AppTertiary)
+                Text(text = stringResource(R.string.discard_confirm), color = AppTertiary)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.edit_profile_discard_cancel), color = AppTextSecondary)
+                Text(text = stringResource(R.string.discard_cancel), color = AppTextSecondary)
             }
         },
     )
@@ -49,6 +45,6 @@ fun DiscardChangesDialog(
 @Composable
 private fun DiscardChangesDialogPreview() {
     AppPreview {
-        DiscardChangesDialog(onDiscard = {}, onDismiss = {})
+        DiscardChangesDialog(title = "Discard your changes?", onDiscard = {}, onDismiss = {})
     }
 }

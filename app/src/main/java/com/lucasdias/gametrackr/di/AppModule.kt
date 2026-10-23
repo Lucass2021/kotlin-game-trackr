@@ -191,7 +191,7 @@ val appModule =
             ResetPasswordViewModel(get(), androidContext(), email, code)
         }
         viewModel { (communityName: String) -> CreateTopicViewModel(communityName, get()) }
-        viewModel { CreateCommunityViewModel(get(), androidContext()) }
+        viewModel { CreateCommunityViewModel(get()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get()) }
         viewModel { MySetupViewModel(get()) }
         viewModel { StatsViewModel(get()) }
