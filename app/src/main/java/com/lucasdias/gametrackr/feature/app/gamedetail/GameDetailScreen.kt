@@ -5,53 +5,51 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
-import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
+import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.data.game.FakeGameRepository
 import com.lucasdias.gametrackr.feature.app.addtolibrary.AddToLibrarySheet
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameAboutSection
+import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameDetailHeader
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameDetailHero
-import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameGenreChip
-import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameInfoChip
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameScreenshotsSection
 import com.lucasdias.gametrackr.feature.app.gamedetail.components.GameSpecificationsSection
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import java.util.Locale
+
+private val BACK_BUTTON_SIZE = 44.dp
+private val BACK_ICON_SIZE = 20.dp
 
 @Composable
 fun GameDetailScreen(
@@ -60,62 +58,82 @@ fun GameDetailScreen(
     isGuest: Boolean = false,
 ) {
     val viewModel: GameDetailViewModel = koinViewModel { parametersOf(slug) }
-    val game by viewModel.game.collectAsStateWithLifecycle()
-    val hasError by viewModel.hasError.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    game?.let {
-        GameDetailContent(game = it, onBack = onBack, isGuest = isGuest)
-    } ?: GameDetailPlaceholder(hasError = hasError, onBack = onBack)
+    LaunchedEffect(viewModel) { viewModel.loadIfNeeded() }
+
+    GameDetailScreen(
+        state = state,
+        isGuest = isGuest,
+        onBack = onBack,
+        onRetry = viewModel::load,
+    )
 }
 
 @Composable
-private fun GameDetailPlaceholder(
-    hasError: Boolean,
-    onBack: () -> Unit,
+private fun GameDetailScreen(
+    state: GameDetailUiState,
+    isGuest: Boolean,
+    onBack: () -> Unit = {},
+    onRetry: () -> Unit = {},
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize().background(AppBackground),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (hasError) {
-            Text(
-                text = stringResource(R.string.game_detail_load_error),
-                color = AppTextSecondary,
-                style = AppType.body(15.sp),
+    val game = state.game
+    if (game != null) {
+        GameDetailContent(game = game, isGuest = isGuest, onBack = onBack)
+        return
+    }
+
+    Box(modifier = Modifier.fillMaxSize().background(AppBackground)) {
+        if (state.hasError) {
+            EmptyState(
+                icon = AppIcon.INFO,
+                title = stringResource(R.string.game_detail_load_error_title),
+                message = stringResource(R.string.game_detail_load_error_message),
+                actionTitle = stringResource(R.string.game_detail_retry),
+                onAction = onRetry,
+                modifier = Modifier.align(Alignment.Center),
             )
         } else {
-            CircularProgressIndicator(color = AppPrimary)
+            CircularProgressIndicator(color = AppPrimary, modifier = Modifier.align(Alignment.Center))
         }
 
-        Box(
-            modifier =
-                Modifier
-                    .align(Alignment.TopStart)
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .size(42.dp)
-                    .clickable(onClick = onBack),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = AppIcon.BACK.image(),
-                contentDescription = stringResource(R.string.game_detail_back),
-                tint = AppTextPrimary,
-                modifier = Modifier.size(20.dp),
-            )
-        }
+        PlaceholderBackButton(onBack = onBack, modifier = Modifier.align(Alignment.TopStart))
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PlaceholderBackButton(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier =
+            modifier
+                .statusBarsPadding()
+                .padding(horizontal = Spacing.md, vertical = Spacing.xs)
+                .size(BACK_BUTTON_SIZE)
+                .clip(CircleShape)
+                .clickable(onClick = onBack),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = AppIcon.BACK.image(),
+            contentDescription = stringResource(R.string.game_detail_back),
+            tint = AppTextPrimary,
+            modifier = Modifier.size(BACK_ICON_SIZE),
+        )
+    }
+}
+
 @Composable
 private fun GameDetailContent(
     game: GameDetail,
-    onBack: () -> Unit,
     isGuest: Boolean,
+    onBack: () -> Unit,
 ) {
     var showAddToLibrary by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val shareMessage = stringResource(R.string.game_detail_share_message, game.title)
 
     Column(
         modifier =
@@ -123,51 +141,16 @@ private fun GameDetailContent(
                 .fillMaxSize()
                 .background(AppBackground)
                 .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(28.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xl),
     ) {
-        GameDetailHero(
+        GameDetailHero(game = game, onBack = onBack, onShare = { context.shareText(shareMessage) })
+
+        GameDetailHeader(
             game = game,
-            onBack = onBack,
-            onShare = { context.shareText("I found ${game.title} on GameTrackr") },
+            isGuest = isGuest,
+            onAddToLibrary = { showAddToLibrary = true },
+            modifier = Modifier.padding(horizontal = Spacing.lg),
         )
-
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-        ) {
-            Text(
-                text = game.title,
-                color = AppTextPrimary,
-                style = AppType.headline(30.sp),
-                lineHeight = 36.sp,
-            )
-
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                GameInfoChip(text = game.year)
-                game.rating?.let { GameInfoChip(text = String.format(Locale.US, "%.1f", it), isRating = true) }
-                game.platforms.forEach { GameInfoChip(text = it) }
-            }
-
-            if (game.genres.isNotEmpty()) {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    game.genres.forEach { GameGenreChip(text = it) }
-                }
-            }
-
-            if (!isGuest) {
-                PrimaryButton(
-                    text = stringResource(R.string.game_detail_add_to_library),
-                    onClick = { showAddToLibrary = true },
-                    icon = AppIcon.ADD_TO_LIBRARY,
-                )
-            }
-        }
 
         if (game.screenshots.isNotEmpty()) {
             GameScreenshotsSection(screenshots = game.screenshots)
@@ -176,10 +159,7 @@ private fun GameDetailContent(
         GameAboutSection(about = game.about)
 
         if (game.specs.isNotEmpty()) {
-            GameSpecificationsSection(
-                specs = game.specs,
-                modifier = Modifier.padding(bottom = 32.dp),
-            )
+            GameSpecificationsSection(specs = game.specs, modifier = Modifier.padding(bottom = Spacing.xxl))
         }
     }
 
@@ -197,6 +177,22 @@ private fun GameDetailContent(
 @Composable
 private fun GameDetailScreenPreview() {
     AppPreview {
-        GameDetailContent(game = FakeGameRepository.gameDetail, onBack = {}, isGuest = false)
+        GameDetailScreen(state = GameDetailUiState(game = FakeGameRepository.gameDetail), isGuest = false)
+    }
+}
+
+@Preview
+@Composable
+private fun GameDetailScreenLoadingPreview() {
+    AppPreview {
+        GameDetailScreen(state = GameDetailUiState(isLoading = true), isGuest = false)
+    }
+}
+
+@Preview
+@Composable
+private fun GameDetailScreenErrorPreview() {
+    AppPreview {
+        GameDetailScreen(state = GameDetailUiState(hasError = true), isGuest = false)
     }
 }

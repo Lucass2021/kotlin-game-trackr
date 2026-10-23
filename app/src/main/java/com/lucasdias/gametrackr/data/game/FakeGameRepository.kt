@@ -26,7 +26,11 @@ class FakeGameRepository(
     var mostAnticipatedFailure: Throwable? = null,
     private val searchResults: List<Game> = games,
     var searchFailure: Throwable? = null,
+    var fetchGameFailure: Throwable? = null,
 ) : GameRepository {
+    var fetchGameCount = 0
+        private set
+
     var searchCount = 0
         private set
     var lastSearch: String? = null
@@ -52,8 +56,9 @@ class FakeGameRepository(
     }
 
     override suspend fun fetchGame(slug: String): Result<GameDetail> {
+        fetchGameCount++
         delay(FakeLatency.RESPONSE_DELAY_MS)
-        return Result.success(gameDetail)
+        return fetchGameFailure?.let { Result.failure(it) } ?: Result.success(gameDetail)
     }
 
     override suspend fun fetchAllNewReleases(

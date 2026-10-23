@@ -1,6 +1,7 @@
 package com.lucasdias.gametrackr.feature.app.gamedetail.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,35 +17,50 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Durations
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.game.FakeGameRepository
+
+private val BODY_SIZE = 15.sp
+private val BODY_LINE_HEIGHT = 22.sp
+private val TOGGLE_SIZE = 14.sp
+private val CARET_SIZE = 12.dp
+private val BORDER_WIDTH = 1.dp
+private const val COLLAPSED_LINES = 3
+private const val EXPANDED_ROTATION = 180f
 
 @Composable
 fun GameAboutSection(
     about: String,
     modifier: Modifier = Modifier,
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val shape = RoundedCornerShape(16.dp)
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val shape = RoundedCornerShape(Radius.lg)
 
     Column(
-        modifier = modifier.padding(horizontal = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier.padding(horizontal = Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         GameSectionHeader(title = stringResource(R.string.game_detail_about))
 
@@ -54,38 +70,45 @@ fun GameAboutSection(
                     .fillMaxWidth()
                     .clip(shape)
                     .background(AppSurfaceCard)
-                    .border(1.dp, AppOutline, shape)
-                    .padding(16.dp)
-                    .animateContentSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                    .border(BORDER_WIDTH, AppOutline, shape)
+                    .padding(Spacing.md)
+                    .animateContentSize(tween(Durations.SHORT)),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             Text(
                 text = about,
                 color = AppTextSecondary,
-                fontSize = 15.sp,
-                lineHeight = 22.sp,
-                maxLines = if (expanded) Int.MAX_VALUE else 3,
+                style = AppType.body(BODY_SIZE),
+                lineHeight = BODY_LINE_HEIGHT,
+                maxLines = if (expanded) Int.MAX_VALUE else COLLAPSED_LINES,
                 overflow = TextOverflow.Ellipsis,
             )
 
             Row(
-                modifier = Modifier.clickable { expanded = !expanded },
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.clickable(role = Role.Button) { expanded = !expanded },
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xxs),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = stringResource(if (expanded) R.string.game_detail_read_less else R.string.game_detail_read_more),
                     color = AppSecondary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    style = AppType.label(TOGGLE_SIZE),
                 )
                 Icon(
                     imageVector = AppIcon.CARET_DOWN.image(),
                     contentDescription = null,
                     tint = AppSecondary,
-                    modifier = Modifier.size(14.dp).rotate(if (expanded) 180f else 0f),
+                    modifier = Modifier.size(CARET_SIZE).rotate(if (expanded) EXPANDED_ROTATION else 0f),
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun GameAboutSectionPreview() {
+    AppPreview {
+        GameAboutSection(about = FakeGameRepository.gameDetail.about)
     }
 }
