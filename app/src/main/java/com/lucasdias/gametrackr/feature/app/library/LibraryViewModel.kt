@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.data.library.LibraryRepository
+import com.lucasdias.gametrackr.data.library.LibraryUpdates
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class LibraryViewModel(
     private val repository: LibraryRepository,
+    libraryUpdates: LibraryUpdates,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LibraryUiState())
     val uiState: StateFlow<LibraryUiState> = _uiState.asStateFlow()
@@ -22,6 +24,16 @@ class LibraryViewModel(
     private var statsJob: Job? = null
     private val favoriteJobs = mutableMapOf<String, Job>()
     private var loadedUserId: Int? = null
+
+    init {
+        viewModelScope.launch {
+            libraryUpdates.addedSlugs.collect {
+                if (loadedUserId == null) return@collect
+                loadPage(1)
+                loadStats()
+            }
+        }
+    }
 
     fun loadFor(userId: Int?) {
         if (userId == loadedUserId) return

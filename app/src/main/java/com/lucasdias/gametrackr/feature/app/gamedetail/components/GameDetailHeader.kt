@@ -15,6 +15,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
+import com.lucasdias.gametrackr.core.ui.components.SecondaryButton
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
@@ -33,6 +34,7 @@ fun GameDetailHeader(
     isGuest: Boolean,
     onAddToLibrary: () -> Unit,
     modifier: Modifier = Modifier,
+    isInLibrary: Boolean = false,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -64,11 +66,15 @@ fun GameDetailHeader(
         }
 
         if (!isGuest) {
-            PrimaryButton(
-                text = stringResource(R.string.game_detail_add_to_library),
-                onClick = onAddToLibrary,
-                icon = AppIcon.ADD_TO_LIBRARY,
-            )
+            if (isInLibrary) {
+                SecondaryButton(text = stringResource(R.string.game_detail_in_library), onClick = onAddToLibrary)
+            } else {
+                PrimaryButton(
+                    text = stringResource(R.string.game_detail_add_to_library),
+                    onClick = onAddToLibrary,
+                    icon = AppIcon.ADD_TO_LIBRARY,
+                )
+            }
         }
     }
 }
@@ -78,6 +84,14 @@ fun GameDetailHeader(
 private fun GameDetailHeaderPreview() {
     AppPreview {
         GameDetailHeader(game = FakeGameRepository.gameDetail, isGuest = false, onAddToLibrary = {})
+    }
+}
+
+@Preview
+@Composable
+private fun GameDetailHeaderInLibraryPreview() {
+    AppPreview {
+        GameDetailHeader(game = FakeGameRepository.gameDetail, isGuest = false, onAddToLibrary = {}, isInLibrary = true)
     }
 }
 

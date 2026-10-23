@@ -56,3 +56,17 @@ data class LibraryStats(
     val totalGames: Int,
     val platinum: Int,
 )
+
+data class NewLibraryEntry(
+    val title: String,
+    val slug: String,
+    val status: LibraryStatus,
+    val rating: Int,
+    val hours: Int?,
+    val platform: String?,
+    val startedAt: Long?,
+    val finishedAt: Long?,
+    val review: String?,
+    val coverStart: Color,
+    val coverEnd: Color,
+)

@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.data.library
 import com.lucasdias.gametrackr.core.model.LibraryEntry
 import com.lucasdias.gametrackr.core.model.LibraryStats
 import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.model.NewLibraryEntry
 import com.lucasdias.gametrackr.core.pagination.Page
 
 interface LibraryRepository {
@@ -18,4 +19,8 @@ interface LibraryRepository {
         slug: String,
         isFavorite: Boolean,
     ): Result<Unit>
+
+    suspend fun addToLibrary(entry: NewLibraryEntry): Result<Unit>
+
+    suspend fun isInLibrary(slug: String): Result<Boolean>
 }

@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.data.library
 import com.lucasdias.gametrackr.core.model.LibraryEntry
 import com.lucasdias.gametrackr.core.model.LibraryStats
 import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.model.NewLibraryEntry
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.pagination.Page
 import com.lucasdias.gametrackr.core.pagination.fakePage
@@ -20,6 +21,9 @@ class FakeLibraryRepository(
         private set
 
     var setFavoriteCount = 0
+        private set
+
+    var addCount = 0
         private set
 
     override suspend fun fetchLibrary(
@@ -47,6 +51,29 @@ class FakeLibraryRepository(
             entries[index] = entries[index].copy(isFavorite = isFavorite)
         }
     }
+
+    override suspend fun addToLibrary(entry: NewLibraryEntry): Result<Unit> {
+        addCount++
+        return respond {
+            val index = entries.indexOfFirst { it.slug == entry.slug }
+            val added =
+                LibraryEntry(
+                    title = entry.title,
+                    slug = entry.slug,
+                    status = entry.status,
+                    rating = entry.rating,
+                    hours = entry.hours ?: 0,
+                    coverStart = entry.coverStart,
+                    coverEnd = entry.coverEnd,
+                    isFavorite = entries.getOrNull(index)?.isFavorite == true,
+                )
+            if (index < 0) entries.add(0, added) else entries[index] = added
+        }
+    }
+
+    override suspend fun isInLibrary(slug: String): Result<Boolean> = respond { entries.any { it.slug == slug } }
+
+    fun entry(slug: String): LibraryEntry? = entries.firstOrNull { it.slug == slug }
 
     fun isFavorite(slug: String): Boolean = entries.firstOrNull { it.slug == slug }?.isFavorite == true
 

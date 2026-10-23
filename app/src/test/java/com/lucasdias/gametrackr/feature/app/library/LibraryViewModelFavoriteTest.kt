@@ -4,6 +4,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.library.FakeLibraryRepository
 import com.lucasdias.gametrackr.data.library.LibraryMockData
+import com.lucasdias.gametrackr.data.library.LibraryUpdates
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -83,7 +84,7 @@ class LibraryViewModelFavoriteTest {
         }
 
     private fun TestScope.loadedViewModel(repository: FakeLibraryRepository): LibraryViewModel {
-        val viewModel = LibraryViewModel(repository)
+        val viewModel = LibraryViewModel(repository, LibraryUpdates())
         viewModel.loadFor(USER_ID)
         advanceUntilIdle()
         return viewModel

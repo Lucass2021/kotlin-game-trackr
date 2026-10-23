@@ -1,185 +1,160 @@
 package com.lucasdias.gametrackr.feature.app.addtolibrary
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.model.GameDetail
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
+import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
-import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppType
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
-import com.lucasdias.gametrackr.feature.app.addtolibrary.components.DateField
-import com.lucasdias.gametrackr.feature.app.addtolibrary.components.InteractiveStarRating
-import com.lucasdias.gametrackr.feature.app.addtolibrary.components.NumberField
-import com.lucasdias.gametrackr.feature.app.addtolibrary.components.PlatformPicker
-import com.lucasdias.gametrackr.feature.app.addtolibrary.components.ReviewField
-import com.lucasdias.gametrackr.feature.app.addtolibrary.components.SectionLabel
-import com.lucasdias.gametrackr.feature.app.addtolibrary.components.StatusSelectGrid
-import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.data.game.FakeGameRepository
+import com.lucasdias.gametrackr.feature.app.addtolibrary.components.AddToLibraryForm
+import com.lucasdias.gametrackr.feature.app.addtolibrary.components.AddToLibraryHeader
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
-private val platforms = listOf("PS5", "PS4", "Xbox Series X|S", "PC", "Nintendo Switch")
+private const val SHEET_HEIGHT_FRACTION = 0.92f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddToLibrarySheet(
-    gameTitle: String,
+    slug: String,
+    game: GameDetail,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
-    coverStart: Color = CoverVioletStart,
-    coverEnd: Color = CoverVioletEnd,
+    onSaved: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val viewModel: AddToLibraryViewModel = koinViewModel(key = "add-to-library") { parametersOf(slug, game) }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isSaving by rememberUpdatedState(state.isSaving)
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { it != SheetValue.Hidden || !isSaving },
+        )
 
-    var status by rememberSaveable { mutableStateOf(LibraryStatus.PLAYING) }
-    var rating by rememberSaveable { mutableIntStateOf(0) }
-    var hours by rememberSaveable { mutableStateOf("") }
-    var platform by rememberSaveable { mutableStateOf("PS5") }
-    var started by rememberSaveable { mutableStateOf<Long?>(null) }
-    var finished by rememberSaveable { mutableStateOf<Long?>(null) }
-    var review by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(state.isSaved) {
+        if (state.isSaved) {
+            viewModel.reset()
+            onSaved()
+        }
+    }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            if (!isSaving) {
+                viewModel.reset()
+                onDismiss()
+            }
+        },
         sheetState = sheetState,
         containerColor = AppBackground,
-        modifier = modifier,
     ) {
-        Column(modifier = Modifier.fillMaxHeight(0.92f)) {
-            Header(
-                gameTitle = gameTitle,
-                coverStart = coverStart,
-                coverEnd = coverEnd,
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 20.dp),
+        AddToLibraryContent(
+            state = state,
+            game = game,
+            actions =
+                AddToLibraryActions(
+                    onStatusChange = viewModel::onStatusChange,
+                    onRatingChange = viewModel::onRatingChange,
+                    onHoursChange = viewModel::onHoursChange,
+                    onPlatformChange = viewModel::onPlatformChange,
+                    onStartedChange = viewModel::onStartedChange,
+                    onFinishedChange = viewModel::onFinishedChange,
+                    onReviewChange = viewModel::onReviewChange,
+                    onSave = viewModel::onSave,
+                    onToastShown = viewModel::onToastShown,
+                ),
+            modifier = Modifier.fillMaxHeight(SHEET_HEIGHT_FRACTION),
+        )
+    }
+}
+
+@Composable
+private fun AddToLibraryContent(
+    state: AddToLibraryUiState,
+    game: GameDetail,
+    actions: AddToLibraryActions,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        Column {
+            AddToLibraryHeader(
+                gameTitle = game.title,
+                coverStart = game.coverStart,
+                coverEnd = game.coverEnd,
+                modifier = Modifier.padding(start = Spacing.lg, end = Spacing.lg, top = Spacing.xs, bottom = Spacing.lg),
             )
 
-            Column(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(22.dp),
-            ) {
-                Field(stringResource(R.string.add_library_status)) {
-                    StatusSelectGrid(selection = status, onSelect = { status = it })
-                }
-
-                Field(stringResource(R.string.add_library_rating)) {
-                    InteractiveStarRating(rating = rating, onRatingChange = { rating = it })
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    Field(stringResource(R.string.add_library_hours), modifier = Modifier.weight(1f)) {
-                        NumberField(
-                            value = hours,
-                            onValueChange = { hours = it },
-                            placeholder = stringResource(R.string.add_library_hours_placeholder),
-                        )
-                    }
-                    Field(stringResource(R.string.add_library_platform), modifier = Modifier.weight(1f)) {
-                        PlatformPicker(selection = platform, options = platforms, onSelect = { platform = it })
-                    }
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                    Field(stringResource(R.string.add_library_started), modifier = Modifier.weight(1f)) {
-                        DateField(
-                            dateMillis = started,
-                            onDateChange = { started = it },
-                            placeholder = stringResource(R.string.add_library_date_placeholder),
-                        )
-                    }
-                    Field(stringResource(R.string.add_library_finished), modifier = Modifier.weight(1f)) {
-                        DateField(
-                            dateMillis = finished,
-                            onDateChange = { finished = it },
-                            placeholder = stringResource(R.string.add_library_date_placeholder),
-                        )
-                    }
-                }
-
-                Field(stringResource(R.string.add_library_review)) {
-                    ReviewField(
-                        value = review,
-                        onValueChange = { review = it },
-                        placeholder = stringResource(R.string.add_library_review_placeholder),
-                    )
-                }
-            }
+            AddToLibraryForm(state = state, actions = actions, modifier = Modifier.weight(1f))
 
             PrimaryButton(
                 text = stringResource(R.string.add_library_save),
-                onClick = onDismiss,
+                onClick = actions.onSave,
+                isLoading = state.isSaving,
                 icon = AppIcon.ADD_TO_LIBRARY,
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+                modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
             )
         }
+
+        Toast(
+            message = state.toastMessage?.let { stringResource(it) },
+            onDismiss = actions.onToastShown,
+            modifier = Modifier.align(Alignment.TopCenter),
+        )
     }
 }
 
+@Preview
 @Composable
-private fun Header(
-    gameTitle: String,
-    coverStart: Color,
-    coverEnd: Color,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
-        GameCoverArt(start = coverStart, end = coverEnd, width = 56.dp, height = 56.dp)
-        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-            Text(
-                text = stringResource(R.string.add_library_title),
-                color = AppTextPrimary,
-                style = AppType.headline(22.sp),
-            )
-            Text(
-                text = gameTitle,
-                color = AppTextSecondary,
-                fontSize = 14.sp,
-                maxLines = 1,
-            )
-        }
+private fun AddToLibraryContentPreview() {
+    val game = FakeGameRepository.gameDetail
+    AppPreview {
+        AddToLibraryContent(
+            state = AddToLibraryUiState(platforms = game.platforms, platform = game.platforms.first(), rating = 4),
+            game = game,
+            actions = AddToLibraryActions(),
+        )
     }
 }
 
+@Preview
 @Composable
-private fun Field(
-    label: String,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        SectionLabel(text = label)
-        content()
+private fun AddToLibraryContentErrorPreview() {
+    val game = FakeGameRepository.gameDetail
+    AppPreview {
+        AddToLibraryContent(
+            state =
+                AddToLibraryUiState(
+                    platforms = game.platforms,
+                    platform = game.platforms.first(),
+                    startedAt = PREVIEW_STARTED_AT,
+                    finishedAt = PREVIEW_FINISHED_AT,
+                    isSubmitted = true,
+                ),
+            game = game,
+            actions = AddToLibraryActions(),
+        )
     }
 }
+
+private const val PREVIEW_STARTED_AT = 1_710_417_600_000L
+private const val PREVIEW_FINISHED_AT = 1_709_251_200_000L

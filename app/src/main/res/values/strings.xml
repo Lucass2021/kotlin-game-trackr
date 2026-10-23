@@ -247,6 +247,7 @@
     <string name="game_detail_back">Back</string>
     <string name="game_detail_share">Share</string>
     <string name="game_detail_add_to_library">Add to library</string>
+    <string name="game_detail_in_library">In library</string>
     <string name="game_detail_screenshots">Screenshots</string>
     <string name="game_detail_about">About</string>
     <string name="game_detail_read_more">Read more</string>
@@ -272,6 +273,12 @@
     <string name="add_library_review">Review</string>
     <string name="add_library_review_placeholder">Write a short review…</string>
     <string name="add_library_save">Save to library</string>
+    <string name="add_library_date_error">The finish date can\'t be before the start date.</string>
+    <string name="add_library_save_error">Couldn\'t save to your library. Please try again.</string>
+    <string name="add_library_saved">Added to your library</string>
+    <string name="add_library_date_done">Done</string>
+    <string name="add_library_date_clear">Clear</string>
+    <string name="add_library_rate_stars">Rate %1$d of %2$d stars</string>
 
     <string name="community_action_like">Like</string>
     <string name="community_action_unlike">Unlike</string>

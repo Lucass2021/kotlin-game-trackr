@@ -18,12 +18,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val CARET_SIZE = 16.dp
+private val TEXT_SIZE = 16.sp
 
 @Composable
 fun PlatformPicker(
@@ -40,33 +49,24 @@ fun PlatformPicker(
                 Modifier
                     .fillMaxWidth()
                     .fieldBox()
-                    .height(50.dp)
-                    .clickable { expanded = true }
-                    .padding(horizontal = 14.dp),
+                    .height(FIELD_HEIGHT)
+                    .clickable(role = Role.Button) { expanded = true }
+                    .padding(horizontal = Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = selection,
-                color = AppTextPrimary,
-                fontSize = 16.sp,
-                modifier = Modifier.weight(1f),
-            )
+            Text(text = selection, color = AppTextPrimary, style = AppType.body(TEXT_SIZE), modifier = Modifier.weight(1f))
             Icon(
                 imageVector = AppIcon.CARET_DOWN.image(),
                 contentDescription = null,
                 tint = AppTextSecondary,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(CARET_SIZE),
             )
         }
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            containerColor = AppSurfaceCard,
-        ) {
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }, containerColor = AppSurfaceCard) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = option, color = AppTextPrimary) },
+                    text = { Text(text = option, color = if (option == selection) AppPrimary else AppTextPrimary) },
                     onClick = {
                         onSelect(option)
                         expanded = false
@@ -74,5 +74,13 @@ fun PlatformPicker(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun PlatformPickerPreview() {
+    AppPreview {
+        PlatformPicker(selection = "PS5", options = listOf("PS5", "PC"), onSelect = {})
     }
 }

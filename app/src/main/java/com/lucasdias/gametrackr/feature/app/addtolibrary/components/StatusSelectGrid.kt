@@ -18,16 +18,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.glow
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
+import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val CHIP_HEIGHT = 64.dp
+private val BORDER_WIDTH = 1.dp
+private val TEXT_SIZE = 14.sp
+private const val COLUMNS = 3
 
 @Composable
 fun StatusSelectGrid(
@@ -35,9 +47,9 @@ fun StatusSelectGrid(
     onSelect: (LibraryStatus) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        LibraryStatus.entries.chunked(3).forEach { rowStatuses ->
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        LibraryStatus.entries.chunked(COLUMNS).forEach { rowStatuses ->
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                 rowStatuses.forEach { status ->
                     StatusChip(
                         status = status,
@@ -58,24 +70,35 @@ private fun StatusChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(12.dp)
-    val interaction = remember { MutableInteractionSource() }
+    val shape = RoundedCornerShape(Radius.md)
     Box(
         modifier =
             modifier
-                .height(64.dp)
-                .then(if (isSelected) Modifier.glow(color = AppPrimary, cornerRadius = 12.dp) else Modifier)
+                .height(CHIP_HEIGHT)
+                .then(if (isSelected) Modifier.glow(color = AppPrimary, cornerRadius = Radius.md) else Modifier)
                 .clip(shape)
                 .background(if (isSelected) AppPrimary else AppSurfaceCard)
-                .border(1.dp, if (isSelected) Color.Transparent else AppOutline, shape)
-                .clickable(interactionSource = interaction, indication = null, onClick = onClick),
+                .border(BORDER_WIDTH, if (isSelected) Color.Transparent else AppOutline, shape)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    role = Role.Button,
+                    onClick = onClick,
+                ).semantics { selected = isSelected },
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = stringResource(status.labelRes),
             color = if (isSelected) AppOnPrimary else AppTextPrimary,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
+            style = AppType.label(TEXT_SIZE),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun StatusSelectGridPreview() {
+    AppPreview {
+        StatusSelectGrid(selection = LibraryStatus.PLAYING, onSelect = {})
     }
 }

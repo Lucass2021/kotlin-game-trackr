@@ -5,6 +5,7 @@ import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.library.FakeLibraryRepository
 import com.lucasdias.gametrackr.data.library.LibraryMockData
+import com.lucasdias.gametrackr.data.library.LibraryUpdates
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -23,7 +24,7 @@ class LibraryViewModelTest {
     @Test
     fun `loading for a user shows the first page and the stats`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = LibraryViewModel(FakeLibraryRepository())
+            val viewModel = LibraryViewModel(FakeLibraryRepository(), LibraryUpdates())
 
             viewModel.loadFor(USER_ID)
             advanceUntilIdle()
@@ -37,7 +38,7 @@ class LibraryViewModelTest {
     @Test
     fun `load failure shows the error state instead of loading forever`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = LibraryViewModel(FakeLibraryRepository(failure = IllegalStateException()))
+            val viewModel = LibraryViewModel(FakeLibraryRepository(failure = IllegalStateException()), LibraryUpdates())
 
             viewModel.loadFor(USER_ID)
             advanceUntilIdle()
@@ -50,7 +51,7 @@ class LibraryViewModelTest {
     fun `retry after a failure shows the entries`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeLibraryRepository(failure = IllegalStateException())
-            val viewModel = LibraryViewModel(repository)
+            val viewModel = LibraryViewModel(repository, LibraryUpdates())
             viewModel.loadFor(USER_ID)
             advanceUntilIdle()
 
@@ -66,7 +67,7 @@ class LibraryViewModelTest {
     fun `coming back to the tab keeps the entries without fetching again`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeLibraryRepository()
-            val viewModel = LibraryViewModel(repository)
+            val viewModel = LibraryViewModel(repository, LibraryUpdates())
             viewModel.loadFor(USER_ID)
             advanceUntilIdle()
 
@@ -80,7 +81,7 @@ class LibraryViewModelTest {
     @Test
     fun `switching to a guest drops the entries and a late result does not bring them back`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = LibraryViewModel(FakeLibraryRepository())
+            val viewModel = LibraryViewModel(FakeLibraryRepository(), LibraryUpdates())
 
             viewModel.loadFor(USER_ID)
             runCurrent()
@@ -93,7 +94,7 @@ class LibraryViewModelTest {
     @Test
     fun `filtering finds matching games beyond the first page`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = LibraryViewModel(FakeLibraryRepository())
+            val viewModel = LibraryViewModel(FakeLibraryRepository(), LibraryUpdates())
             viewModel.loadFor(USER_ID)
             advanceUntilIdle()
 
@@ -107,7 +108,7 @@ class LibraryViewModelTest {
     @Test
     fun `a filter change replaces the load in flight`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = LibraryViewModel(FakeLibraryRepository())
+            val viewModel = LibraryViewModel(FakeLibraryRepository(), LibraryUpdates())
 
             viewModel.loadFor(USER_ID)
             runCurrent()
@@ -120,7 +121,7 @@ class LibraryViewModelTest {
     @Test
     fun `loading more appends the next page until the last one`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = LibraryViewModel(FakeLibraryRepository())
+            val viewModel = LibraryViewModel(FakeLibraryRepository(), LibraryUpdates())
             viewModel.loadFor(USER_ID)
             advanceUntilIdle()
 
@@ -135,7 +136,7 @@ class LibraryViewModelTest {
     fun `a load more failure keeps the entries and stops until retried`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeLibraryRepository()
-            val viewModel = LibraryViewModel(repository)
+            val viewModel = LibraryViewModel(repository, LibraryUpdates())
             viewModel.loadFor(USER_ID)
             advanceUntilIdle()
 
@@ -159,7 +160,7 @@ class LibraryViewModelTest {
     fun `an empty library opened with a filter shows the empty library state`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = FakeLibraryRepository(entries = emptyList(), stats = LibraryStats(totalGames = 0, platinum = 0))
-            val viewModel = LibraryViewModel(repository)
+            val viewModel = LibraryViewModel(repository, LibraryUpdates())
             viewModel.loadFor(USER_ID)
             advanceUntilIdle()
 

@@ -7,6 +7,7 @@ import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
 import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.UserProfile
 import com.lucasdias.gametrackr.core.network.AuthApi
@@ -33,6 +34,7 @@ import com.lucasdias.gametrackr.data.game.GameRepository
 import com.lucasdias.gametrackr.data.game.RemoteGameRepository
 import com.lucasdias.gametrackr.data.library.FakeLibraryRepository
 import com.lucasdias.gametrackr.data.library.LibraryRepository
+import com.lucasdias.gametrackr.data.library.LibraryUpdates
 import com.lucasdias.gametrackr.data.notifications.FakeNotificationsRepository
 import com.lucasdias.gametrackr.data.notifications.NotificationsRepository
 import com.lucasdias.gametrackr.data.profile.FakeProfileOverviewRepository
@@ -45,6 +47,7 @@ import com.lucasdias.gametrackr.data.stats.FakeStatsRepository
 import com.lucasdias.gametrackr.data.stats.StatsRepository
 import com.lucasdias.gametrackr.feature.app.achievements.AchievementsViewModel
 import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsViewModel
+import com.lucasdias.gametrackr.feature.app.addtolibrary.AddToLibraryViewModel
 import com.lucasdias.gametrackr.feature.app.community.CommunityFeedViewModel
 import com.lucasdias.gametrackr.feature.app.community.communitydetail.CommunityDetailViewModel
 import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityViewModel
@@ -168,6 +171,7 @@ val appModule =
         single<SetupRepository> { RemoteSetupRepository(get(), get(), baseUrl) }
         single<StatsRepository> { FakeStatsRepository() }
         single<LibraryRepository> { FakeLibraryRepository() }
+        single { LibraryUpdates() }
         single<NotificationsRepository> { FakeNotificationsRepository() }
         single<AchievementsRepository> { FakeAchievementsRepository() }
         single<ProfileOverviewRepository> { FakeProfileOverviewRepository() }
@@ -177,7 +181,7 @@ val appModule =
         viewModel { CommunityFeedViewModel(get(), get(), get(), get()) }
         viewModel { HomeViewModel(get()) }
         viewModel { (scope: SearchScope) -> SearchViewModel(scope, get()) }
-        viewModel { (slug: String) -> GameDetailViewModel(get(), slug) }
+        viewModel { (slug: String) -> GameDetailViewModel(get(), get(), get(), slug) }
         viewModel { AuthViewModel(get(), get()) }
         viewModel { LoginViewModel(get(), get(), androidContext()) }
         viewModel { RegisterViewModel(get(), get(), androidContext()) }
@@ -191,7 +195,8 @@ val appModule =
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get(), androidContext()) }
         viewModel { MySetupViewModel(get()) }
         viewModel { StatsViewModel(get()) }
-        viewModel { LibraryViewModel(get()) }
+        viewModel { LibraryViewModel(get(), get()) }
+        viewModel { (slug: String, game: GameDetail) -> AddToLibraryViewModel(get(), get(), slug, game) }
         viewModel { AchievementsViewModel(get()) }
         viewModel { (gameId: Long) -> GameAchievementsViewModel(get(), gameId) }
         viewModel { NotificationsViewModel(get()) }
