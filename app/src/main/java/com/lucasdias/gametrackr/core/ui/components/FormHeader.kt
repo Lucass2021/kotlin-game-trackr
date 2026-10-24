@@ -51,6 +51,7 @@ fun FormHeader(
     onAction: () -> Unit,
     modifier: Modifier = Modifier,
     closeIcon: AppIcon = AppIcon.BACK,
+    isActionVisible: Boolean = true,
 ) {
     val closeInteraction = remember { MutableInteractionSource() }
     val actionInteraction = remember { MutableInteractionSource() }
@@ -90,33 +91,52 @@ fun FormHeader(
             modifier = Modifier.weight(1f),
         )
 
-        Box(
-            modifier =
-                Modifier
-                    .pressScale(actionInteraction)
-                    .height(ACTION_HEIGHT)
-                    .clip(CircleShape)
-                    .background(AppPrimary)
-                    .clickable(
-                        interactionSource = actionInteraction,
-                        indication = null,
-                        role = Role.Button,
-                        onClick = onAction,
-                    ).padding(horizontal = Spacing.lg),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = actionLabel,
-                color = if (isSaving) AppPrimary else AppOnPrimary,
-                style = AppType.label(ACTION_TEXT_SIZE),
+        if (isActionVisible) {
+            ActionButton(
+                label = actionLabel,
+                savingLabel = savingLabel,
+                isSaving = isSaving,
+                interactionSource = actionInteraction,
+                onClick = onAction,
             )
-            if (isSaving) {
-                CircularProgressIndicator(
-                    color = AppOnPrimary,
-                    strokeWidth = SPINNER_STROKE,
-                    modifier = Modifier.size(SPINNER_SIZE).semantics { contentDescription = savingLabel },
-                )
-            }
+        }
+    }
+}
+
+@Composable
+private fun ActionButton(
+    label: String,
+    savingLabel: String,
+    isSaving: Boolean,
+    interactionSource: MutableInteractionSource,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier =
+            Modifier
+                .pressScale(interactionSource)
+                .height(ACTION_HEIGHT)
+                .clip(CircleShape)
+                .background(AppPrimary)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    role = Role.Button,
+                    onClick = onClick,
+                ).padding(horizontal = Spacing.lg),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            color = if (isSaving) AppPrimary else AppOnPrimary,
+            style = AppType.label(ACTION_TEXT_SIZE),
+        )
+        if (isSaving) {
+            CircularProgressIndicator(
+                color = AppOnPrimary,
+                strokeWidth = SPINNER_STROKE,
+                modifier = Modifier.size(SPINNER_SIZE).semantics { contentDescription = savingLabel },
+            )
         }
     }
 }

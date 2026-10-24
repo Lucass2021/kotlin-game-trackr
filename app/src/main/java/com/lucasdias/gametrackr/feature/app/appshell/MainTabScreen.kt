@@ -102,8 +102,6 @@ private object ShellRoutes {
     const val HELP = "help"
     const val CREATE_COMMUNITY = "createcommunity"
     const val CREATE_TOPIC = "createtopic"
-    const val CREATE_TOPIC_ARG_COMMUNITY = "community"
-    const val CREATE_TOPIC_ROUTE = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY={$CREATE_TOPIC_ARG_COMMUNITY}"
 
     fun search(scope: SearchScope) = "$SEARCH?$SEARCH_ARG_SCOPE=${scope.name}"
 
@@ -118,8 +116,6 @@ private object ShellRoutes {
     fun editSetup(setupId: Int? = null) = if (setupId == null) EDIT_SETUP else "$EDIT_SETUP?$EDIT_SETUP_ARG_ID=$setupId"
 
     fun userProfile(name: String) = "$USER_PROFILE?$USER_PROFILE_ARG_NAME=${Uri.encode(name)}"
-
-    fun createTopic(communityName: String = "") = "$CREATE_TOPIC?$CREATE_TOPIC_ARG_COMMUNITY=${Uri.encode(communityName)}"
 }
 
 private fun NavController.popBackStackIfResumed() {
@@ -142,6 +138,7 @@ fun MainTabScreen(
     val discoverViewModel: DiscoverCommunitiesViewModel = koinViewModel()
     val communityFeedViewModel: CommunityFeedViewModel = koinViewModel()
     var selectedCommunity by remember { mutableStateOf<Community?>(null) }
+    var createTopicCommunity by remember { mutableStateOf<Community?>(null) }
     var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
     val libraryViewModel: LibraryViewModel = koinViewModel()
     val profileViewModel: ProfileViewModel = koinViewModel()
@@ -185,7 +182,10 @@ fun MainTabScreen(
                     selectedCommunity = community
                     navController.navigate(ShellRoutes.COMMUNITY_DETAIL)
                 },
-                onCreatePost = { navController.navigate(ShellRoutes.createTopic()) },
+                onCreatePost = {
+                    createTopicCommunity = null
+                    navController.navigate(ShellRoutes.CREATE_TOPIC)
+                },
                 onCreateCommunity = { navController.navigate(ShellRoutes.CREATE_COMMUNITY) },
                 onViewStats = { navController.navigate(ShellRoutes.stats()) },
                 profile = profile,
@@ -294,33 +294,20 @@ fun MainTabScreen(
                     navController.navigate(ShellRoutes.POST_DETAIL)
                 },
                 onCreatePost = {
-                    navController.navigate(ShellRoutes.createTopic(community.name))
+                    createTopicCommunity = community
+                    navController.navigate(ShellRoutes.CREATE_TOPIC)
                 },
                 onMemberClick = { member ->
                     navController.navigate(ShellRoutes.userProfile(member.author))
                 },
             )
         }
-        composable(
-            route = ShellRoutes.CREATE_TOPIC_ROUTE,
-            arguments =
-                listOf(
-                    navArgument(ShellRoutes.CREATE_TOPIC_ARG_COMMUNITY) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    },
-                ),
-        ) { backStackEntry ->
-            val communityName =
-                backStackEntry.arguments?.getString(ShellRoutes.CREATE_TOPIC_ARG_COMMUNITY).orEmpty()
+        composable(ShellRoutes.CREATE_TOPIC) {
             CreateTopicScreen(
                 isGuest = isGuest,
-                communityName = communityName,
+                community = createTopicCommunity,
                 onBack = { navController.popBackStackIfResumed() },
                 onCreateAccount = onLogout,
-                onPost = { post ->
-                    communityFeedViewModel.onPostCreated(post)
-                },
             )
         }
         composable(ShellRoutes.POST_DETAIL) {

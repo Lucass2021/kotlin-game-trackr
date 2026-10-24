@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.model.prependingPost
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.community.CommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.CommunityRepository
@@ -40,7 +41,9 @@ class CommunityDetailViewModel(
             postUpdates = postUpdates,
             posts = { _uiState.value.posts },
             replacePost = ::replacePost,
+            addPost = { post -> _uiState.update { it.copy(posts = it.posts.prependingPost(post)) } },
             showToast = { message -> _uiState.update { it.copy(toastMessage = message) } },
+            communityId = community.id,
         )
 
     fun loadIfNeeded() {

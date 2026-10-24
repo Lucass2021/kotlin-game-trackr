@@ -15,13 +15,20 @@ class PostListActions(
     private val postUpdates: PostUpdates,
     private val posts: () -> List<CommunityPost>,
     private val replacePost: (Long, (CommunityPost) -> CommunityPost) -> Unit,
+    private val addPost: (CommunityPost) -> Unit,
     private val showToast: (Int) -> Unit,
+    private val communityId: Long? = null,
 ) {
     private val pendingLikeIds = mutableSetOf<Long>()
     private val pendingBookmarkIds = mutableSetOf<Long>()
 
     init {
         scope.launch { postUpdates.posts.collect { post -> replacePost(post.id) { post } } }
+        scope.launch {
+            postUpdates.createdPosts.collect { post ->
+                if (communityId == null || post.communityId == communityId) addPost(post)
+            }
+        }
     }
 
     fun onLike(postId: Long) {

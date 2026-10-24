@@ -130,7 +130,8 @@ class CommunityFeedViewModelActionsTest {
             loaded()
             val created = post.copy(id = 9_999L)
 
-            viewModel.onPostCreated(created)
+            postUpdates.publishCreated(created)
+            advanceUntilIdle()
             assertEquals(
                 created.id,
                 viewModel.uiState.value.posts

@@ -1,12 +1,12 @@
 package com.lucasdias.gametrackr.feature.app.community.createtopic
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Community
-import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.data.community.CommunityRepository
+import com.lucasdias.gametrackr.data.community.PostUpdates
+import com.lucasdias.gametrackr.feature.auth.toUiText
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,89 +14,67 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateTopicViewModel(
-    communityName: String,
+    community: Community?,
     private val repository: CommunityRepository,
+    private val postUpdates: PostUpdates,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(CreateTopicUiState())
+    private val _uiState = MutableStateFlow(CreateTopicUiState(community = community, isCommunityLocked = community != null))
     val uiState: StateFlow<CreateTopicUiState> = _uiState.asStateFlow()
 
-    private var submitted = false
+    private var communitiesJob: Job? = null
 
-    val communities = mutableStateListOf<Community>()
-
-    init {
-        viewModelScope.launch {
-            repository.fetchJoinedCommunities().onSuccess { communities.addAll(it) }
-            val locked =
-                communityName
-                    .takeIf { it.isNotBlank() }
-                    ?.let { name -> communities.firstOrNull { it.name == name } }
-            if (locked != null) {
-                _uiState.update { it.copy(community = locked, isCommunityLocked = true) }
-            }
-        }
+    fun loadIfNeeded() {
+        val state = _uiState.value
+        if (state.isCommunityLocked || state.isLoadingCommunities || state.communities.isNotEmpty()) return
+        loadCommunities()
     }
 
+    fun retryCommunities() = loadCommunities()
+
     fun onCommunityChange(value: Community) {
+        if (_uiState.value.isCommunityLocked) return
         _uiState.update { it.copy(community = value) }
-        revalidate()
     }
 
     fun onTitleChange(value: String) {
         _uiState.update { it.copy(title = value) }
-        revalidate()
     }
 
     fun onBodyChange(value: String) {
         _uiState.update { it.copy(body = value) }
-        revalidate()
     }
 
-    suspend fun submitPost(): CommunityPost? {
-        submitted = true
-        revalidate()
-        val state = _uiState.value
-        val community = state.community ?: return null
-        if (!state.canSubmit) return null
+    fun onSubmit() {
+        val current = _uiState.value
+        if (current.isSubmitting || current.createdPost != null) return
+        _uiState.update { it.copy(isSubmitted = true) }
+        val community = current.community
+        if (!current.canSubmit || community == null) return
 
-        return repository
-            .createPost(
-                title = state.title.trim(),
-                description = state.body.trim(),
-                communityId = community.id,
-            ).getOrNull()
-    }
-
-    private fun revalidate() {
-        if (!submitted) return
-        _uiState.update {
-            it.copy(
-                communityError = communityErrorFor(it.community),
-                titleError = titleErrorFor(it.title),
-                bodyError = bodyErrorFor(it.body),
-            )
+        _uiState.update { it.copy(isSubmitting = true, toastMessage = null) }
+        viewModelScope.launch {
+            repository
+                .createPost(title = current.trimmedTitle, description = current.trimmedBody, communityId = community.id)
+                .onSuccess { post ->
+                    postUpdates.publishCreated(post)
+                    _uiState.update { it.copy(isSubmitting = false, createdPost = post) }
+                }.onFailure { error -> _uiState.update { it.copy(isSubmitting = false, toastMessage = error.toUiText()) } }
         }
     }
 
-    private fun communityErrorFor(community: Community?): Int? = if (community == null) R.string.validation_community_required else null
-
-    private fun titleErrorFor(title: String): Int? {
-        val trimmed = title.trim()
-        return when {
-            trimmed.isEmpty() -> R.string.validation_topic_title_required
-            trimmed.length < 3 -> R.string.validation_topic_title_too_short
-            trimmed.length > CreateTopicUiState.TITLE_LIMIT -> R.string.validation_topic_title_too_long
-            else -> null
-        }
+    fun onToastShown() {
+        _uiState.update { it.copy(toastMessage = null) }
     }
 
-    private fun bodyErrorFor(body: String): Int? {
-        val trimmed = body.trim()
-        return when {
-            trimmed.isEmpty() -> R.string.validation_topic_body_required
-            trimmed.length < 10 -> R.string.validation_topic_body_too_short
-            trimmed.length > CreateTopicUiState.BODY_LIMIT -> R.string.validation_topic_body_too_long
-            else -> null
-        }
+    private fun loadCommunities() {
+        communitiesJob?.cancel()
+        _uiState.update { it.copy(isLoadingCommunities = true, communitiesFailed = false) }
+        communitiesJob =
+            viewModelScope.launch {
+                repository
+                    .fetchJoinedCommunities()
+                    .onSuccess { communities -> _uiState.update { it.copy(communities = communities, isLoadingCommunities = false) } }
+                    .onFailure { _uiState.update { it.copy(isLoadingCommunities = false, communitiesFailed = true) } }
+            }
     }
 }

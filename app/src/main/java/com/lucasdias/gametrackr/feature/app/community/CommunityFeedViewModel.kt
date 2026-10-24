@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.CommunityFeedFilter
 import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.model.prependingPost
 import com.lucasdias.gametrackr.data.community.CommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.CommunityRepository
 import com.lucasdias.gametrackr.data.community.CommunityUpdates
@@ -35,6 +36,7 @@ class CommunityFeedViewModel(
             postUpdates = postUpdates,
             posts = { _uiState.value.posts },
             replacePost = ::replacePost,
+            addPost = ::onPostCreated,
             showToast = { message -> _uiState.update { it.copy(toastMessage = message) } },
         )
 
@@ -100,7 +102,7 @@ class CommunityFeedViewModel(
     }
 
     fun onPostCreated(post: CommunityPost) {
-        _uiState.update { state -> state.copy(posts = listOf(post) + state.posts.filterNot { it.id == post.id }) }
+        _uiState.update { state -> state.copy(posts = state.posts.prependingPost(post)) }
     }
 
     fun onPostDeleted(postId: Long) {

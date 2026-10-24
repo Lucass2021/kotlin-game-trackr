@@ -190,7 +190,7 @@ val appModule =
         viewModel { (email: String, code: String) ->
             ResetPasswordViewModel(get(), androidContext(), email, code)
         }
-        viewModel { (communityName: String) -> CreateTopicViewModel(communityName, get()) }
+        viewModel { params -> CreateTopicViewModel(params.getOrNull(), get(), get()) }
         viewModel { CreateCommunityViewModel(get()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get()) }
         viewModel { MySetupViewModel(get()) }

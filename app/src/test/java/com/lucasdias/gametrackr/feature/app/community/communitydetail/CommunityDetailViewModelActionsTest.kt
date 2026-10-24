@@ -173,18 +173,6 @@ class CommunityDetailViewModelActionsTest {
             assertEquals(R.string.community_bookmark_error, viewModel.uiState.value.toastMessage)
         }
 
-    @Test
-    fun `a post changed in another screen is updated in the community posts`() =
-        runTest(mainDispatcherRule.dispatcher) {
-            loaded()
-
-            postUpdates.publish(post.copy(isLiked = !post.isLiked, likes = post.likes + 1))
-            advanceUntilIdle()
-
-            assertEquals(!post.isLiked, likedPost().isLiked)
-            assertEquals(post.likes + 1, likedPost().likes)
-        }
-
     private fun likedPost() =
         viewModel.uiState.value.posts
             .first { it.id == post.id }

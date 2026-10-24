@@ -42,6 +42,8 @@ class FakeCommunityRepository(
         private set
     var commentLikeCount = 0
         private set
+    var createPostCount = 0
+        private set
 
     override suspend fun fetchCommunities(
         page: Int,
@@ -114,8 +116,9 @@ class FakeCommunityRepository(
         title: String,
         description: String,
         communityId: Long,
-    ): Result<CommunityPost> =
-        respond {
+    ): Result<CommunityPost> {
+        createPostCount++
+        return respond {
             val created =
                 posts.first().copy(
                     id = posts.maxOf { it.id } + 1,
@@ -128,6 +131,7 @@ class FakeCommunityRepository(
             posts.add(0, created)
             created
         }
+    }
 
     override suspend fun deletePost(id: Long): Result<Unit> = respond { if (!posts.removeIf { it.id == id }) throw ApiError.NotFound }
 
