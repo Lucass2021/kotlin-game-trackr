@@ -1,19 +1,16 @@
 package com.lucasdias.gametrackr.feature.auth.verifyresetcode.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.AuthPrompt
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 
 @Composable
@@ -22,27 +19,36 @@ fun ResendRow(
     onResend: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val canResend = seconds <= 0
-    val text =
-        buildAnnotatedString {
-            append(stringResource(R.string.verify_didnt_get))
-            if (canResend) {
-                withStyle(SpanStyle(color = AppSecondary, fontWeight = FontWeight.SemiBold)) {
-                    append(stringResource(R.string.verify_resend))
-                }
-            } else {
-                append(stringResource(R.string.verify_resend_in, seconds))
-            }
-        }
+    if (seconds <= 0) {
+        AuthPrompt(
+            prefix = stringResource(R.string.verify_didnt_get),
+            actionText = stringResource(R.string.verify_resend),
+            onClick = onResend,
+            modifier = modifier,
+        )
+    } else {
+        Text(
+            text = stringResource(R.string.verify_didnt_get) + stringResource(R.string.verify_resend_in, seconds),
+            color = AppTextSecondary,
+            fontSize = 15.sp,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxWidth(),
+        )
+    }
+}
 
-    Text(
-        text = text,
-        color = AppTextSecondary,
-        fontSize = 15.sp,
-        textAlign = TextAlign.Center,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .then(if (canResend) Modifier.clickable(onClick = onResend) else Modifier),
-    )
+@Preview
+@Composable
+private fun ResendRowCountdownPreview() {
+    AppPreview {
+        ResendRow(seconds = 12, onResend = {})
+    }
+}
+
+@Preview
+@Composable
+private fun ResendRowReadyPreview() {
+    AppPreview {
+        ResendRow(seconds = 0, onResend = {})
+    }
 }

@@ -1,12 +1,11 @@
 package com.lucasdias.gametrackr.feature.auth.verifyresetcode
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.auth.AuthRepository
-import com.lucasdias.gametrackr.feature.auth.toMessage
+import com.lucasdias.gametrackr.feature.auth.toUiText
+import com.lucasdias.gametrackr.feature.auth.verifyresetcode.VerifyResetCodeUiState.Companion.CODE_LENGTH
+import com.lucasdias.gametrackr.feature.auth.verifyresetcode.VerifyResetCodeUiState.Companion.RESEND_SECONDS
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,13 +16,11 @@ import kotlinx.coroutines.launch
 
 class VerifyResetCodeViewModel(
     private val authRepository: AuthRepository,
-    private val context: Context,
     private val email: String,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(VerifyResetCodeUiState())
     val uiState: StateFlow<VerifyResetCodeUiState> = _uiState.asStateFlow()
 
-    private var submitted = false
     private var countdownJob: Job? = null
 
     init {
@@ -31,69 +28,63 @@ class VerifyResetCodeViewModel(
     }
 
     fun onCodeChange(value: String) {
-        val digits = value.filter { it.isDigit() }.take(CODE_LENGTH)
-        _uiState.update { it.copy(code = digits, codeError = codeErrorFor(digits)) }
-        if (digits.length == CODE_LENGTH) verify()
+        val digits = value.filter { it in '0'..'9' }.take(CODE_LENGTH)
+        if (digits == _uiState.value.code) return
+        _uiState.update { it.copy(code = digits) }
+        if (digits.length == CODE_LENGTH) onSubmit()
     }
 
-    fun onConfirm() = verify()
+    fun onSubmit() {
+        if (_uiState.value.isLoading) return
+        _uiState.update { it.copy(isSubmitted = true) }
+        val state = _uiState.value
+        if (!state.canSubmit) return
 
-    fun onErrorShown() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
-    fun onVerifiedHandled() {
-        _uiState.update { it.copy(verified = false) }
+        _uiState.update { it.copy(isLoading = true, toastMessage = null) }
+        viewModelScope.launch {
+            val result = authRepository.verifyResetCode(email, state.code)
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    verifiedCode = state.code.takeIf { result.isSuccess },
+                    toastMessage = result.exceptionOrNull()?.toUiText(),
+                )
+            }
+        }
     }
 
     fun onResend() {
-        if (_uiState.value.resendSeconds > 0) return
-        viewModelScope.launch { authRepository.forgotPassword(email) }
+        if (!_uiState.value.canResend) return
         startCountdown()
-    }
-
-    private fun verify() {
-        if (_uiState.value.isLoading) return
-        submitted = true
-        val code = _uiState.value.code
-        val codeError = codeErrorFor(code)
-        _uiState.update { it.copy(codeError = codeError) }
-        if (codeError != null) return
-
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.verifyResetCode(email, code)
-            _uiState.update { it.copy(isLoading = false) }
-            result.onSuccess {
-                _uiState.update { it.copy(verified = true) }
-            }
-            result.onFailure { error ->
-                val message =
-                    (error as? ApiError)?.toMessage(context)
-                        ?: context.getString(R.string.error_generic)
-                _uiState.update { it.copy(errorMessage = message) }
+            authRepository.forgotPassword(email).onFailure { error ->
+                countdownJob?.cancel()
+                _uiState.update { it.copy(resendSeconds = 0, toastMessage = error.toUiText()) }
             }
         }
     }
 
-    private fun codeErrorFor(code: String): Int? {
-        if (!submitted) return null
-        return when {
-            code.isBlank() -> R.string.validation_code_required
-            code.length != CODE_LENGTH -> R.string.validation_code_invalid
-            else -> null
-        }
+    fun onToastShown() {
+        _uiState.update { it.copy(toastMessage = null) }
+    }
+
+    fun onVerifiedHandled() {
+        _uiState.update { it.copy(verifiedCode = null) }
     }
 
     private fun startCountdown() {
         countdownJob?.cancel()
+        _uiState.update { it.copy(resendSeconds = RESEND_SECONDS) }
         countdownJob =
             viewModelScope.launch {
-                _uiState.update { it.copy(resendSeconds = RESEND_SECONDS) }
                 while (_uiState.value.resendSeconds > 0) {
-                    delay(1000)
+                    delay(TICK_MILLIS)
                     _uiState.update { it.copy(resendSeconds = it.resendSeconds - 1) }
                 }
             }
+    }
+
+    private companion object {
+        const val TICK_MILLIS = 1_000L
     }
 }

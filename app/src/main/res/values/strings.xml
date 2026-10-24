@@ -72,7 +72,7 @@
     <string name="verify_resend_in">Resend in %1$ds</string>
     <string name="verify_resend">Resend code</string>
     <string name="validation_code_required">Code is required</string>
-    <string name="validation_code_invalid">Enter the 6-digit code</string>
+    <string name="validation_code_invalid">Enter the %1$d-digit code</string>
 
     <string name="reset_title">Create new password</string>
     <string name="reset_subtitle">Your new password must be different from previously used passwords.</string>

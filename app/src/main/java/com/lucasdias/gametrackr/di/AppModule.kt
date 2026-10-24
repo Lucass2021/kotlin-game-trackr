@@ -199,7 +199,7 @@ val appModule =
         viewModel { LoginViewModel(get(), get()) }
         viewModel { RegisterViewModel(get(), get()) }
         viewModel { ForgotPasswordViewModel(get()) }
-        viewModel { (email: String) -> VerifyResetCodeViewModel(get(), androidContext(), email) }
+        viewModel { (email: String) -> VerifyResetCodeViewModel(get(), email) }
         viewModel { (email: String, code: String) ->
             ResetPasswordViewModel(get(), androidContext(), email, code)
         }

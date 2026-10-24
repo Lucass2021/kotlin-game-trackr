@@ -6,11 +6,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
@@ -20,7 +20,10 @@ import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
 import com.lucasdias.gametrackr.core.ui.components.OtpField
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.components.Toast
+import com.lucasdias.gametrackr.core.ui.text.asString
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.feature.auth.verifyresetcode.VerifyResetCodeUiState.Companion.CODE_LENGTH
 import com.lucasdias.gametrackr.feature.auth.verifyresetcode.components.VerifyResetCodeBottomSection
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -33,22 +36,25 @@ fun VerifyResetCodeScreen(
     viewModel: VerifyResetCodeViewModel = koinViewModel { parametersOf(email) },
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val currentOnVerified by rememberUpdatedState(onVerified)
 
-    LaunchedEffect(uiState.verified) {
-        if (uiState.verified) {
-            onVerified(uiState.code)
-            viewModel.onVerifiedHandled()
-        }
+    LaunchedEffect(uiState.verifiedCode) {
+        val code = uiState.verifiedCode ?: return@LaunchedEffect
+        currentOnVerified(code)
+        viewModel.onVerifiedHandled()
     }
 
     VerifyResetCodeContent(
         email = email,
         uiState = uiState,
-        onBack = onBack,
-        onCodeChange = viewModel::onCodeChange,
-        onConfirm = viewModel::onConfirm,
-        onResend = viewModel::onResend,
-        onErrorShown = viewModel::onErrorShown,
+        actions =
+            VerifyResetCodeActions(
+                onBack = onBack,
+                onCodeChange = viewModel::onCodeChange,
+                onSubmit = viewModel::onSubmit,
+                onResend = viewModel::onResend,
+                onToastShown = viewModel::onToastShown,
+            ),
     )
 }
 
@@ -56,27 +62,23 @@ fun VerifyResetCodeScreen(
 private fun VerifyResetCodeContent(
     email: String,
     uiState: VerifyResetCodeUiState,
-    onBack: () -> Unit,
-    onCodeChange: (String) -> Unit,
-    onConfirm: () -> Unit,
-    onResend: () -> Unit,
-    onErrorShown: () -> Unit,
+    actions: VerifyResetCodeActions,
 ) {
     AuthScreenScaffold(
-        onBack = onBack,
+        onBack = actions.onBack,
         overlay = {
             Toast(
-                message = uiState.errorMessage,
-                onDismiss = onErrorShown,
+                message = uiState.toastMessage?.asString(),
+                onDismiss = actions.onToastShown,
                 modifier = Modifier.align(Alignment.TopCenter),
             )
         },
         bottomBar = {
             VerifyResetCodeBottomSection(
                 seconds = uiState.resendSeconds,
-                onResend = onResend,
+                onResend = actions.onResend,
                 isLoading = uiState.isLoading,
-                onConfirm = onConfirm,
+                onConfirm = actions.onSubmit,
                 modifier = Modifier.staggeredAppear(3),
             )
         },
@@ -86,29 +88,30 @@ private fun VerifyResetCodeContent(
             subtitle = stringResource(R.string.verify_subtitle_prefix) + email,
             modifier =
                 Modifier
-                    .padding(top = 16.dp)
+                    .padding(top = Spacing.md)
                     .staggeredAppear(1),
         )
 
         OtpField(
             value = uiState.code,
-            onValueChange = onCodeChange,
-            onImeDone = onConfirm,
+            onValueChange = actions.onCodeChange,
+            length = CODE_LENGTH,
+            onImeDone = actions.onSubmit,
             modifier =
                 Modifier
-                    .padding(top = 32.dp)
+                    .padding(top = Spacing.xxl)
                     .staggeredAppear(2),
         )
 
-        if (uiState.codeError != null) {
+        uiState.codeError?.let { error ->
             Text(
-                text = stringResource(uiState.codeError),
+                text = error.asString(),
                 color = AppTertiary,
                 fontSize = 13.sp,
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(top = 12.dp, start = 4.dp),
+                        .padding(top = Spacing.sm, start = Spacing.xxs),
             )
         }
     }
@@ -121,11 +124,19 @@ private fun VerifyResetCodePreview() {
         VerifyResetCodeContent(
             email = "you@email.com",
             uiState = VerifyResetCodeUiState(code = "123"),
-            onBack = {},
-            onCodeChange = {},
-            onConfirm = {},
-            onResend = {},
-            onErrorShown = {},
+            actions = VerifyResetCodeActions(),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun VerifyResetCodeErrorPreview() {
+    AppPreview {
+        VerifyResetCodeContent(
+            email = "you@email.com",
+            uiState = VerifyResetCodeUiState(code = "123", isSubmitted = true, resendSeconds = 0),
+            actions = VerifyResetCodeActions(),
         )
     }
 }

@@ -7,9 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 
 @Composable
 fun VerifyResetCodeBottomSection(
@@ -21,7 +23,7 @@ fun VerifyResetCodeBottomSection(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ResendRow(seconds = seconds, onResend = onResend)
@@ -30,5 +32,13 @@ fun VerifyResetCodeBottomSection(
             onClick = onConfirm,
             isLoading = isLoading,
         )
+    }
+}
+
+@Preview
+@Composable
+private fun VerifyResetCodeBottomSectionPreview() {
+    AppPreview {
+        VerifyResetCodeBottomSection(seconds = 12, onResend = {}, isLoading = false, onConfirm = {})
     }
 }
