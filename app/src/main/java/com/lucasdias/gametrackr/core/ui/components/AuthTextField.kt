@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
@@ -148,5 +149,33 @@ fun AuthTextField(
                 modifier = Modifier.padding(horizontal = 4.dp),
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AuthTextFieldPreview() {
+    AppPreview {
+        AuthTextField(
+            label = stringResource(R.string.login_email_label),
+            placeholder = stringResource(R.string.login_email_placeholder),
+            value = "",
+            onValueChange = {},
+            error = R.string.validation_email_required,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AuthTextFieldPasswordPreview() {
+    AppPreview {
+        AuthTextField(
+            label = stringResource(R.string.login_password_label),
+            placeholder = stringResource(R.string.login_password_placeholder),
+            value = "hunter22",
+            onValueChange = {},
+            isPassword = true,
+        )
     }
 }

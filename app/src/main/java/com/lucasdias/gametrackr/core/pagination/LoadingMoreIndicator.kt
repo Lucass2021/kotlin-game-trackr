@@ -8,7 +8,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 
 @Composable
@@ -22,5 +24,13 @@ fun LoadingMoreIndicator(modifier: Modifier = Modifier) {
             strokeWidth = 2.dp,
             modifier = Modifier.size(24.dp),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun LoadingMoreIndicatorPreview() {
+    AppPreview {
+        LoadingMoreIndicator()
     }
 }

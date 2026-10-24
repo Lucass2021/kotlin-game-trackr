@@ -20,7 +20,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 
@@ -78,5 +81,18 @@ fun AuthScreenScaffold(
             }
         }
         overlay()
+    }
+}
+
+@Preview
+@Composable
+private fun AuthScreenScaffoldPreview() {
+    AppPreview {
+        AuthScreenScaffold(
+            onBack = {},
+            bottomBar = { PrimaryButton(text = stringResource(R.string.login_sign_in), onClick = {}) },
+        ) {
+            TitleWithSubtitle(title = stringResource(R.string.login_title), subtitle = stringResource(R.string.login_subtitle))
+        }
     }
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
@@ -87,5 +88,13 @@ fun OtpField(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun OtpFieldPreview() {
+    AppPreview {
+        OtpField(value = "123", onValueChange = {})
     }
 }

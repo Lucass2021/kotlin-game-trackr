@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
@@ -36,5 +37,13 @@ fun BackButton(
             tint = AppTextPrimary,
             modifier = Modifier.size(32.dp),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun BackButtonPreview() {
+    AppPreview {
+        BackButton(onBack = {})
     }
 }

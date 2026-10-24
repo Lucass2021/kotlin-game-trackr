@@ -16,9 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -80,5 +83,21 @@ fun PrimaryButton(
                 Text(text = text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun PrimaryButtonPreview() {
+    AppPreview {
+        PrimaryButton(text = stringResource(R.string.login_sign_in), onClick = {})
+    }
+}
+
+@Preview
+@Composable
+private fun PrimaryButtonLoadingPreview() {
+    AppPreview {
+        PrimaryButton(text = stringResource(R.string.login_sign_in), onClick = {}, isLoading = true)
     }
 }

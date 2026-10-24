@@ -12,9 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 
 @Composable
@@ -37,5 +40,13 @@ fun SecondaryButton(
         colors = ButtonDefaults.outlinedButtonColors(contentColor = AppTextPrimary),
     ) {
         Text(text = text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+@Preview
+@Composable
+private fun SecondaryButtonPreview() {
+    AppPreview {
+        SecondaryButton(text = stringResource(R.string.sign_out), onClick = {})
     }
 }

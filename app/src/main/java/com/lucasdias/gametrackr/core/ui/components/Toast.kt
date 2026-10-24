@@ -21,9 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.theme.AppSuccess
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import kotlinx.coroutines.delay
@@ -82,5 +85,13 @@ fun Toast(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ToastPreview() {
+    AppPreview {
+        Toast(message = stringResource(R.string.library_favorite_error), onDismiss = {})
     }
 }
