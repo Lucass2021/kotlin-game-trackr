@@ -58,7 +58,10 @@ import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileScree
 import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupRoute
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupScreen
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
+import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuActions
+import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuItem
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
+import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuUiState
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
 import com.lucasdias.gametrackr.feature.app.settings.SettingsScreen
@@ -339,18 +342,13 @@ fun MainTabScreen(
         }
         composable(ShellRoutes.MENU) {
             ProfileMenuScreen(
-                isGuest = isGuest,
-                userName = userName,
-                email = email,
-                onBack = { navController.popBackStackIfResumed() },
-                onLogout = onLogout,
-                onStats = { navController.navigate(ShellRoutes.stats()) },
-                onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
-                onAchievements = { navController.navigate(ShellRoutes.achievements()) },
-                onSettings = { navController.navigate(ShellRoutes.SETTINGS) },
-                onAbout = { navController.navigate(ShellRoutes.ABOUT) },
-                onHelp = { navController.navigate(ShellRoutes.HELP) },
-                profile = profile,
+                state = ProfileMenuUiState.from(isGuest = isGuest, userName = userName, email = email),
+                actions =
+                    ProfileMenuActions(
+                        onBack = { navController.popBackStackIfResumed() },
+                        onItemSelect = { item -> navController.navigate(item.route) },
+                        onLogout = onLogout,
+                    ),
             )
         }
         composable(ShellRoutes.SETTINGS) {
@@ -545,3 +543,14 @@ private fun TabShell(
         AppTabBar(selected = selected, onSelect = onSelect)
     }
 }
+
+private val ProfileMenuItem.route: String
+    get() =
+        when (this) {
+            ProfileMenuItem.EDIT_PROFILE -> ShellRoutes.EDIT_PROFILE
+            ProfileMenuItem.STATS -> ShellRoutes.stats()
+            ProfileMenuItem.ACHIEVEMENTS -> ShellRoutes.achievements()
+            ProfileMenuItem.SETTINGS -> ShellRoutes.SETTINGS
+            ProfileMenuItem.HELP -> ShellRoutes.HELP
+            ProfileMenuItem.ABOUT -> ShellRoutes.ABOUT
+        }
