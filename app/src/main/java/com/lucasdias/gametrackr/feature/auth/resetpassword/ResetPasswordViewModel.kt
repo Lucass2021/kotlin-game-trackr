@@ -1,13 +1,9 @@
 package com.lucasdias.gametrackr.feature.auth.resetpassword
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.auth.AuthRepository
-import com.lucasdias.gametrackr.feature.auth.AuthValidation
-import com.lucasdias.gametrackr.feature.auth.toMessage
+import com.lucasdias.gametrackr.feature.auth.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,62 +12,40 @@ import kotlinx.coroutines.launch
 
 class ResetPasswordViewModel(
     private val authRepository: AuthRepository,
-    private val context: Context,
     private val email: String,
     private val code: String,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ResetPasswordUiState())
     val uiState: StateFlow<ResetPasswordUiState> = _uiState.asStateFlow()
 
-    private var submitted = false
-
     fun onPasswordChange(value: String) {
         _uiState.update { it.copy(password = value) }
-        revalidate()
     }
 
     fun onConfirmPasswordChange(value: String) {
         _uiState.update { it.copy(confirmPassword = value) }
-        revalidate()
     }
 
-    fun onErrorShown() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
-    fun onDoneHandled() {
-        _uiState.update { it.copy(done = false) }
+    fun onToastShown() {
+        _uiState.update { it.copy(toastMessage = null) }
     }
 
     fun onSubmit() {
-        submitted = true
-        revalidate()
+        if (_uiState.value.isLoading || _uiState.value.isReset) return
+        _uiState.update { it.copy(isSubmitted = true) }
         val state = _uiState.value
-        if (state.passwordError != null || state.confirmPasswordError != null) return
+        if (!state.canSubmit) return
 
+        _uiState.update { it.copy(isLoading = true, toastMessage = null) }
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val result = authRepository.resetPassword(email, code, state.password)
-            _uiState.update { it.copy(isLoading = false) }
-            result.onSuccess {
-                _uiState.update { it.copy(done = true) }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    isReset = result.isSuccess,
+                    toastMessage = result.exceptionOrNull()?.toUiText(),
+                )
             }
-            result.onFailure { error ->
-                val message =
-                    (error as? ApiError)?.toMessage(context)
-                        ?: context.getString(R.string.error_generic)
-                _uiState.update { it.copy(errorMessage = message) }
-            }
-        }
-    }
-
-    private fun revalidate() {
-        if (!submitted) return
-        _uiState.update {
-            it.copy(
-                passwordError = AuthValidation.passwordError(it.password),
-                confirmPasswordError = AuthValidation.confirmPasswordError(it.password, it.confirmPassword),
-            )
         }
     }
 }

@@ -6,6 +6,7 @@ import com.lucasdias.gametrackr.core.auth.AuthStatus
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.auth.AuthRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -14,6 +15,8 @@ class AuthViewModel(
     private val sessionManager: SessionManager,
 ) : ViewModel() {
     val status: StateFlow<AuthStatus> = sessionManager.status
+
+    private var completeResetJob: Job? = null
 
     init {
         resolveSession()
@@ -44,9 +47,11 @@ class AuthViewModel(
     }
 
     fun completePasswordReset(onFailure: () -> Unit) {
-        viewModelScope.launch {
-            authRepository.completePasswordReset().onFailure { onFailure() }
-        }
+        if (completeResetJob?.isActive == true) return
+        completeResetJob =
+            viewModelScope.launch {
+                authRepository.completePasswordReset().onFailure { onFailure() }
+            }
     }
 
     fun logout() {

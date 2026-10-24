@@ -8,12 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.AuthTextField
 import com.lucasdias.gametrackr.core.ui.components.PasswordStrength
 import com.lucasdias.gametrackr.core.ui.components.PasswordStrengthMeter
 import com.lucasdias.gametrackr.core.ui.text.UiText
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 
 @Composable
 fun ResetPasswordFormSection(
@@ -27,9 +29,9 @@ fun ResetPasswordFormSection(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             AuthTextField(
                 label = stringResource(R.string.reset_new_password_label),
                 placeholder = stringResource(R.string.register_password_placeholder),
@@ -52,6 +54,21 @@ fun ResetPasswordFormSection(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
             error = confirmPasswordError,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ResetPasswordFormSectionPreview() {
+    AppPreview {
+        ResetPasswordFormSection(
+            password = "secret123",
+            onPasswordChange = {},
+            confirmPassword = "secret",
+            onConfirmPasswordChange = {},
+            passwordError = null,
+            confirmPasswordError = UiText.Resource(R.string.validation_passwords_dont_match),
         )
     }
 }

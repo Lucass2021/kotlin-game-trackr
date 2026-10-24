@@ -1,12 +1,8 @@
 package com.lucasdias.gametrackr.feature.auth
 
-import android.content.Context
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.ui.text.UiText
-import com.lucasdias.gametrackr.core.ui.text.asString
-
-fun ApiError.toMessage(context: Context): String = toUiText().asString(context)
 
 fun ApiError.toUiText(): UiText =
     when (this) {

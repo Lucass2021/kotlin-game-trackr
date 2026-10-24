@@ -61,6 +61,21 @@ class ChangePasswordViewModelTest {
         }
 
     @Test
+    fun `new password equal to the current one is rejected`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            val viewModel = viewModel(new = CURRENT, confirm = CURRENT)
+
+            viewModel.onSave()
+            advanceUntilIdle()
+
+            assertEquals(
+                UiText.Resource(R.string.change_password_error_same_as_current),
+                viewModel.uiState.value.newPasswordError,
+            )
+            assertEquals(0, repository.changeCount)
+        }
+
+    @Test
     fun `save sends the new password and marks it as changed`() =
         runTest(mainDispatcherRule.dispatcher) {
             val viewModel = viewModel()

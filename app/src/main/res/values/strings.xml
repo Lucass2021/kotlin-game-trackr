@@ -518,6 +518,7 @@
     <string name="change_password_error_current_required">Current password is required</string>
     <string name="change_password_error_new_required">New password is required</string>
     <string name="change_password_error_confirm_required">Confirm your new password</string>
+    <string name="change_password_error_same_as_current">New password must be different from the current one</string>
     <string name="change_password_success_title">Password updated!</string>
     <string name="change_password_success_subtitle">Your password was changed successfully.</string>
     <string name="change_password_success_button">Done</string>

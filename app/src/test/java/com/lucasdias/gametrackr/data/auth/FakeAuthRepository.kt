@@ -24,6 +24,10 @@ class FakeAuthRepository(
         private set
     var lastCode: String? = null
         private set
+    var resetCount = 0
+        private set
+    var completeResetCount = 0
+        private set
     var gate: CompletableDeferred<Unit>? = null
 
     override suspend fun login(
@@ -83,7 +87,18 @@ class FakeAuthRepository(
         email: String,
         code: String,
         newPassword: String,
-    ): Result<Unit> = Result.success(Unit)
+    ): Result<Unit> {
+        resetCount += 1
+        lastEmail = email
+        lastCode = code
+        lastPassword = newPassword
+        gate?.await()
+        return failure?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
 
-    override suspend fun completePasswordReset(): Result<User> = Result.success(user)
+    override suspend fun completePasswordReset(): Result<User> {
+        completeResetCount += 1
+        gate?.await()
+        return failure?.let { Result.failure(it) } ?: Result.success(user)
+    }
 }

@@ -201,7 +201,7 @@ val appModule =
         viewModel { ForgotPasswordViewModel(get()) }
         viewModel { (email: String) -> VerifyResetCodeViewModel(get(), email) }
         viewModel { (email: String, code: String) ->
-            ResetPasswordViewModel(get(), androidContext(), email, code)
+            ResetPasswordViewModel(get(), email, code)
         }
         viewModel { params -> CreateTopicViewModel(params.getOrNull(), get(), get()) }
         viewModel { CreateCommunityViewModel(get()) }
