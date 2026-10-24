@@ -1,16 +1,13 @@
 package com.lucasdias.gametrackr.feature.auth.register
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.auth.GoogleAuth
 import com.lucasdias.gametrackr.core.auth.GoogleAuthState
-import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.ui.text.UiText
 import com.lucasdias.gametrackr.data.auth.AuthRepository
-import com.lucasdias.gametrackr.feature.auth.AuthValidation
-import com.lucasdias.gametrackr.feature.auth.toMessage
+import com.lucasdias.gametrackr.feature.auth.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,57 +19,50 @@ import kotlinx.coroutines.launch
 class RegisterViewModel(
     private val authRepository: AuthRepository,
     private val googleAuth: GoogleAuth,
-    private val context: Context,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> =
         combine(_uiState, googleAuth.state, ::withGoogleAuth)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), RegisterUiState())
 
-    private var submitted = false
-
     fun onNameChange(value: String) {
         _uiState.update { it.copy(name = value) }
-        revalidate()
     }
 
     fun onEmailChange(value: String) {
         _uiState.update { it.copy(email = value) }
-        revalidate()
     }
 
     fun onPasswordChange(value: String) {
         _uiState.update { it.copy(password = value) }
-        revalidate()
     }
 
     fun onConfirmPasswordChange(value: String) {
         _uiState.update { it.copy(confirmPassword = value) }
-        revalidate()
     }
 
     fun onToggleTerms() {
         _uiState.update { it.copy(acceptedTerms = !it.acceptedTerms) }
-        revalidate()
     }
 
-    fun onErrorShown() {
+    fun onToastShown() {
         googleAuth.onErrorShown()
-        _uiState.update { it.copy(errorMessage = null) }
+        _uiState.update { it.copy(toastMessage = null) }
     }
 
-    fun onGoogleSignUp() {
+    fun onSignUpWithGoogle() {
+        if (isBusy) return
         googleAuth.launch()
     }
 
     fun onSubmit() {
-        submitted = true
-        revalidate()
+        if (isBusy) return
+        _uiState.update { it.copy(isSubmitted = true) }
         val state = _uiState.value
-        if (hasFieldErrors(state)) return
+        if (!state.canSubmit) return
 
+        _uiState.update { it.copy(isLoading = true, toastMessage = null) }
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val result =
                 authRepository.register(
                     name = state.name.trim(),
@@ -80,49 +70,22 @@ class RegisterViewModel(
                     password = state.password,
                     passwordConfirmation = state.confirmPassword,
                 )
-            _uiState.update { it.copy(isLoading = false) }
-            result.onSuccess {
-                _uiState.update { it.copy(registered = true) }
-            }
-            result.onFailure { error ->
-                val message =
-                    (error as? ApiError)?.toMessage(context)
-                        ?: context.getString(R.string.error_generic)
-                _uiState.update { it.copy(errorMessage = message) }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    isRegistered = result.isSuccess,
+                    toastMessage = result.exceptionOrNull()?.toUiText(),
+                )
             }
         }
     }
 
-    private fun revalidate() {
-        if (!submitted) return
-        _uiState.update {
-            it.copy(
-                nameError = nameErrorFor(it.name),
-                emailError = AuthValidation.emailError(it.email),
-                passwordError = AuthValidation.passwordError(it.password),
-                confirmPasswordError = AuthValidation.confirmPasswordError(it.password, it.confirmPassword),
-                termsError = termsErrorFor(it.acceptedTerms),
-            )
-        }
-    }
-
-    private fun hasFieldErrors(state: RegisterUiState): Boolean =
-        state.nameError != null ||
-            state.emailError != null ||
-            state.passwordError != null ||
-            state.confirmPasswordError != null ||
-            state.termsError != null
-
-    private fun nameErrorFor(name: String): UiText? {
-        val trimmed = name.trim()
-        return when {
-            trimmed.isEmpty() -> UiText.Resource(R.string.validation_name_required)
-            trimmed.length < 3 -> UiText.Resource(R.string.validation_name_too_short)
-            else -> null
-        }
-    }
-
-    private fun termsErrorFor(accepted: Boolean): UiText? = if (!accepted) UiText.Resource(R.string.validation_terms_required) else null
+    private val isBusy: Boolean
+        get() =
+            _uiState.value.isLoading ||
+                _uiState.value.isRegistered ||
+                googleAuth.state.value == GoogleAuthState.IN_PROGRESS ||
+                googleAuth.state.value == GoogleAuthState.COMPLETING
 
     private fun withGoogleAuth(
         state: RegisterUiState,
@@ -130,8 +93,8 @@ class RegisterViewModel(
     ): RegisterUiState =
         when (googleState) {
             GoogleAuthState.IDLE, GoogleAuthState.IN_PROGRESS -> state
-            GoogleAuthState.COMPLETING -> state.copy(isLoading = true, errorMessage = null)
-            GoogleAuthState.FAILED -> state.copy(isLoading = false, errorMessage = context.getString(R.string.error_generic))
+            GoogleAuthState.COMPLETING -> state.copy(isLoading = true, toastMessage = null)
+            GoogleAuthState.FAILED -> state.copy(isLoading = false, toastMessage = UiText.Resource(R.string.error_generic))
         }
 
     private companion object {

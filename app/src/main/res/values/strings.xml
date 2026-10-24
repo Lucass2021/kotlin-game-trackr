@@ -31,6 +31,7 @@
     <string name="register_terms">Terms of Use</string>
     <string name="register_terms_and">" and the "</string>
     <string name="register_privacy">Privacy Policy</string>
+    <string name="register_terms_checkbox">Accept the terms of use and privacy policy</string>
 
     <string name="password_strength_weak">WEAK PASSWORD</string>
     <string name="password_strength_medium">MEDIUM PASSWORD</string>

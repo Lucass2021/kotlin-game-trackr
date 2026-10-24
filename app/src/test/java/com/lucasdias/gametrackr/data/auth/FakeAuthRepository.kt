@@ -14,6 +14,10 @@ class FakeAuthRepository(
         private set
     var lastPassword: String? = null
         private set
+    var registerCount = 0
+        private set
+    var lastName: String? = null
+        private set
     var gate: CompletableDeferred<Unit>? = null
 
     override suspend fun login(
@@ -32,7 +36,14 @@ class FakeAuthRepository(
         email: String,
         password: String,
         passwordConfirmation: String,
-    ): Result<User> = Result.success(user)
+    ): Result<User> {
+        registerCount += 1
+        lastName = name
+        lastEmail = email
+        lastPassword = password
+        gate?.await()
+        return failure?.let { Result.failure(it) } ?: Result.success(user)
+    }
 
     override suspend fun validate(): Result<User> = Result.success(user)
 

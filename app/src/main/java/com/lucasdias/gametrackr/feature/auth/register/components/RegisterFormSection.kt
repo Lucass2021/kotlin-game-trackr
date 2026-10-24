@@ -8,12 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.AuthTextField
 import com.lucasdias.gametrackr.core.ui.components.PasswordStrength
 import com.lucasdias.gametrackr.core.ui.components.PasswordStrengthMeter
 import com.lucasdias.gametrackr.core.ui.text.UiText
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 
 @Composable
 fun RegisterFormSection(
@@ -33,7 +35,7 @@ fun RegisterFormSection(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
         AuthTextField(
             label = stringResource(R.string.register_name_label),
@@ -50,7 +52,7 @@ fun RegisterFormSection(
             keyboardType = KeyboardType.Email,
             error = emailError,
         )
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             AuthTextField(
                 label = stringResource(R.string.register_password_label),
                 placeholder = stringResource(R.string.register_password_placeholder),
@@ -73,6 +75,27 @@ fun RegisterFormSection(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
             error = confirmPasswordError,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RegisterFormSectionPreview() {
+    AppPreview {
+        RegisterFormSection(
+            name = "Player",
+            onNameChange = {},
+            email = "player@gametrackr.com",
+            onEmailChange = {},
+            password = "secret123",
+            onPasswordChange = {},
+            confirmPassword = "secret",
+            onConfirmPasswordChange = {},
+            nameError = null,
+            emailError = null,
+            passwordError = null,
+            confirmPasswordError = UiText.Resource(R.string.validation_passwords_dont_match),
         )
     }
 }

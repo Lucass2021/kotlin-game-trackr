@@ -197,7 +197,7 @@ val appModule =
         viewModel { (slug: String) -> GameDetailViewModel(get(), get(), get(), slug) }
         viewModel { AuthViewModel(get(), get()) }
         viewModel { LoginViewModel(get(), get()) }
-        viewModel { RegisterViewModel(get(), get(), androidContext()) }
+        viewModel { RegisterViewModel(get(), get()) }
         viewModel { ForgotPasswordViewModel(get(), androidContext()) }
         viewModel { (email: String) -> VerifyResetCodeViewModel(get(), androidContext(), email) }
         viewModel { (email: String, code: String) ->
