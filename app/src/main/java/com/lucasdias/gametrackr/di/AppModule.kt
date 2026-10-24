@@ -21,6 +21,8 @@ import com.lucasdias.gametrackr.core.network.TokenRefresher
 import com.lucasdias.gametrackr.data.achievements.AchievementsRepository
 import com.lucasdias.gametrackr.data.achievements.FakeAchievementsRepository
 import com.lucasdias.gametrackr.data.auth.AuthRepository
+import com.lucasdias.gametrackr.data.auth.FakePasswordRepository
+import com.lucasdias.gametrackr.data.auth.PasswordRepository
 import com.lucasdias.gametrackr.data.auth.RemoteAuthRepository
 import com.lucasdias.gametrackr.data.community.CommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.CommunityRepository
@@ -66,6 +68,7 @@ import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupViewModel
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchViewModel
+import com.lucasdias.gametrackr.feature.app.settings.changepassword.ChangePasswordViewModel
 import com.lucasdias.gametrackr.feature.app.stats.StatsViewModel
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
 import com.lucasdias.gametrackr.feature.auth.forgotpassword.ForgotPasswordViewModel
@@ -169,6 +172,7 @@ val appModule =
         single<AuthRepository> { RemoteAuthRepository(get(), get(), get(), get()) }
         single<ProfileRepository> { RemoteProfileRepository(get(), get()) }
         single<SetupRepository> { RemoteSetupRepository(get(), get(), baseUrl) }
+        single<PasswordRepository> { FakePasswordRepository() }
         single<StatsRepository> { FakeStatsRepository() }
         single<LibraryRepository> { FakeLibraryRepository() }
         single { LibraryUpdates() }
@@ -192,6 +196,7 @@ val appModule =
         }
         viewModel { params -> CreateTopicViewModel(params.getOrNull(), get(), get()) }
         viewModel { CreateCommunityViewModel(get()) }
+        viewModel { ChangePasswordViewModel(get()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get()) }
         viewModel { MySetupViewModel(get()) }
         viewModel { StatsViewModel(get()) }

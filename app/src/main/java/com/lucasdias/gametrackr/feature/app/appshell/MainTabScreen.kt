@@ -61,8 +61,8 @@ import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
 import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchScreen
-import com.lucasdias.gametrackr.feature.app.settings.ChangePasswordScreen
 import com.lucasdias.gametrackr.feature.app.settings.SettingsScreen
+import com.lucasdias.gametrackr.feature.app.settings.changepassword.ChangePasswordScreen
 import com.lucasdias.gametrackr.feature.app.stats.StatsScreen
 import org.koin.androidx.compose.koinViewModel
 
