@@ -522,7 +522,7 @@
     <string name="change_password_success_button">Done</string>
 
     <string name="about_title">About</string>
-    <string name="about_version">Version 1.0.0</string>
+    <string name="about_version">Version %1$s</string>
     <string name="about_description">Track your games, share your progress, and connect with fellow gamers.</string>
     <string name="about_section_legal">Legal</string>
     <string name="about_terms">Terms of Use</string>
@@ -541,9 +541,9 @@
     <string name="help_faq_2_question">Can I track my playtime?</string>
     <string name="help_faq_2_answer">Yes! Open any game in your library and edit its details. You can log hours played, start and finish dates, and even write a short review.</string>
     <string name="help_faq_3_question">How do I connect with friends?</string>
-    <string name="help_faq_3_answer">Visit another user\'s profile and send them a friend request. Once accepted, you\'ll see their activity in your feed and can message them directly.</string>
+    <string name="help_faq_3_answer">Visit another user\'s profile and send them a friend request. Once they accept, you can see each other\'s library and stats, even on private profiles.</string>
     <string name="help_faq_4_question">Is my data private?</string>
-    <string name="help_faq_4_answer">By default your profile is public, but you can change its visibility in Settings. Your library, stats, and activity respect your privacy preferences.</string>
+    <string name="help_faq_4_answer">Your profile is public by default. You can make it private in Edit profile, so only friends can see your library and stats.</string>
 
     <string name="setup_title">My Setup</string>
     <string name="setup_back">Back</string>

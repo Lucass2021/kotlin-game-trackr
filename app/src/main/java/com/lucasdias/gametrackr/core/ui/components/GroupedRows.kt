@@ -1,4 +1,4 @@
-package com.lucasdias.gametrackr.feature.app.settings.components
+package com.lucasdias.gametrackr.core.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,8 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.ui.components.AppPreview
-import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -37,7 +35,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 
-internal val SETTINGS_ICON_BOX_WIDTH = 24.dp
+internal val GROUPED_ICON_BOX_WIDTH = 24.dp
 private val ICON_SIZE = 20.dp
 private val CHEVRON_SIZE = 16.dp
 private val PROGRESS_SIZE = 16.dp
@@ -45,7 +43,7 @@ private val PROGRESS_STROKE = 2.dp
 private val TITLE_SIZE = 16.sp
 
 @Composable
-fun SettingsToggleRow(
+fun GroupedToggleRow(
     icon: AppIcon,
     title: String,
     checked: Boolean,
@@ -69,12 +67,12 @@ fun SettingsToggleRow(
 }
 
 @Composable
-fun SettingsNavRow(
+fun GroupedNavRow(
     icon: AppIcon,
     title: String,
     onClick: () -> Unit,
 ) {
-    RowLayout(icon = icon, tint = AppPrimary, modifier = Modifier.pressable(onClick)) {
+    RowLayout(icon = icon, tint = AppPrimary, modifier = Modifier.pressable(title, onClick)) {
         RowTitle(title = title, color = AppTextPrimary)
         Icon(
             imageVector = AppIcon.FORWARD.image(),
@@ -86,13 +84,13 @@ fun SettingsNavRow(
 }
 
 @Composable
-fun SettingsDestructiveRow(
+fun GroupedDestructiveRow(
     icon: AppIcon,
     title: String,
     isLoading: Boolean,
     onClick: () -> Unit,
 ) {
-    RowLayout(icon = icon, tint = AppTertiary, modifier = Modifier.pressable(onClick)) {
+    RowLayout(icon = icon, tint = AppTertiary, modifier = Modifier.pressable(title, onClick)) {
         RowTitle(title = title, color = AppTertiary)
         if (isLoading) {
             CircularProgressIndicator(color = AppTertiary, strokeWidth = PROGRESS_STROKE, modifier = Modifier.size(PROGRESS_SIZE))
@@ -101,11 +99,19 @@ fun SettingsDestructiveRow(
 }
 
 @Composable
-private fun Modifier.pressable(onClick: () -> Unit): Modifier {
+private fun Modifier.pressable(
+    label: String,
+    onClick: () -> Unit,
+): Modifier {
     val interactionSource = remember { MutableInteractionSource() }
     return pressScale(interactionSource)
-        .clickable(interactionSource = interactionSource, indication = null, role = Role.Button, onClick = onClick)
-        .padding(horizontal = Spacing.md, vertical = Spacing.md)
+        .clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClickLabel = label,
+            role = Role.Button,
+            onClick = onClick,
+        ).padding(horizontal = Spacing.md, vertical = Spacing.md)
 }
 
 @Composable
@@ -120,7 +126,7 @@ private fun RowLayout(
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.width(SETTINGS_ICON_BOX_WIDTH), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.width(GROUPED_ICON_BOX_WIDTH), contentAlignment = Alignment.Center) {
             Icon(imageVector = icon.image(), contentDescription = null, tint = tint, modifier = Modifier.size(ICON_SIZE))
         }
         content()
@@ -137,17 +143,17 @@ private fun RowScope.RowTitle(
 
 @Preview
 @Composable
-private fun SettingsRowsPreview() {
+private fun GroupedRowsPreview() {
     AppPreview {
-        SettingsSection(title = stringResource(R.string.settings_title)) {
-            SettingsToggleRow(
+        GroupedSection(title = stringResource(R.string.settings_title)) {
+            GroupedToggleRow(
                 icon = AppIcon.NOTIFICATIONS,
                 title = stringResource(R.string.settings_push_notifications),
                 checked = true,
                 onCheckedChange = {},
             )
-            SettingsNavRow(icon = AppIcon.SHIELD_CHECK, title = stringResource(R.string.settings_change_password), onClick = {})
-            SettingsDestructiveRow(
+            GroupedNavRow(icon = AppIcon.SHIELD_CHECK, title = stringResource(R.string.settings_change_password), onClick = {})
+            GroupedDestructiveRow(
                 icon = AppIcon.CLOSE,
                 title = stringResource(R.string.settings_delete_account),
                 isLoading = true,

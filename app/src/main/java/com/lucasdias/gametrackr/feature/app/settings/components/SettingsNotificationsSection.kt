@@ -16,6 +16,9 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.NotificationSetting
 import com.lucasdias.gametrackr.core.model.NotificationSettings
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.GroupedDivider
+import com.lucasdias.gametrackr.core.ui.components.GroupedSection
+import com.lucasdias.gametrackr.core.ui.components.GroupedToggleRow
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
@@ -32,17 +35,17 @@ fun SettingsNotificationsSection(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SettingsSection(title = stringResource(R.string.settings_section_notifications), modifier = modifier) {
+    GroupedSection(title = stringResource(R.string.settings_section_notifications), modifier = modifier) {
         when {
             settings != null -> {
                 NotificationSetting.entries.forEachIndexed { index, setting ->
-                    SettingsToggleRow(
+                    GroupedToggleRow(
                         icon = setting.icon,
                         title = stringResource(setting.titleRes),
                         checked = settings.isEnabled(setting),
                         onCheckedChange = { onToggle(setting, it) },
                     )
-                    if (index < NotificationSetting.entries.lastIndex) SettingsDivider()
+                    if (index < NotificationSetting.entries.lastIndex) GroupedDivider()
                 }
             }
 

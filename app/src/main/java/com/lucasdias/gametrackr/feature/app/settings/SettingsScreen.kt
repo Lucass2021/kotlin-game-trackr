@@ -23,16 +23,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.NotificationSettings
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.GroupedDestructiveRow
+import com.lucasdias.gametrackr.core.ui.components.GroupedNavRow
+import com.lucasdias.gametrackr.core.ui.components.GroupedSection
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.text.asString
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.feature.app.settings.components.DeleteAccountDialog
-import com.lucasdias.gametrackr.feature.app.settings.components.SettingsDestructiveRow
-import com.lucasdias.gametrackr.feature.app.settings.components.SettingsNavRow
 import com.lucasdias.gametrackr.feature.app.settings.components.SettingsNotificationsSection
-import com.lucasdias.gametrackr.feature.app.settings.components.SettingsSection
 import com.lucasdias.gametrackr.feature.app.stats.components.StatsTopBar
 import org.koin.androidx.compose.koinViewModel
 
@@ -95,8 +95,8 @@ fun SettingsContent(
                     )
                 }
                 item {
-                    SettingsSection(title = stringResource(R.string.settings_section_account)) {
-                        SettingsNavRow(
+                    GroupedSection(title = stringResource(R.string.settings_section_account)) {
+                        GroupedNavRow(
                             icon = AppIcon.SHIELD_CHECK,
                             title = stringResource(R.string.settings_change_password),
                             onClick = actions.onChangePassword,
@@ -104,8 +104,8 @@ fun SettingsContent(
                     }
                 }
                 item {
-                    SettingsSection(title = stringResource(R.string.settings_section_danger)) {
-                        SettingsDestructiveRow(
+                    GroupedSection(title = stringResource(R.string.settings_section_danger)) {
+                        GroupedDestructiveRow(
                             icon = AppIcon.CLOSE,
                             title = stringResource(R.string.settings_delete_account),
                             isLoading = state.isDeleting,
