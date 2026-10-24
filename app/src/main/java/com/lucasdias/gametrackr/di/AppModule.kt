@@ -20,7 +20,9 @@ import com.lucasdias.gametrackr.core.network.TokenAuthenticator
 import com.lucasdias.gametrackr.core.network.TokenRefresher
 import com.lucasdias.gametrackr.data.achievements.AchievementsRepository
 import com.lucasdias.gametrackr.data.achievements.FakeAchievementsRepository
+import com.lucasdias.gametrackr.data.auth.AccountRepository
 import com.lucasdias.gametrackr.data.auth.AuthRepository
+import com.lucasdias.gametrackr.data.auth.FakeAccountRepository
 import com.lucasdias.gametrackr.data.auth.FakePasswordRepository
 import com.lucasdias.gametrackr.data.auth.PasswordRepository
 import com.lucasdias.gametrackr.data.auth.RemoteAuthRepository
@@ -37,7 +39,9 @@ import com.lucasdias.gametrackr.data.game.RemoteGameRepository
 import com.lucasdias.gametrackr.data.library.FakeLibraryRepository
 import com.lucasdias.gametrackr.data.library.LibraryRepository
 import com.lucasdias.gametrackr.data.library.LibraryUpdates
+import com.lucasdias.gametrackr.data.notifications.FakeNotificationSettingsRepository
 import com.lucasdias.gametrackr.data.notifications.FakeNotificationsRepository
+import com.lucasdias.gametrackr.data.notifications.NotificationSettingsRepository
 import com.lucasdias.gametrackr.data.notifications.NotificationsRepository
 import com.lucasdias.gametrackr.data.profile.FakeProfileOverviewRepository
 import com.lucasdias.gametrackr.data.profile.ProfileOverviewRepository
@@ -68,6 +72,7 @@ import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupViewModel
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 import com.lucasdias.gametrackr.feature.app.search.SearchViewModel
+import com.lucasdias.gametrackr.feature.app.settings.SettingsViewModel
 import com.lucasdias.gametrackr.feature.app.settings.changepassword.ChangePasswordViewModel
 import com.lucasdias.gametrackr.feature.app.stats.StatsViewModel
 import com.lucasdias.gametrackr.feature.auth.AuthViewModel
@@ -173,6 +178,8 @@ val appModule =
         single<ProfileRepository> { RemoteProfileRepository(get(), get()) }
         single<SetupRepository> { RemoteSetupRepository(get(), get(), baseUrl) }
         single<PasswordRepository> { FakePasswordRepository() }
+        single<AccountRepository> { FakeAccountRepository() }
+        single<NotificationSettingsRepository> { FakeNotificationSettingsRepository() }
         single<StatsRepository> { FakeStatsRepository() }
         single<LibraryRepository> { FakeLibraryRepository() }
         single { LibraryUpdates() }
@@ -197,6 +204,7 @@ val appModule =
         viewModel { params -> CreateTopicViewModel(params.getOrNull(), get(), get()) }
         viewModel { CreateCommunityViewModel(get()) }
         viewModel { ChangePasswordViewModel(get()) }
+        viewModel { SettingsViewModel(get(), get()) }
         viewModel { (profile: Profile) -> EditProfileViewModel(profile, get(), get()) }
         viewModel { MySetupViewModel(get()) }
         viewModel { StatsViewModel(get()) }

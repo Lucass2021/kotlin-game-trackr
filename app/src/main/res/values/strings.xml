@@ -503,6 +503,10 @@
     <string name="settings_delete_dialog_message">This action cannot be undone. All your data, library, and stats will be permanently removed.</string>
     <string name="settings_delete_dialog_confirm">Delete</string>
     <string name="settings_delete_dialog_cancel">Cancel</string>
+    <string name="settings_notifications_loading">Loading notification settings…</string>
+    <string name="settings_notifications_error">Couldn\'t load notification settings.</string>
+    <string name="settings_try_again">Try again</string>
+    <string name="settings_notification_update_error">Couldn\'t update notification settings. Please try again.</string>
 
     <string name="change_password_title">Change password</string>
     <string name="change_password_current_label">Current password</string>
