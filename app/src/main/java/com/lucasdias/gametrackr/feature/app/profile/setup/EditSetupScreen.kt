@@ -34,7 +34,6 @@ import com.lucasdias.gametrackr.core.model.SetupItem
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
-import com.lucasdias.gametrackr.data.profile.FakeSetupRepository
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.profile.setup.components.EditSetupHeader
 import com.lucasdias.gametrackr.feature.app.profile.setup.components.SetupDeleteButton
@@ -70,34 +69,27 @@ fun EditSetupScreen(
             ActivityResultContracts.PickMultipleVisualMedia(EditSetupUiState.PHOTO_LIMIT),
         ) { picked -> viewModel.onPhotosPicked(picked.map { it.toString() }) }
 
-    Box(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            EditSetupHeader(
-                isNew = state.isNew,
-                isSaving = state.isSaving,
+    EditSetupContent(
+        state = state,
+        actions =
+            EditSetupActions(
                 onClose = close,
                 onSave = {
                     focusManager.clearFocus()
                     viewModel.onSave(onSaved)
                 },
-            )
-
-            Form(
-                state = state,
-                viewModel = viewModel,
                 onAddPhotos = {
                     pickPhotos.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
                 onDelete = { showDeleteConfirm = true },
-            )
-        }
-
-        Toast(
-            message = state.errorMessage?.let { stringResource(it) },
-            onDismiss = viewModel::onErrorShown,
-            modifier = Modifier.align(Alignment.TopCenter),
-        )
-    }
+                onRemoveImage = viewModel::onRemoveImage,
+                onRemoveNewPhoto = viewModel::onRemoveNewPhoto,
+                onTitleChange = viewModel::onTitleChange,
+                onDescriptionChange = viewModel::onDescriptionChange,
+                onErrorShown = viewModel::onErrorShown,
+            ),
+        modifier = modifier,
+    )
 
     if (showDeleteConfirm) {
         SetupDeleteDialog(
@@ -111,11 +103,29 @@ fun EditSetupScreen(
 }
 
 @Composable
+fun EditSetupContent(
+    state: EditSetupUiState,
+    actions: EditSetupActions,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            EditSetupHeader(isNew = state.isNew, isSaving = state.isSaving, onClose = actions.onClose, onSave = actions.onSave)
+            Form(state = state, actions = actions)
+        }
+
+        Toast(
+            message = state.errorMessage?.let { stringResource(it) },
+            onDismiss = actions.onErrorShown,
+            modifier = Modifier.align(Alignment.TopCenter),
+        )
+    }
+}
+
+@Composable
 private fun Form(
     state: EditSetupUiState,
-    viewModel: EditSetupViewModel,
-    onAddPhotos: () -> Unit,
-    onDelete: () -> Unit,
+    actions: EditSetupActions,
 ) {
     Column(
         modifier =
@@ -135,16 +145,16 @@ private fun Form(
                 images = state.images,
                 newPhotos = state.newPhotos,
                 canAddPhotos = state.remainingPhotoSlots > 0,
-                onRemoveImage = viewModel::onRemoveImage,
-                onRemoveNewPhoto = viewModel::onRemoveNewPhoto,
-                onAdd = onAddPhotos,
+                onRemoveImage = actions.onRemoveImage,
+                onRemoveNewPhoto = actions.onRemoveNewPhoto,
+                onAdd = actions.onAddPhotos,
             )
         }
 
         SetupFormField(label = stringResource(R.string.setup_field_title), error = state.titleError) {
             SetupTextField(
                 value = state.title,
-                onValueChange = viewModel::onTitleChange,
+                onValueChange = actions.onTitleChange,
                 placeholder = stringResource(R.string.setup_title_placeholder),
             )
         }
@@ -152,28 +162,33 @@ private fun Form(
         SetupFormField(label = stringResource(R.string.setup_field_description), error = state.descriptionError) {
             SetupTextField(
                 value = state.description,
-                onValueChange = viewModel::onDescriptionChange,
+                onValueChange = actions.onDescriptionChange,
                 placeholder = stringResource(R.string.setup_description_placeholder),
                 singleLine = false,
             )
         }
 
         if (!state.isNew) {
-            SetupDeleteButton(isDeleting = state.isDeleting, onClick = onDelete)
+            SetupDeleteButton(isDeleting = state.isDeleting, onClick = actions.onDelete)
         }
     }
 }
 
 @Preview
 @Composable
-private fun EditSetupScreenPreview() {
+private fun EditSetupContentPreview() {
+    val setup = ProfileMockData.setups[0]
     AppPreview {
-        EditSetupScreen(
-            setup = ProfileMockData.setups[0],
-            onBack = {},
-            onSaved = {},
-            onDeleted = {},
-            viewModel = EditSetupViewModel(ProfileMockData.setups[0], FakeSetupRepository()) { null },
+        EditSetupContent(
+            state =
+                EditSetupUiState(
+                    isNew = false,
+                    setupId = setup.id,
+                    title = setup.title,
+                    description = setup.description,
+                    images = setup.images,
+                ),
+            actions = EditSetupActions(),
         )
     }
 }
