@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.di
 import com.lucasdias.gametrackr.BuildConfig
 import com.lucasdias.gametrackr.core.auth.DataStoreTokenStore
 import com.lucasdias.gametrackr.core.auth.GoogleAuth
+import com.lucasdias.gametrackr.core.auth.GoogleAuthService
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
 import com.lucasdias.gametrackr.core.model.Community
@@ -186,7 +187,8 @@ val appModule =
         single<NotificationsRepository> { FakeNotificationsRepository() }
         single<AchievementsRepository> { FakeAchievementsRepository() }
         single<ProfileOverviewRepository> { FakeProfileOverviewRepository() }
-        single { GoogleAuth(get()) }
+        single { GoogleAuthService(androidContext(), get()) }
+        single<GoogleAuth> { get<GoogleAuthService>() }
 
         viewModel { DiscoverCommunitiesViewModel(get(), get()) }
         viewModel { CommunityFeedViewModel(get(), get(), get(), get()) }
@@ -194,7 +196,7 @@ val appModule =
         viewModel { (scope: SearchScope) -> SearchViewModel(scope, get()) }
         viewModel { (slug: String) -> GameDetailViewModel(get(), get(), get(), slug) }
         viewModel { AuthViewModel(get(), get()) }
-        viewModel { LoginViewModel(get(), get(), androidContext()) }
+        viewModel { LoginViewModel(get(), get()) }
         viewModel { RegisterViewModel(get(), get(), androidContext()) }
         viewModel { ForgotPasswordViewModel(get(), androidContext()) }
         viewModel { (email: String) -> VerifyResetCodeViewModel(get(), androidContext(), email) }

@@ -1,12 +1,19 @@
 package com.lucasdias.gametrackr.feature.auth.login
 
-import androidx.annotation.StringRes
+import com.lucasdias.gametrackr.core.ui.text.UiText
+import com.lucasdias.gametrackr.feature.auth.AuthValidation
 
 data class LoginUiState(
     val email: String = "",
     val password: String = "",
-    @param:StringRes val emailError: Int? = null,
-    @param:StringRes val passwordError: Int? = null,
+    val isSubmitted: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-)
+    val toastMessage: UiText? = null,
+) {
+    val emailError: UiText? get() = if (isSubmitted) AuthValidation.emailError(email) else null
+
+    val passwordError: UiText? get() = if (isSubmitted) AuthValidation.passwordError(password) else null
+
+    val canSubmit: Boolean
+        get() = AuthValidation.emailError(email) == null && AuthValidation.passwordError(password) == null
+}

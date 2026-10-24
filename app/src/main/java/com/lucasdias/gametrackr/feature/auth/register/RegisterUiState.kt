@@ -1,6 +1,6 @@
 package com.lucasdias.gametrackr.feature.auth.register
 
-import androidx.annotation.StringRes
+import com.lucasdias.gametrackr.core.ui.text.UiText
 
 data class RegisterUiState(
     val name: String = "",
@@ -8,11 +8,11 @@ data class RegisterUiState(
     val password: String = "",
     val confirmPassword: String = "",
     val acceptedTerms: Boolean = false,
-    @param:StringRes val nameError: Int? = null,
-    @param:StringRes val emailError: Int? = null,
-    @param:StringRes val passwordError: Int? = null,
-    @param:StringRes val confirmPasswordError: Int? = null,
-    @param:StringRes val termsError: Int? = null,
+    val nameError: UiText? = null,
+    val emailError: UiText? = null,
+    val passwordError: UiText? = null,
+    val confirmPasswordError: UiText? = null,
+    val termsError: UiText? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val registered: Boolean = false,

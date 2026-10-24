@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.feature.auth.register.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.text.UiText
+import com.lucasdias.gametrackr.core.ui.text.asString
 import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
@@ -40,7 +41,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 fun TermsAcceptanceRow(
     accepted: Boolean,
     onToggle: () -> Unit,
-    @StringRes error: Int?,
+    error: UiText?,
     modifier: Modifier = Modifier,
 ) {
     val borderColor =
@@ -75,7 +76,7 @@ fun TermsAcceptanceRow(
         }
         if (error != null) {
             Spacer(modifier = Modifier.size(8.dp))
-            Text(text = stringResource(error), color = AppTertiary, fontSize = 13.sp)
+            Text(text = error.asString(), color = AppTertiary, fontSize = 13.sp)
         }
     }
 }

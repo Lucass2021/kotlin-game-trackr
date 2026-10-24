@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.auth.AuthRepository
+import com.lucasdias.gametrackr.feature.auth.AuthValidation
 import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,15 +60,6 @@ class ForgotPasswordViewModel(
 
     private fun revalidate() {
         if (!submitted) return
-        _uiState.update { it.copy(emailError = emailErrorFor(it.email)) }
-    }
-
-    private fun emailErrorFor(email: String): Int? {
-        val trimmed = email.trim()
-        return when {
-            trimmed.isEmpty() -> R.string.validation_email_required
-            !trimmed.contains("@") || !trimmed.contains(".") -> R.string.validation_email_invalid
-            else -> null
-        }
+        _uiState.update { it.copy(emailError = AuthValidation.emailError(it.email)) }
     }
 }

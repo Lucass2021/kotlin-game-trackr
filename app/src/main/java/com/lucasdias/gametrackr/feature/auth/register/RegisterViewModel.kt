@@ -7,7 +7,9 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.auth.GoogleAuth
 import com.lucasdias.gametrackr.core.auth.GoogleAuthState
 import com.lucasdias.gametrackr.core.network.ApiError
+import com.lucasdias.gametrackr.core.ui.text.UiText
 import com.lucasdias.gametrackr.data.auth.AuthRepository
+import com.lucasdias.gametrackr.feature.auth.AuthValidation
 import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,7 +62,7 @@ class RegisterViewModel(
     }
 
     fun onGoogleSignUp() {
-        googleAuth.launch(context)
+        googleAuth.launch()
     }
 
     fun onSubmit() {
@@ -96,9 +98,9 @@ class RegisterViewModel(
         _uiState.update {
             it.copy(
                 nameError = nameErrorFor(it.name),
-                emailError = emailErrorFor(it.email),
-                passwordError = passwordErrorFor(it.password),
-                confirmPasswordError = confirmPasswordErrorFor(it.password, it.confirmPassword),
+                emailError = AuthValidation.emailError(it.email),
+                passwordError = AuthValidation.passwordError(it.password),
+                confirmPasswordError = AuthValidation.confirmPasswordError(it.password, it.confirmPassword),
                 termsError = termsErrorFor(it.acceptedTerms),
             )
         }
@@ -111,37 +113,16 @@ class RegisterViewModel(
             state.confirmPasswordError != null ||
             state.termsError != null
 
-    private fun nameErrorFor(name: String): Int? {
+    private fun nameErrorFor(name: String): UiText? {
         val trimmed = name.trim()
         return when {
-            trimmed.isEmpty() -> R.string.validation_name_required
-            trimmed.length < 3 -> R.string.validation_name_too_short
+            trimmed.isEmpty() -> UiText.Resource(R.string.validation_name_required)
+            trimmed.length < 3 -> UiText.Resource(R.string.validation_name_too_short)
             else -> null
         }
     }
 
-    private fun emailErrorFor(email: String): Int? {
-        val trimmed = email.trim()
-        return when {
-            trimmed.isEmpty() -> R.string.validation_email_required
-            !trimmed.contains("@") || !trimmed.contains(".") -> R.string.validation_email_invalid
-            else -> null
-        }
-    }
-
-    private fun passwordErrorFor(password: String): Int? =
-        when {
-            password.isEmpty() -> R.string.validation_password_required
-            password.length < 6 -> R.string.validation_password_too_short
-            else -> null
-        }
-
-    private fun confirmPasswordErrorFor(
-        password: String,
-        confirm: String,
-    ): Int? = if (confirm != password) R.string.validation_passwords_dont_match else null
-
-    private fun termsErrorFor(accepted: Boolean): Int? = if (!accepted) R.string.validation_terms_required else null
+    private fun termsErrorFor(accepted: Boolean): UiText? = if (!accepted) UiText.Resource(R.string.validation_terms_required) else null
 
     private fun withGoogleAuth(
         state: RegisterUiState,

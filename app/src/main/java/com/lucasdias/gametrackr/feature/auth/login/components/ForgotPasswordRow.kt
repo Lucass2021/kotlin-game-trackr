@@ -8,9 +8,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 
 @Composable
@@ -25,7 +28,15 @@ fun ForgotPasswordRow(
             color = AppSecondary,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.clickable(onClick = onForgotPassword),
+            modifier = Modifier.clickable(role = Role.Button, onClick = onForgotPassword),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun ForgotPasswordRowPreview() {
+    AppPreview {
+        ForgotPasswordRow(onForgotPassword = {})
     }
 }

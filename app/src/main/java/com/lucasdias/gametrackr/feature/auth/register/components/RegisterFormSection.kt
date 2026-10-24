@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.feature.auth.register.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +13,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.components.AuthTextField
 import com.lucasdias.gametrackr.core.ui.components.PasswordStrength
 import com.lucasdias.gametrackr.core.ui.components.PasswordStrengthMeter
+import com.lucasdias.gametrackr.core.ui.text.UiText
 
 @Composable
 fun RegisterFormSection(
@@ -25,10 +25,10 @@ fun RegisterFormSection(
     onPasswordChange: (String) -> Unit,
     confirmPassword: String,
     onConfirmPasswordChange: (String) -> Unit,
-    @StringRes nameError: Int?,
-    @StringRes emailError: Int?,
-    @StringRes passwordError: Int?,
-    @StringRes confirmPasswordError: Int?,
+    nameError: UiText?,
+    emailError: UiText?,
+    passwordError: UiText?,
+    confirmPasswordError: UiText?,
     modifier: Modifier = Modifier,
 ) {
     Column(

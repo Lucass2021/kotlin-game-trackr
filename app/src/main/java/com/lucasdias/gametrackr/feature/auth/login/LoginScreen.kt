@@ -6,22 +6,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.anim.staggeredAppear
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
+import com.lucasdias.gametrackr.core.ui.components.AuthPrompt
 import com.lucasdias.gametrackr.core.ui.components.AuthScreenScaffold
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.components.SocialLoginSection
 import com.lucasdias.gametrackr.core.ui.components.TitleWithSubtitle
 import com.lucasdias.gametrackr.core.ui.components.Toast
+import com.lucasdias.gametrackr.core.ui.text.asString
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.feature.auth.login.components.ForgotPasswordRow
-import com.lucasdias.gametrackr.feature.auth.login.components.GuestPrompt
 import com.lucasdias.gametrackr.feature.auth.login.components.LoginFormSection
-import com.lucasdias.gametrackr.feature.auth.login.components.SignUpPrompt
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -33,41 +34,40 @@ fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val focusManager = LocalFocusManager.current
 
     LoginContent(
         uiState = uiState,
-        onBack = onBack,
-        onSignUp = onSignUp,
-        onEmailChange = viewModel::onEmailChange,
-        onPasswordChange = viewModel::onPasswordChange,
-        onForgotPassword = onForgotPassword,
-        onSubmit = viewModel::onSubmit,
-        onGoogleSignIn = viewModel::onGoogleSignIn,
-        onErrorShown = viewModel::onErrorShown,
-        onContinueAsGuest = onContinueAsGuest,
+        actions =
+            LoginActions(
+                onBack = onBack,
+                onSignUp = onSignUp,
+                onEmailChange = viewModel::onEmailChange,
+                onPasswordChange = viewModel::onPasswordChange,
+                onForgotPassword = onForgotPassword,
+                onSubmit = {
+                    focusManager.clearFocus()
+                    viewModel.onSubmit()
+                },
+                onSignInWithGoogle = viewModel::onSignInWithGoogle,
+                onToastShown = viewModel::onToastShown,
+                onContinueAsGuest = onContinueAsGuest,
+            ),
     )
 }
 
 @Composable
 private fun LoginContent(
     uiState: LoginUiState,
-    onBack: () -> Unit,
-    onSignUp: () -> Unit,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onForgotPassword: () -> Unit,
-    onSubmit: () -> Unit,
-    onGoogleSignIn: () -> Unit,
-    onErrorShown: () -> Unit,
-    onContinueAsGuest: () -> Unit,
+    actions: LoginActions,
 ) {
     AuthScreenScaffold(
-        onBack = onBack,
+        onBack = actions.onBack,
         contentArrangement = Arrangement.Center,
         overlay = {
             Toast(
-                message = uiState.errorMessage,
-                onDismiss = onErrorShown,
+                message = uiState.toastMessage?.asString(),
+                onDismiss = actions.onToastShown,
                 modifier = Modifier.align(Alignment.TopCenter),
             )
         },
@@ -78,62 +78,66 @@ private fun LoginContent(
             centered = true,
             modifier =
                 Modifier
-                    .padding(top = 16.dp)
+                    .padding(top = Spacing.md)
                     .staggeredAppear(1),
         )
 
         LoginFormSection(
             email = uiState.email,
-            onEmailChange = onEmailChange,
+            onEmailChange = actions.onEmailChange,
             password = uiState.password,
-            onPasswordChange = onPasswordChange,
+            onPasswordChange = actions.onPasswordChange,
             emailError = uiState.emailError,
             passwordError = uiState.passwordError,
             modifier =
                 Modifier
-                    .padding(top = 28.dp)
+                    .padding(top = Spacing.xl)
                     .staggeredAppear(2),
         )
 
         ForgotPasswordRow(
-            onForgotPassword = onForgotPassword,
+            onForgotPassword = actions.onForgotPassword,
             modifier =
                 Modifier
-                    .padding(top = 20.dp)
+                    .padding(top = Spacing.lg)
                     .staggeredAppear(3),
         )
 
         PrimaryButton(
             text = stringResource(R.string.login_sign_in),
-            onClick = onSubmit,
+            onClick = actions.onSubmit,
             isLoading = uiState.isLoading,
             modifier =
                 Modifier
-                    .padding(top = 24.dp)
+                    .padding(top = Spacing.xl)
                     .staggeredAppear(4),
         )
 
         SocialLoginSection(
-            onGoogle = onGoogleSignIn,
+            onGoogle = actions.onSignInWithGoogle,
             modifier =
                 Modifier
-                    .padding(top = 28.dp)
+                    .padding(top = Spacing.xl)
                     .staggeredAppear(5),
         )
 
-        SignUpPrompt(
-            onSignUp = onSignUp,
+        AuthPrompt(
+            prefix = stringResource(R.string.login_no_account),
+            actionText = stringResource(R.string.login_sign_up),
+            onClick = actions.onSignUp,
             modifier =
                 Modifier
-                    .padding(top = 28.dp)
+                    .padding(top = Spacing.xl)
                     .staggeredAppear(6),
         )
 
-        GuestPrompt(
-            onContinueAsGuest = onContinueAsGuest,
+        AuthPrompt(
+            prefix = stringResource(R.string.login_guest_prefix),
+            actionText = stringResource(R.string.login_guest_action),
+            onClick = actions.onContinueAsGuest,
             modifier =
                 Modifier
-                    .padding(top = 16.dp)
+                    .padding(top = Spacing.md)
                     .staggeredAppear(7),
         )
     }
@@ -143,17 +147,17 @@ private fun LoginContent(
 @Composable
 private fun LoginScreenPreview() {
     AppPreview {
+        LoginContent(uiState = LoginUiState(), actions = LoginActions())
+    }
+}
+
+@Preview
+@Composable
+private fun LoginScreenErrorsPreview() {
+    AppPreview {
         LoginContent(
-            uiState = LoginUiState(),
-            onBack = {},
-            onSignUp = {},
-            onEmailChange = {},
-            onPasswordChange = {},
-            onForgotPassword = {},
-            onSubmit = {},
-            onGoogleSignIn = {},
-            onErrorShown = {},
-            onContinueAsGuest = {},
+            uiState = LoginUiState(email = "player", password = "abc", isSubmitted = true),
+            actions = LoginActions(),
         )
     }
 }

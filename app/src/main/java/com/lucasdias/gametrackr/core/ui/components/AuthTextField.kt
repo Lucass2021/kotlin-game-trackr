@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.core.ui.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,12 +39,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
+import com.lucasdias.gametrackr.core.ui.text.UiText
+import com.lucasdias.gametrackr.core.ui.text.asString
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
+import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
+
+private val FIELD_HEIGHT = 56.dp
+private val BORDER_WIDTH = 1.dp
+private val FOCUSED_BORDER_WIDTH = 2.dp
+private val LEADING_ICON_SIZE = 20.dp
+private val REVEAL_ICON_SIZE = 22.dp
 
 @Composable
 fun AuthTextField(
@@ -58,7 +67,7 @@ fun AuthTextField(
     isPassword: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
-    @StringRes error: Int? = null,
+    error: UiText? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -70,8 +79,8 @@ fun AuthTextField(
             isFocused -> AppPrimary
             else -> AppOutline
         }
-    val borderWidth = if (error != null || isFocused) 2.dp else 1.dp
-    val shape = RoundedCornerShape(14.dp)
+    val borderWidth = if (error != null || isFocused) FOCUSED_BORDER_WIDTH else BORDER_WIDTH
+    val shape = RoundedCornerShape(Radius.md)
 
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
@@ -80,7 +89,7 @@ fun AuthTextField(
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(Spacing.xs))
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
@@ -101,11 +110,11 @@ fun AuthTextField(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
+                        .height(FIELD_HEIGHT)
                         .clip(shape)
                         .background(AppSurfaceCard)
                         .border(borderWidth, borderColor, shape)
-                        .padding(horizontal = 18.dp),
+                        .padding(horizontal = Spacing.md),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (icon != null) {
@@ -113,7 +122,7 @@ fun AuthTextField(
                         imageVector = icon.image(),
                         contentDescription = null,
                         tint = AppTextSecondary,
-                        modifier = Modifier.padding(end = 12.dp).size(20.dp),
+                        modifier = Modifier.padding(end = Spacing.sm).size(LEADING_ICON_SIZE),
                     )
                 }
                 Box(modifier = Modifier.weight(1f)) {
@@ -134,19 +143,19 @@ fun AuthTextField(
                         tint = AppTextSecondary,
                         modifier =
                             Modifier
-                                .size(22.dp)
+                                .size(REVEAL_ICON_SIZE)
                                 .clickable { revealed = !revealed },
                     )
                 }
             }
         }
         if (error != null) {
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(Spacing.xxs))
             Text(
-                text = stringResource(error),
+                text = error.asString(),
                 color = AppTertiary,
                 fontSize = 13.sp,
-                modifier = Modifier.padding(horizontal = 4.dp),
+                modifier = Modifier.padding(horizontal = Spacing.xxs),
             )
         }
     }
@@ -161,7 +170,7 @@ private fun AuthTextFieldPreview() {
             placeholder = stringResource(R.string.login_email_placeholder),
             value = "",
             onValueChange = {},
-            error = R.string.validation_email_required,
+            error = UiText.Resource(R.string.validation_email_required),
         )
     }
 }

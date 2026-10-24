@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.data.auth.AuthRepository
+import com.lucasdias.gametrackr.feature.auth.AuthValidation
 import com.lucasdias.gametrackr.feature.auth.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,21 +69,9 @@ class ResetPasswordViewModel(
         if (!submitted) return
         _uiState.update {
             it.copy(
-                passwordError = passwordErrorFor(it.password),
-                confirmPasswordError = confirmPasswordErrorFor(it.password, it.confirmPassword),
+                passwordError = AuthValidation.passwordError(it.password),
+                confirmPasswordError = AuthValidation.confirmPasswordError(it.password, it.confirmPassword),
             )
         }
     }
-
-    private fun passwordErrorFor(password: String): Int? =
-        when {
-            password.isEmpty() -> R.string.validation_password_required
-            password.length < 6 -> R.string.validation_password_too_short
-            else -> null
-        }
-
-    private fun confirmPasswordErrorFor(
-        password: String,
-        confirm: String,
-    ): Int? = if (confirm != password) R.string.validation_passwords_dont_match else null
 }

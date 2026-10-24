@@ -40,9 +40,9 @@ class ChangePasswordViewModelTest {
             advanceUntilIdle()
 
             val state = viewModel.uiState.value
-            assertEquals(R.string.change_password_error_current_required, state.currentPasswordError)
-            assertEquals(R.string.change_password_error_new_required, state.newPasswordError)
-            assertEquals(R.string.change_password_error_confirm_required, state.confirmPasswordError)
+            assertEquals(UiText.Resource(R.string.change_password_error_current_required), state.currentPasswordError)
+            assertEquals(UiText.Resource(R.string.change_password_error_new_required), state.newPasswordError)
+            assertEquals(UiText.Resource(R.string.change_password_error_confirm_required), state.confirmPasswordError)
             assertEquals(0, repository.changeCount)
         }
 
@@ -55,8 +55,8 @@ class ChangePasswordViewModelTest {
             advanceUntilIdle()
 
             val state = viewModel.uiState.value
-            assertEquals(R.string.validation_password_too_short, state.newPasswordError)
-            assertEquals(R.string.validation_passwords_dont_match, state.confirmPasswordError)
+            assertEquals(UiText.Resource(R.string.validation_password_too_short, listOf(6)), state.newPasswordError)
+            assertEquals(UiText.Resource(R.string.validation_passwords_dont_match), state.confirmPasswordError)
             assertEquals(0, repository.changeCount)
         }
 

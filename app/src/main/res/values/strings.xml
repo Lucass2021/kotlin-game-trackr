@@ -41,7 +41,7 @@
     <string name="validation_email_required">Email is required</string>
     <string name="validation_email_invalid">Enter a valid email</string>
     <string name="validation_password_required">Password is required</string>
-    <string name="validation_password_too_short">At least 6 characters</string>
+    <string name="validation_password_too_short">At least %1$d characters</string>
     <string name="validation_passwords_dont_match">Passwords do not match</string>
     <string name="validation_terms_required">You must accept the terms to continue</string>
 

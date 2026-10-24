@@ -7,14 +7,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.lucasdias.gametrackr.core.auth.GoogleAuth
+import com.lucasdias.gametrackr.core.auth.GoogleAuthService
 import com.lucasdias.gametrackr.core.ui.theme.GameTrackrTheme
 import com.lucasdias.gametrackr.navigation.RootScreen
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
-    private val googleAuth: GoogleAuth by inject()
+    private val googleAuth: GoogleAuthService by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
