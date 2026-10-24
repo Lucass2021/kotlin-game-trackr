@@ -9,12 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.R
+import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.PrimaryButton
 import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
+import com.lucasdias.gametrackr.core.ui.theme.Spacing
 
 @Composable
 fun ForgotPasswordBottomSection(
@@ -25,7 +28,7 @@ fun ForgotPasswordBottomSection(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         PrimaryButton(
@@ -38,7 +41,15 @@ fun ForgotPasswordBottomSection(
             color = AppSecondary,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.clickable(onClick = onBackToLogin),
+            modifier = Modifier.clickable(role = Role.Button, onClick = onBackToLogin),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun ForgotPasswordBottomSectionPreview() {
+    AppPreview {
+        ForgotPasswordBottomSection(isLoading = false, onSendCode = {}, onBackToLogin = {})
     }
 }

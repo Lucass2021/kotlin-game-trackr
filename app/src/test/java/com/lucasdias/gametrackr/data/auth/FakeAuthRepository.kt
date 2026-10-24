@@ -18,6 +18,8 @@ class FakeAuthRepository(
         private set
     var lastName: String? = null
         private set
+    var forgotPasswordCount = 0
+        private set
     var gate: CompletableDeferred<Unit>? = null
 
     override suspend fun login(
@@ -55,7 +57,12 @@ class FakeAuthRepository(
 
     override fun completeRegistration() = Unit
 
-    override suspend fun forgotPassword(email: String): Result<Unit> = Result.success(Unit)
+    override suspend fun forgotPassword(email: String): Result<Unit> {
+        forgotPasswordCount += 1
+        lastEmail = email
+        gate?.await()
+        return failure?.let { Result.failure(it) } ?: Result.success(Unit)
+    }
 
     override suspend fun verifyResetCode(
         email: String,
