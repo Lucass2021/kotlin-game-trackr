@@ -5,12 +5,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.User
-import com.lucasdias.gametrackr.data.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.appshell.navigation.CommunitySelection
 import com.lucasdias.gametrackr.feature.app.appshell.navigation.TabsViewModels
 import com.lucasdias.gametrackr.feature.app.appshell.navigation.accountGraph
@@ -46,10 +47,9 @@ fun MainTabScreen(
         remember(discover, communityFeed, library, profileViewModel, mySetup) {
             TabsViewModels(discover, communityFeed, library, profileViewModel, mySetup)
         }
-    var profile by remember { mutableStateOf(ProfileMockData.profile) }
+    val profile by rememberUpdatedState(user?.let(Profile::from))
 
     LaunchedEffect(user?.id) {
-        profile = profile.applying(user)
         val userId = if (isGuest) null else user?.id
         viewModels.mySetup.loadFor(userId)
         viewModels.library.loadFor(userId)
@@ -83,7 +83,6 @@ fun MainTabScreen(
             isGuest = isGuest,
             profile = { profile },
             mySetupViewModel = viewModels.mySetup,
-            onProfileSave = { profile = it },
         )
         accountGraph(
             navController = navController,

@@ -50,15 +50,6 @@ data class EditProfileUiState(
 
     val previewUsername: String get() = if (normalizedUsername.isEmpty()) original.username else formattedUsername
 
-    fun updatedProfile(): Profile =
-        original.copy(
-            name = trimmedName,
-            username = formattedUsername,
-            bio = trimmedBio,
-            avatarHex = avatarHex,
-            visibility = visibility,
-        )
-
     private val formattedUsername: String get() = "$USERNAME_PREFIX$normalizedUsername"
 
     companion object {

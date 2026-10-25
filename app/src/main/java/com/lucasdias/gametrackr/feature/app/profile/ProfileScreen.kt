@@ -26,7 +26,7 @@ import com.lucasdias.gametrackr.feature.app.profile.components.ProfileGuestState
 fun ProfileScreen(
     state: ProfileUiState,
     isGuest: Boolean,
-    profile: Profile,
+    profile: Profile?,
     setups: List<SetupItem>,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -43,7 +43,7 @@ fun ProfileScreen(
             ProfileGuestState(onCreateAccount = onCreateAccount, modifier = modifier)
         }
 
-        overview != null -> {
+        overview != null && profile != null -> {
             ProfileContent(
                 overview = overview,
                 profile = profile,

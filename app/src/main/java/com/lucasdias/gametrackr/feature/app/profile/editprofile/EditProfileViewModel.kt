@@ -78,7 +78,7 @@ class EditProfileViewModel(
                     visibility = current.visibility,
                 ).onSuccess { user ->
                     sessionManager.setAuthenticated(user)
-                    _uiState.update { it.copy(isSaving = false, savedProfile = current.updatedProfile().applying(user)) }
+                    _uiState.update { it.copy(isSaving = false, savedProfile = Profile.from(user)) }
                 }.onFailure { error ->
                     _uiState.update { it.copy(isSaving = false, toastMessage = error.toUiText()) }
                 }

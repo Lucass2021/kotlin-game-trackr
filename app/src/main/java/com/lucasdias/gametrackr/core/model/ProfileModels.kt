@@ -25,22 +25,19 @@ data class Profile(
     val avatarStart: Color get() = avatarHex.toAppColor()
     val avatarEnd: Color get() = avatarHex.toAppColor().darkened(AVATAR_GRADIENT_DEPTH)
 
-    fun applying(user: User?): Profile =
-        if (user == null) {
-            this
-        } else {
-            copy(
-                name = user.name,
-                username = user.username?.let { "@$it" } ?: username,
-                avatarHex = user.profileColor ?: avatarHex,
-                bio = user.bio.orEmpty(),
-                visibility = user.visibility,
-                joinedAt = user.createdAt ?: joinedAt,
-            )
-        }
+    companion object {
+        const val DEFAULT_AVATAR_HEX = "#8B5CF6"
+        private const val AVATAR_GRADIENT_DEPTH = 0.28f
 
-    private companion object {
-        const val AVATAR_GRADIENT_DEPTH = 0.28f
+        fun from(user: User): Profile =
+            Profile(
+                name = user.name,
+                username = user.username?.let { "@$it" }.orEmpty(),
+                bio = user.bio.orEmpty(),
+                joinedAt = user.createdAt,
+                avatarHex = user.profileColor ?: DEFAULT_AVATAR_HEX,
+                visibility = user.visibility,
+            )
     }
 }
 

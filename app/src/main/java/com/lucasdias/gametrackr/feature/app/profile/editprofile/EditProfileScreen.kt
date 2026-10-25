@@ -35,19 +35,15 @@ import org.koin.core.parameter.parametersOf
 fun EditProfileScreen(
     profile: Profile,
     onBack: () -> Unit,
-    onSave: (Profile) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EditProfileViewModel = koinViewModel { parametersOf(profile) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var showDiscardConfirm by remember { mutableStateOf(false) }
     val currentOnBack by rememberUpdatedState(onBack)
-    val currentOnSave by rememberUpdatedState(onSave)
 
     LaunchedEffect(state.savedProfile) {
-        val saved = state.savedProfile ?: return@LaunchedEffect
-        currentOnSave(saved)
-        currentOnBack()
+        if (state.savedProfile != null) currentOnBack()
     }
 
     fun requestClose() {

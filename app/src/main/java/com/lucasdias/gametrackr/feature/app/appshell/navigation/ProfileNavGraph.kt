@@ -20,9 +20,8 @@ import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
 internal fun NavGraphBuilder.profileGraph(
     navController: NavController,
     isGuest: Boolean,
-    profile: () -> Profile,
+    profile: () -> Profile?,
     mySetupViewModel: MySetupViewModel,
-    onProfileSave: (Profile) -> Unit,
 ) {
     composable(ShellRoutes.MY_SETUP) {
         val mySetupState by mySetupViewModel.uiState.collectAsStateWithLifecycle()
@@ -54,10 +53,10 @@ internal fun NavGraphBuilder.profileGraph(
         )
     }
     composable(ShellRoutes.EDIT_PROFILE) {
+        val current = profile() ?: return@composable
         EditProfileScreen(
-            profile = profile(),
+            profile = current,
             onBack = { navController.popBackStackIfResumed() },
-            onSave = onProfileSave,
         )
     }
     composable(

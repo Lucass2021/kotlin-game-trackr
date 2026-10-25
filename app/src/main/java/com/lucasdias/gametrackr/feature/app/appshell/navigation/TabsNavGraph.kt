@@ -37,7 +37,7 @@ internal fun NavGraphBuilder.tabsGraph(
     viewModels: TabsViewModels,
     isGuest: Boolean,
     currentUserId: Int?,
-    profile: () -> Profile,
+    profile: () -> Profile?,
     onCreateAccount: () -> Unit,
 ) {
     composable(ShellRoutes.TABS) {
@@ -72,7 +72,7 @@ private fun TabContent(
     viewModels: TabsViewModels,
     isGuest: Boolean,
     currentUserId: Int?,
-    profile: Profile,
+    profile: Profile?,
     onCreateAccount: () -> Unit,
 ) {
     val onGameClick: (String) -> Unit = { navController.navigate(ShellRoutes.gameDetail(it)) }
