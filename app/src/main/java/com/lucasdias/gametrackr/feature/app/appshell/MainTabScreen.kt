@@ -1,10 +1,5 @@
 package com.lucasdias.gametrackr.feature.app.appshell
 
-import android.net.Uri
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,120 +7,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.model.Community
-import com.lucasdias.gametrackr.core.model.CommunityPost
-import com.lucasdias.gametrackr.core.model.LibraryStatus
-import com.lucasdias.gametrackr.core.model.Profile
-import com.lucasdias.gametrackr.core.model.SetupItem
 import com.lucasdias.gametrackr.core.model.User
-import com.lucasdias.gametrackr.core.ui.components.SuccessScreen
-import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
-import com.lucasdias.gametrackr.data.profile.UserProfileMockData
-import com.lucasdias.gametrackr.feature.app.about.AboutScreen
-import com.lucasdias.gametrackr.feature.app.achievements.AchievementsScreen
-import com.lucasdias.gametrackr.feature.app.achievements.GameAchievementsScreen
-import com.lucasdias.gametrackr.feature.app.appshell.components.AppHeader
-import com.lucasdias.gametrackr.feature.app.appshell.components.AppTabBar
+import com.lucasdias.gametrackr.feature.app.appshell.navigation.CommunitySelection
+import com.lucasdias.gametrackr.feature.app.appshell.navigation.TabsViewModels
+import com.lucasdias.gametrackr.feature.app.appshell.navigation.accountGraph
+import com.lucasdias.gametrackr.feature.app.appshell.navigation.communityGraph
+import com.lucasdias.gametrackr.feature.app.appshell.navigation.gamesGraph
+import com.lucasdias.gametrackr.feature.app.appshell.navigation.profileGraph
+import com.lucasdias.gametrackr.feature.app.appshell.navigation.tabsGraph
 import com.lucasdias.gametrackr.feature.app.community.CommunityFeedViewModel
-import com.lucasdias.gametrackr.feature.app.community.CommunityScreen
-import com.lucasdias.gametrackr.feature.app.community.communitydetail.CommunityDetailScreen
-import com.lucasdias.gametrackr.feature.app.community.createcommunity.CreateCommunityScreen
-import com.lucasdias.gametrackr.feature.app.community.createtopic.CreateTopicScreen
 import com.lucasdias.gametrackr.feature.app.community.discover.DiscoverCommunitiesViewModel
-import com.lucasdias.gametrackr.feature.app.community.postdetail.PostDetailScreen
-import com.lucasdias.gametrackr.feature.app.gamedetail.GameDetailScreen
-import com.lucasdias.gametrackr.feature.app.help.HelpScreen
-import com.lucasdias.gametrackr.feature.app.home.HomeScreen
-import com.lucasdias.gametrackr.feature.app.library.LibraryScreen
 import com.lucasdias.gametrackr.feature.app.library.LibraryViewModel
-import com.lucasdias.gametrackr.feature.app.notifications.NotificationsScreen
-import com.lucasdias.gametrackr.feature.app.profile.ProfileScreen
 import com.lucasdias.gametrackr.feature.app.profile.ProfileViewModel
-import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
-import com.lucasdias.gametrackr.feature.app.profile.editprofile.EditProfileScreen
-import com.lucasdias.gametrackr.feature.app.profile.setup.EditSetupRoute
-import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupScreen
 import com.lucasdias.gametrackr.feature.app.profile.setup.MySetupViewModel
-import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuActions
-import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuItem
-import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuScreen
-import com.lucasdias.gametrackr.feature.app.profilemenu.ProfileMenuUiState
-import com.lucasdias.gametrackr.feature.app.search.SearchScope
-import com.lucasdias.gametrackr.feature.app.search.SearchScreen
-import com.lucasdias.gametrackr.feature.app.settings.SettingsScreen
-import com.lucasdias.gametrackr.feature.app.settings.changepassword.ChangePasswordScreen
-import com.lucasdias.gametrackr.feature.app.stats.StatsScreen
 import org.koin.androidx.compose.koinViewModel
-
-private object ShellRoutes {
-    const val TABS = "tabs"
-    const val SEARCH = "search"
-    const val SEARCH_ARG_SCOPE = "scope"
-    const val SEARCH_ROUTE = "$SEARCH?$SEARCH_ARG_SCOPE={$SEARCH_ARG_SCOPE}"
-    const val NOTIFICATIONS = "notifications"
-    const val MENU = "menu"
-    const val GAME_DETAIL = "gamedetail"
-    const val GAME_DETAIL_ARG_SLUG = "slug"
-    const val GAME_DETAIL_ROUTE = "$GAME_DETAIL?$GAME_DETAIL_ARG_SLUG={$GAME_DETAIL_ARG_SLUG}"
-    const val COMMUNITY_DETAIL = "communitydetail"
-    const val POST_DETAIL = "postdetail"
-    const val STATS = "stats"
-    const val STATS_ARG_OWNER = "owner"
-    const val STATS_ROUTE = "$STATS?$STATS_ARG_OWNER={$STATS_ARG_OWNER}"
-    const val USER_PROFILE = "userprofile"
-    const val USER_PROFILE_ARG_NAME = "name"
-    const val USER_PROFILE_ROUTE = "$USER_PROFILE?$USER_PROFILE_ARG_NAME={$USER_PROFILE_ARG_NAME}"
-    const val EDIT_PROFILE = "editprofile"
-    const val MY_SETUP = "mysetup"
-    const val EDIT_SETUP = "editsetup"
-    const val EDIT_SETUP_ARG_ID = "setupId"
-    const val EDIT_SETUP_ROUTE = "$EDIT_SETUP?$EDIT_SETUP_ARG_ID={$EDIT_SETUP_ARG_ID}"
-    const val ACHIEVEMENTS = "achievements"
-    const val ACHIEVEMENTS_ARG_OWNER = "owner"
-    const val ACHIEVEMENTS_ROUTE = "$ACHIEVEMENTS?$ACHIEVEMENTS_ARG_OWNER={$ACHIEVEMENTS_ARG_OWNER}"
-    const val GAME_ACHIEVEMENTS = "gameachievements"
-    const val GAME_ACHIEVEMENTS_ARG_ID = "gameId"
-    const val GAME_ACHIEVEMENTS_ROUTE = "$GAME_ACHIEVEMENTS/{$GAME_ACHIEVEMENTS_ARG_ID}"
-    const val SETTINGS = "settings"
-    const val CHANGE_PASSWORD = "changepassword"
-    const val CHANGE_PASSWORD_SUCCESS = "changepasswordsuccess"
-    const val ABOUT = "about"
-    const val HELP = "help"
-    const val CREATE_COMMUNITY = "createcommunity"
-    const val CREATE_TOPIC = "createtopic"
-
-    fun search(scope: SearchScope) = "$SEARCH?$SEARCH_ARG_SCOPE=${scope.name}"
-
-    fun stats(ownerName: String = "") = "$STATS?$STATS_ARG_OWNER=${Uri.encode(ownerName)}"
-
-    fun achievements(ownerName: String = "") = "$ACHIEVEMENTS?$ACHIEVEMENTS_ARG_OWNER=${Uri.encode(ownerName)}"
-
-    fun gameAchievements(gameId: Long) = "$GAME_ACHIEVEMENTS/$gameId"
-
-    fun gameDetail(slug: String) = "$GAME_DETAIL?$GAME_DETAIL_ARG_SLUG=${Uri.encode(slug)}"
-
-    fun editSetup(setupId: Int? = null) = if (setupId == null) EDIT_SETUP else "$EDIT_SETUP?$EDIT_SETUP_ARG_ID=$setupId"
-
-    fun userProfile(name: String) = "$USER_PROFILE?$USER_PROFILE_ARG_NAME=${Uri.encode(name)}"
-}
-
-private fun NavController.popBackStackIfResumed() {
-    if (currentBackStackEntry?.lifecycle?.currentState?.isAtLeast(Lifecycle.State.RESUMED) == true) {
-        popBackStack()
-    }
-}
 
 @Composable
 fun MainTabScreen(
@@ -138,419 +36,61 @@ fun MainTabScreen(
 ) {
     val navController = rememberNavController()
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
-    val discoverViewModel: DiscoverCommunitiesViewModel = koinViewModel()
-    val communityFeedViewModel: CommunityFeedViewModel = koinViewModel()
-    var selectedCommunity by remember { mutableStateOf<Community?>(null) }
-    var createTopicCommunity by remember { mutableStateOf<Community?>(null) }
-    var selectedPost by remember { mutableStateOf<CommunityPost?>(null) }
-    val libraryViewModel: LibraryViewModel = koinViewModel()
+    val selection = remember { CommunitySelection() }
+    val discover: DiscoverCommunitiesViewModel = koinViewModel()
+    val communityFeed: CommunityFeedViewModel = koinViewModel()
+    val library: LibraryViewModel = koinViewModel()
     val profileViewModel: ProfileViewModel = koinViewModel()
+    val mySetup: MySetupViewModel = koinViewModel()
+    val viewModels =
+        remember(discover, communityFeed, library, profileViewModel, mySetup) {
+            TabsViewModels(discover, communityFeed, library, profileViewModel, mySetup)
+        }
     var profile by remember { mutableStateOf(ProfileMockData.profile) }
-
-    val mySetupViewModel: MySetupViewModel = koinViewModel()
-    val mySetupState by mySetupViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(user?.id) {
         profile = profile.applying(user)
-        mySetupViewModel.loadFor(if (isGuest) null else user?.id)
-        libraryViewModel.loadFor(if (isGuest) null else user?.id)
-        profileViewModel.loadFor(if (isGuest) null else user?.id)
+        val userId = if (isGuest) null else user?.id
+        viewModels.mySetup.loadFor(userId)
+        viewModels.library.loadFor(userId)
+        viewModels.profile.loadFor(userId)
     }
 
     NavHost(navController = navController, startDestination = ShellRoutes.TABS) {
-        composable(ShellRoutes.TABS) {
-            TabShell(
-                isGuest = isGuest,
-                selected = selectedTab,
-                onSelect = { selectedTab = it },
-                discoverViewModel = discoverViewModel,
-                communityFeedViewModel = communityFeedViewModel,
-                libraryViewModel = libraryViewModel,
-                profileViewModel = profileViewModel,
-                onStatusClick = { status ->
-                    libraryViewModel.onFilterChange(status)
-                    selectedTab = AppTab.LIBRARY
-                },
-                onCreateAccount = onLogout,
-                onNotifications = { navController.navigate(ShellRoutes.NOTIFICATIONS) },
-                onSearch = { navController.navigate(ShellRoutes.search(SearchScope.ALL)) },
-                onViewAll = { navController.navigate(ShellRoutes.search(it)) },
-                onMenu = { navController.navigate(ShellRoutes.MENU) },
-                onGameClick = { navController.navigate(ShellRoutes.gameDetail(it)) },
-                onPostClick = { post ->
-                    selectedPost = post
-                    navController.navigate(ShellRoutes.POST_DETAIL)
-                },
-                onCommunityClick = { community ->
-                    selectedCommunity = community
-                    navController.navigate(ShellRoutes.COMMUNITY_DETAIL)
-                },
-                onCreatePost = {
-                    createTopicCommunity = null
-                    navController.navigate(ShellRoutes.CREATE_TOPIC)
-                },
-                onCreateCommunity = { navController.navigate(ShellRoutes.CREATE_COMMUNITY) },
-                onViewStats = { navController.navigate(ShellRoutes.stats()) },
-                profile = profile,
-                onEditProfile = { navController.navigate(ShellRoutes.EDIT_PROFILE) },
-                setups = mySetupState.setups,
-                onViewSetup = { navController.navigate(ShellRoutes.MY_SETUP) },
-                currentUserId = currentUserId,
-            )
-        }
-        composable(ShellRoutes.MY_SETUP) {
-            MySetupScreen(
-                state = mySetupState,
-                onBack = { navController.popBackStackIfResumed() },
-                onAdd = { navController.navigate(ShellRoutes.editSetup()) },
-                onEdit = { setup -> navController.navigate(ShellRoutes.editSetup(setup.id)) },
-                onRetry = mySetupViewModel::load,
-            )
-        }
-        composable(
-            route = ShellRoutes.EDIT_SETUP_ROUTE,
-            arguments =
-                listOf(
-                    navArgument(ShellRoutes.EDIT_SETUP_ARG_ID) {
-                        type = NavType.StringType
-                        nullable = true
-                    },
-                ),
-        ) { backStackEntry ->
-            EditSetupRoute(
-                setupId = backStackEntry.arguments?.getString(ShellRoutes.EDIT_SETUP_ARG_ID)?.toIntOrNull(),
-                mySetupState = mySetupState,
-                onBack = { navController.popBackStackIfResumed() },
-                onSaved = mySetupViewModel::onSetupSaved,
-                onDeleted = mySetupViewModel::onSetupDeleted,
-            )
-        }
-        composable(ShellRoutes.EDIT_PROFILE) {
-            EditProfileScreen(
-                profile = profile,
-                onBack = { navController.popBackStackIfResumed() },
-                onSave = { profile = it },
-            )
-        }
-        composable(
-            route = ShellRoutes.SEARCH_ROUTE,
-            arguments =
-                listOf(
-                    navArgument(ShellRoutes.SEARCH_ARG_SCOPE) {
-                        type = NavType.StringType
-                        defaultValue = SearchScope.ALL.name
-                    },
-                ),
-        ) { backStackEntry ->
-            val scope =
-                backStackEntry.arguments
-                    ?.getString(ShellRoutes.SEARCH_ARG_SCOPE)
-                    ?.let { runCatching { SearchScope.valueOf(it) }.getOrNull() }
-                    ?: SearchScope.ALL
-            SearchScreen(
-                onBack = { navController.popBackStackIfResumed() },
-                onGameClick = { navController.navigate(ShellRoutes.gameDetail(it)) },
-                scope = scope,
-            )
-        }
-        composable(
-            route = ShellRoutes.GAME_DETAIL_ROUTE,
-            arguments =
-                listOf(
-                    navArgument(ShellRoutes.GAME_DETAIL_ARG_SLUG) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    },
-                ),
-        ) { backStackEntry ->
-            GameDetailScreen(
-                onBack = { navController.popBackStackIfResumed() },
-                isGuest = isGuest,
-                slug = backStackEntry.arguments?.getString(ShellRoutes.GAME_DETAIL_ARG_SLUG).orEmpty(),
-            )
-        }
-        composable(ShellRoutes.CREATE_COMMUNITY) {
-            CreateCommunityScreen(
-                onBack = { navController.popBackStackIfResumed() },
-                onCreated = { community ->
-                    discoverViewModel.onCommunityCreated(community)
-                    selectedCommunity = community
-                    navController.navigate(ShellRoutes.COMMUNITY_DETAIL) {
-                        popUpTo(ShellRoutes.CREATE_COMMUNITY) { inclusive = true }
-                    }
-                },
-            )
-        }
-        composable(ShellRoutes.COMMUNITY_DETAIL) {
-            val community = selectedCommunity ?: return@composable
-            CommunityDetailScreen(
-                community = community,
-                isGuest = isGuest,
-                currentUserId = currentUserId,
-                onBack = { navController.popBackStackIfResumed() },
-                onDeleted = {
-                    discoverViewModel.onCommunityRemoved(community.id)
-                    communityFeedViewModel.onCommunityRemoved(community.id)
-                },
-                onPostClick = { post ->
-                    selectedPost = post
-                    navController.navigate(ShellRoutes.POST_DETAIL)
-                },
-                onCreatePost = {
-                    createTopicCommunity = community
-                    navController.navigate(ShellRoutes.CREATE_TOPIC)
-                },
-                onMemberClick = { member ->
-                    navController.navigate(ShellRoutes.userProfile(member.author))
-                },
-            )
-        }
-        composable(ShellRoutes.CREATE_TOPIC) {
-            CreateTopicScreen(
-                isGuest = isGuest,
-                community = createTopicCommunity,
-                onBack = { navController.popBackStackIfResumed() },
-                onCreateAccount = onLogout,
-            )
-        }
-        composable(ShellRoutes.POST_DETAIL) {
-            val post = selectedPost ?: return@composable
-            PostDetailScreen(
-                post = post,
-                isGuest = isGuest,
-                currentUserId = currentUserId,
-                onBack = { navController.popBackStackIfResumed() },
-                onCommunityClick = { community ->
-                    selectedCommunity = community
-                    navController.navigate(ShellRoutes.COMMUNITY_DETAIL)
-                },
-                onAuthorClick = {
-                    navController.navigate(ShellRoutes.userProfile(post.author))
-                },
-                onCreateAccount = onLogout,
-                onDelete = {
-                    communityFeedViewModel.onPostDeleted(post.id)
-                },
-            )
-        }
-        composable(ShellRoutes.NOTIFICATIONS) {
-            NotificationsScreen(
-                isGuest = isGuest,
-                onBack = { navController.popBackStackIfResumed() },
-                onCreateAccount = onLogout,
-            )
-        }
-        composable(ShellRoutes.MENU) {
-            ProfileMenuScreen(
-                state = ProfileMenuUiState.from(isGuest = isGuest, userName = userName, email = email),
-                actions =
-                    ProfileMenuActions(
-                        onBack = { navController.popBackStackIfResumed() },
-                        onItemSelect = { item -> navController.navigate(item.route) },
-                        onLogout = onLogout,
-                    ),
-            )
-        }
-        composable(ShellRoutes.SETTINGS) {
-            SettingsScreen(
-                onBack = { navController.popBackStackIfResumed() },
-                onChangePassword = { navController.navigate(ShellRoutes.CHANGE_PASSWORD) },
-                onLogout = onLogout,
-            )
-        }
-        composable(ShellRoutes.CHANGE_PASSWORD) {
-            ChangePasswordScreen(
-                onBack = { navController.popBackStackIfResumed() },
-                onSuccess = {
-                    navController.navigate(ShellRoutes.CHANGE_PASSWORD_SUCCESS) {
-                        popUpTo(ShellRoutes.SETTINGS)
-                    }
-                },
-            )
-        }
-        composable(ShellRoutes.ABOUT) {
-            AboutScreen(onBack = { navController.popBackStackIfResumed() })
-        }
-        composable(ShellRoutes.HELP) {
-            HelpScreen(onBack = { navController.popBackStackIfResumed() })
-        }
-        composable(ShellRoutes.CHANGE_PASSWORD_SUCCESS) {
-            SuccessScreen(
-                title = stringResource(R.string.change_password_success_title),
-                subtitle = stringResource(R.string.change_password_success_subtitle),
-                buttonText = stringResource(R.string.change_password_success_button),
-                onPrimary = {
-                    navController.popBackStack(ShellRoutes.SETTINGS, inclusive = false)
-                },
-            )
-        }
-        composable(
-            route = ShellRoutes.STATS_ROUTE,
-            arguments =
-                listOf(
-                    navArgument(ShellRoutes.STATS_ARG_OWNER) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    },
-                ),
-        ) { backStackEntry ->
-            val owner = backStackEntry.arguments?.getString(ShellRoutes.STATS_ARG_OWNER).orEmpty()
-            StatsScreen(
-                onBack = { navController.popBackStackIfResumed() },
-                onAchievements = { navController.navigate(ShellRoutes.achievements(owner)) },
-                ownerName = owner.ifBlank { null },
-            )
-        }
-        composable(
-            route = ShellRoutes.ACHIEVEMENTS_ROUTE,
-            arguments =
-                listOf(
-                    navArgument(ShellRoutes.ACHIEVEMENTS_ARG_OWNER) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    },
-                ),
-        ) { backStackEntry ->
-            val owner = backStackEntry.arguments?.getString(ShellRoutes.ACHIEVEMENTS_ARG_OWNER).orEmpty()
-            AchievementsScreen(
-                onBack = { navController.popBackStackIfResumed() },
-                onGameClick = { navController.navigate(ShellRoutes.gameAchievements(it)) },
-                ownerName = owner.ifBlank { null },
-            )
-        }
-        composable(
-            route = ShellRoutes.GAME_ACHIEVEMENTS_ROUTE,
-            arguments = listOf(navArgument(ShellRoutes.GAME_ACHIEVEMENTS_ARG_ID) { type = NavType.LongType }),
-        ) { backStackEntry ->
-            val gameId = backStackEntry.arguments?.getLong(ShellRoutes.GAME_ACHIEVEMENTS_ARG_ID) ?: 0L
-            GameAchievementsScreen(
-                gameId = gameId,
-                onBack = { navController.popBackStackIfResumed() },
-            )
-        }
-        composable(
-            route = ShellRoutes.USER_PROFILE_ROUTE,
-            arguments =
-                listOf(
-                    navArgument(ShellRoutes.USER_PROFILE_ARG_NAME) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    },
-                ),
-        ) { backStackEntry ->
-            val name = backStackEntry.arguments?.getString(ShellRoutes.USER_PROFILE_ARG_NAME).orEmpty()
-            UserProfileScreen(
-                user = UserProfileMockData.forName(name),
-                isGuest = isGuest,
-                onBack = { navController.popBackStackIfResumed() },
-                onGameClick = { navController.navigate(ShellRoutes.gameDetail(it)) },
-                onViewStats = { navController.navigate(ShellRoutes.stats(name)) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun TabShell(
-    isGuest: Boolean,
-    selected: AppTab,
-    onSelect: (AppTab) -> Unit,
-    discoverViewModel: DiscoverCommunitiesViewModel,
-    communityFeedViewModel: CommunityFeedViewModel,
-    libraryViewModel: LibraryViewModel,
-    profileViewModel: ProfileViewModel,
-    onNotifications: () -> Unit,
-    onSearch: () -> Unit,
-    onViewAll: (SearchScope) -> Unit,
-    onMenu: () -> Unit,
-    onGameClick: (String) -> Unit,
-    onPostClick: (CommunityPost) -> Unit,
-    onCommunityClick: (Community) -> Unit,
-    onCreatePost: () -> Unit,
-    onCreateCommunity: () -> Unit,
-    onStatusClick: (LibraryStatus?) -> Unit,
-    onCreateAccount: () -> Unit,
-    onViewStats: () -> Unit,
-    profile: Profile,
-    onEditProfile: () -> Unit,
-    setups: List<SetupItem>,
-    onViewSetup: () -> Unit,
-    currentUserId: Int? = null,
-    user: User? = null,
-) {
-    Column(modifier = Modifier.fillMaxSize().background(AppBackground)) {
-        AppHeader(
-            onNotifications = onNotifications,
-            onSearch = onSearch,
-            onMenu = onMenu,
+        tabsGraph(
+            navController = navController,
+            selection = selection,
+            selectedTab = { selectedTab },
+            onSelectTab = { selectedTab = it },
+            viewModels = viewModels,
+            isGuest = isGuest,
+            currentUserId = currentUserId,
+            profile = { profile },
+            onCreateAccount = onLogout,
         )
-
-        Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-            when (selected) {
-                AppTab.HOME -> {
-                    HomeScreen(onViewAll = onViewAll, onGameClick = onGameClick)
-                }
-
-                AppTab.LIBRARY -> {
-                    val libraryState by libraryViewModel.uiState.collectAsStateWithLifecycle()
-                    LibraryScreen(
-                        state = libraryState,
-                        isGuest = isGuest,
-                        onFilterChange = libraryViewModel::onFilterChange,
-                        onRetry = libraryViewModel::load,
-                        onLoadMore = libraryViewModel::loadMore,
-                        onToggleFavorite = libraryViewModel::onToggleFavorite,
-                        onErrorShown = libraryViewModel::onErrorShown,
-                        onCreateAccount = onCreateAccount,
-                        onBrowseGames = onSearch,
-                        onGameClick = onGameClick,
-                    )
-                }
-
-                AppTab.COMMUNITY -> {
-                    CommunityScreen(
-                        feedViewModel = communityFeedViewModel,
-                        discoverViewModel = discoverViewModel,
-                        isGuest = isGuest,
-                        onPostClick = onPostClick,
-                        onCommunityClick = onCommunityClick,
-                        onCreatePost = onCreatePost,
-                        onCreateCommunity = onCreateCommunity,
-                        onCreateAccount = onCreateAccount,
-                        currentUserId = currentUserId,
-                    )
-                }
-
-                AppTab.PROFILE -> {
-                    val profileState by profileViewModel.uiState.collectAsStateWithLifecycle()
-                    ProfileScreen(
-                        state = profileState,
-                        isGuest = isGuest,
-                        onRetry = profileViewModel::load,
-                        onGameClick = onGameClick,
-                        onStatusClick = onStatusClick,
-                        onEditProfile = onEditProfile,
-                        onCreateAccount = onCreateAccount,
-                        onViewStats = onViewStats,
-                        onViewSetup = onViewSetup,
-                        setups = setups,
-                        profile = profile,
-                    )
-                }
-            }
-        }
-
-        AppTabBar(selected = selected, onSelect = onSelect)
+        gamesGraph(navController = navController, isGuest = isGuest)
+        communityGraph(
+            navController = navController,
+            selection = selection,
+            isGuest = isGuest,
+            currentUserId = currentUserId,
+            discoverViewModel = viewModels.discover,
+            communityFeedViewModel = viewModels.communityFeed,
+            onCreateAccount = onLogout,
+        )
+        profileGraph(
+            navController = navController,
+            isGuest = isGuest,
+            profile = { profile },
+            mySetupViewModel = viewModels.mySetup,
+            onProfileSave = { profile = it },
+        )
+        accountGraph(
+            navController = navController,
+            isGuest = isGuest,
+            userName = userName,
+            email = email,
+            onLogout = onLogout,
+        )
     }
 }
-
-private val ProfileMenuItem.route: String
-    get() =
-        when (this) {
-            ProfileMenuItem.EDIT_PROFILE -> ShellRoutes.EDIT_PROFILE
-            ProfileMenuItem.STATS -> ShellRoutes.stats()
-            ProfileMenuItem.ACHIEVEMENTS -> ShellRoutes.achievements()
-            ProfileMenuItem.SETTINGS -> ShellRoutes.SETTINGS
-            ProfileMenuItem.HELP -> ShellRoutes.HELP
-            ProfileMenuItem.ABOUT -> ShellRoutes.ABOUT
-        }
