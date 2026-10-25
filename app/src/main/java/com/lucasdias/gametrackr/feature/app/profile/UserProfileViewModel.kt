@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.UserOverview
-import com.lucasdias.gametrackr.core.model.UserProfile
-import com.lucasdias.gametrackr.core.ui.theme.toHexString
 import com.lucasdias.gametrackr.data.profile.ProfileOverviewRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class UserProfileViewModel(
     private val repository: ProfileOverviewRepository,
-    private val user: UserProfile,
+    private val username: String,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UserProfileUiState())
     val uiState: StateFlow<UserProfileUiState> = _uiState.asStateFlow()
@@ -37,7 +35,7 @@ class UserProfileViewModel(
         loadJob =
             viewModelScope.launch {
                 repository
-                    .fetchUserOverview(user.username)
+                    .fetchUserOverview(username)
                     .onSuccess { result -> _uiState.update { it.showing(result) } }
                     .onFailure { _uiState.update { it.copy(isLoading = false, hasError = true) } }
             }
@@ -53,7 +51,7 @@ class UserProfileViewModel(
         friendJob?.cancel()
         friendJob =
             viewModelScope.launch {
-                repository.setFriend(user.username, isFriend).onFailure {
+                repository.setFriend(username, isFriend).onFailure {
                     _uiState.update { it.copy(isFriend = !isFriend, toastMessage = R.string.user_profile_friend_error) }
                 }
             }
@@ -71,11 +69,11 @@ class UserProfileViewModel(
         copy(
             profile =
                 Profile(
-                    name = user.name,
-                    username = user.username,
+                    name = result.name,
+                    username = "@${result.username}",
                     bio = result.bio,
                     joinedAt = result.joinedAt,
-                    avatarHex = user.avatarStart.toHexString(),
+                    avatarHex = result.avatarHex,
                 ),
             overview = result.overview,
             isFriend = result.isFriend,

@@ -28,6 +28,9 @@ class FakeProfileOverviewRepository(
         fetchCount++
         return respond {
             UserOverview(
+                name = UserProfileMockData.names[username] ?: username,
+                username = username,
+                avatarHex = UserProfileMockData.AVATAR_HEX,
                 bio = UserProfileMockData.BIO,
                 joinedAt = UserProfileMockData.joinedAt,
                 isFriend = username in friendUsernames,

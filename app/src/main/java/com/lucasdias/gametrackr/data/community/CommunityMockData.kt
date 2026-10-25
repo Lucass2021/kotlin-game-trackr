@@ -25,6 +25,7 @@ object CommunityMockData {
             CommunityPost(
                 id = 1,
                 author = "@ShadowReaper",
+                authorUsername = "shadowreaper",
                 timeAgo = "2h ago",
                 communityName = "RPG Speedrunners",
                 title = "Finally hit Platinum on Elden Ring!",
@@ -41,6 +42,7 @@ object CommunityMockData {
             CommunityPost(
                 id = 2,
                 author = "@PixelWitcher",
+                authorUsername = "pixelwitcher",
                 timeAgo = "5h ago",
                 communityName = "Cyberpunk Lore",
                 title = "New Night City secrets discovered",
@@ -56,6 +58,7 @@ object CommunityMockData {
             CommunityPost(
                 id = 3,
                 author = "@RetroGamer",
+                authorUsername = "retrogamer",
                 timeAgo = "8h ago",
                 communityName = "Retro Vault",
                 title = "Is the new DLC worth it?",
@@ -210,6 +213,7 @@ object CommunityMockData {
             CommunityPost(
                 id = 50,
                 author = "@chrono_runner",
+                authorUsername = "chrono_runner",
                 timeAgo = "2h ago",
                 communityName = "RPG Speedrunners",
                 title = "New glitch found in Chrono Trigger's 1999 AD sequence!",
@@ -225,6 +229,7 @@ object CommunityMockData {
             CommunityPost(
                 id = 51,
                 author = "@master_of_none",
+                authorUsername = "master_of_none",
                 timeAgo = "5h ago",
                 communityName = "RPG Speedrunners",
                 title = "Weekly challenge: barebones level 1 boss rush",
@@ -243,6 +248,7 @@ object CommunityMockData {
         CommunityPost(
             id = 60,
             author = "@ShadowReaper",
+            authorUsername = "shadowreaper",
             timeAgo = "Posted on March 14, 2024",
             communityName = "RPG Speedrunners",
             title = "The state of RPGs in 2024: is the golden age back?",
@@ -314,10 +320,10 @@ object CommunityMockData {
 
     val members =
         listOf(
-            CommunityMember(80, "@ShadowReaper", "Moderator", CoverVioletStart, CoverVioletEnd),
-            CommunityMember(81, "@chrono_runner", "Moderator", CoverAzureStart, CoverAzureEnd),
-            CommunityMember(82, "@QuestMaster", "Member · joined 2 months ago", CoverEmeraldStart, CoverEmeraldEnd),
-            CommunityMember(83, "@VoidWalker", "Member · joined 5 months ago", CoverCrimsonStart, CoverCrimsonEnd),
-            CommunityMember(84, "@NeonSamurai", "Member · joined 1 year ago", CoverCyanStart, CoverCyanEnd),
+            CommunityMember(80, "@ShadowReaper", "Moderator", CoverVioletStart, CoverVioletEnd, username = "shadowreaper"),
+            CommunityMember(81, "@chrono_runner", "Moderator", CoverAzureStart, CoverAzureEnd, username = "chrono_runner"),
+            CommunityMember(82, "@QuestMaster", "Member · joined 2 months ago", CoverEmeraldStart, CoverEmeraldEnd, username = "questmaster"),
+            CommunityMember(83, "@VoidWalker", "Member · joined 5 months ago", CoverCrimsonStart, CoverCrimsonEnd, username = "voidwalker"),
+            CommunityMember(84, "@NeonSamurai", "Member · joined 1 year ago", CoverCyanStart, CoverCyanEnd, username = "neonsamurai"),
         )
 }

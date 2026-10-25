@@ -89,6 +89,7 @@ data class CommunityUserDto(
     val name: String,
     val email: String? = null,
     @SerialName("avatar_url") val avatarUrl: String? = null,
+    val username: String? = null,
 )
 
 @Serializable
@@ -191,6 +192,7 @@ fun PostDto.toDomain(): CommunityPost {
         id = id.toLong(),
         author = "@${author?.name ?: "Unknown"}",
         authorId = authorId,
+        authorUsername = author?.username,
         timeAgo = formatTimeAgo(createdAt),
         communityName = community?.title.orEmpty(),
         communityId = communityId.toLong(),
@@ -230,6 +232,7 @@ fun CommunityUserDto.toDomain(): CommunityMember {
         role = "Member",
         avatarStart = colors.first,
         avatarEnd = colors.second,
+        username = username,
     )
 }
 

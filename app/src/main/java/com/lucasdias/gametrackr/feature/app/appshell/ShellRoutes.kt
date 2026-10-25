@@ -21,8 +21,8 @@ internal object ShellRoutes {
     const val STATS_ARG_OWNER = "owner"
     const val STATS_ROUTE = "$STATS?$STATS_ARG_OWNER={$STATS_ARG_OWNER}"
     const val USER_PROFILE = "userprofile"
-    const val USER_PROFILE_ARG_NAME = "name"
-    const val USER_PROFILE_ROUTE = "$USER_PROFILE?$USER_PROFILE_ARG_NAME={$USER_PROFILE_ARG_NAME}"
+    const val USER_PROFILE_ARG_USERNAME = "username"
+    const val USER_PROFILE_ROUTE = "$USER_PROFILE?$USER_PROFILE_ARG_USERNAME={$USER_PROFILE_ARG_USERNAME}"
     const val EDIT_PROFILE = "editprofile"
     const val MY_SETUP = "mysetup"
     const val EDIT_SETUP = "editsetup"
@@ -54,7 +54,7 @@ internal object ShellRoutes {
 
     fun editSetup(setupId: Int? = null) = if (setupId == null) EDIT_SETUP else "$EDIT_SETUP?$EDIT_SETUP_ARG_ID=$setupId"
 
-    fun userProfile(name: String) = "$USER_PROFILE?$USER_PROFILE_ARG_NAME=${Uri.encode(name)}"
+    fun userProfile(username: String) = "$USER_PROFILE?$USER_PROFILE_ARG_USERNAME=${Uri.encode(username)}"
 }
 
 internal fun NavController.popBackStackIfResumed() {

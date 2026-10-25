@@ -10,7 +10,6 @@ import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.core.model.Profile
-import com.lucasdias.gametrackr.core.model.UserProfile
 import com.lucasdias.gametrackr.core.network.AuthApi
 import com.lucasdias.gametrackr.core.network.AuthInterceptor
 import com.lucasdias.gametrackr.core.network.CommunityApi
@@ -216,7 +215,7 @@ val appModule =
         viewModel { (gameId: Long) -> GameAchievementsViewModel(get(), gameId) }
         viewModel { NotificationsViewModel(get()) }
         viewModel { ProfileViewModel(get()) }
-        viewModel { (user: UserProfile) -> UserProfileViewModel(get(), user) }
+        viewModel { (username: String) -> UserProfileViewModel(get(), username) }
         viewModel { (community: Community) -> CommunityDetailViewModel(get(), get(), get(), get(), community) }
         viewModel { (post: CommunityPost) -> PostDetailViewModel(get(), get(), get(), post) }
         viewModel { params -> EditSetupViewModel(params.getOrNull(), get(), ContentSetupPhotoEncoder(androidContext())) }

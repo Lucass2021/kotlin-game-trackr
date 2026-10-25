@@ -148,6 +148,9 @@ data class ProfileOverview(
 )
 
 data class UserOverview(
+    val name: String,
+    val username: String,
+    val avatarHex: String,
     val bio: String,
     val joinedAt: LocalDate?,
     val isFriend: Boolean,

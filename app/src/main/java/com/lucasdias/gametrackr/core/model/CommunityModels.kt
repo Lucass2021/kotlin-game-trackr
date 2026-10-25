@@ -24,6 +24,7 @@ data class CommunityPost(
     val id: Long,
     val author: String,
     val authorId: Int? = null,
+    val authorUsername: String? = null,
     val timeAgo: String,
     val communityName: String,
     val communityId: Long? = null,
@@ -46,6 +47,7 @@ data class CommunityMember(
     val role: String,
     val avatarStart: Color,
     val avatarEnd: Color,
+    val username: String? = null,
 )
 
 data class PostComment(

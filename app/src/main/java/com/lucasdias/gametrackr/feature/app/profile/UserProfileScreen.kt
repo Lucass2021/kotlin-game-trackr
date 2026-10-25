@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.model.UserProfile
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.EmptyState
 import com.lucasdias.gametrackr.core.ui.components.Toast
@@ -34,13 +33,13 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun UserProfileScreen(
-    user: UserProfile,
+    username: String,
     isGuest: Boolean,
     onBack: () -> Unit,
     onGameClick: (String) -> Unit,
     onViewStats: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: UserProfileViewModel = koinViewModel { parametersOf(user) },
+    viewModel: UserProfileViewModel = koinViewModel { parametersOf(username) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -48,7 +47,7 @@ fun UserProfileScreen(
 
     UserProfileScreen(
         state = state,
-        user = user,
+        username = username,
         isGuest = isGuest,
         onBack = onBack,
         onRetry = viewModel::load,
@@ -64,7 +63,7 @@ fun UserProfileScreen(
 @Composable
 private fun UserProfileScreen(
     state: UserProfileUiState,
-    user: UserProfile,
+    username: String,
     isGuest: Boolean,
     modifier: Modifier = Modifier,
     onBack: () -> Unit = {},
@@ -76,16 +75,16 @@ private fun UserProfileScreen(
     onViewStats: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    val shareMessage = stringResource(R.string.user_profile_share_message, user.name)
 
     Box(modifier = modifier.fillMaxSize().background(AppBackground).statusBarsPadding()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            UserProfileTopBar(username = user.username, onBack = onBack)
+            UserProfileTopBar(username = "@$username", onBack = onBack)
 
             val profile = state.profile
             val overview = state.overview
             when {
                 profile != null && overview != null -> {
+                    val shareMessage = stringResource(R.string.user_profile_share_message, profile.name)
                     UserProfileContent(
                         profile = profile,
                         overview = overview,
@@ -138,7 +137,7 @@ private fun UserProfileScreenPreview() {
                     overview = UserProfileMockData.overview,
                     isFriend = true,
                 ),
-            user = UserProfileMockData.friend,
+            username = UserProfileMockData.USERNAME,
             isGuest = false,
         )
     }
@@ -148,6 +147,6 @@ private fun UserProfileScreenPreview() {
 @Composable
 private fun UserProfileScreenErrorPreview() {
     AppPreview {
-        UserProfileScreen(state = UserProfileUiState(hasError = true), user = UserProfileMockData.user, isGuest = false)
+        UserProfileScreen(state = UserProfileUiState(hasError = true), username = UserProfileMockData.USERNAME, isGuest = false)
     }
 }

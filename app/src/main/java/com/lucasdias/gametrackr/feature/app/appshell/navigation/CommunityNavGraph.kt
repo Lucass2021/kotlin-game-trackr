@@ -83,7 +83,7 @@ internal fun NavGraphBuilder.communityGraph(
             },
             onPostClick = { post -> navController.openPost(selection, post) },
             onCreatePost = { navController.openCreateTopic(selection, community) },
-            onMemberClick = { member -> navController.navigate(ShellRoutes.userProfile(member.author)) },
+            onMemberClick = { member -> member.username?.let { navController.navigate(ShellRoutes.userProfile(it)) } },
         )
     }
     composable(ShellRoutes.CREATE_TOPIC) {
@@ -102,7 +102,7 @@ internal fun NavGraphBuilder.communityGraph(
             currentUserId = currentUserId,
             onBack = { navController.popBackStackIfResumed() },
             onCommunityClick = { community -> navController.openCommunity(selection, community) },
-            onAuthorClick = { navController.navigate(ShellRoutes.userProfile(post.author)) },
+            onAuthorClick = { post.authorUsername?.let { navController.navigate(ShellRoutes.userProfile(it)) } },
             onCreateAccount = onCreateAccount,
             onDelete = { communityFeedViewModel.onPostDeleted(post.id) },
         )

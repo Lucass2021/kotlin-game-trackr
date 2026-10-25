@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.data.profile
 
-import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.core.model.ActivityEvent
 import com.lucasdias.gametrackr.core.model.ActivityKind
 import com.lucasdias.gametrackr.core.model.LibraryEntry
@@ -8,7 +7,6 @@ import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.ProfileOverview
 import com.lucasdias.gametrackr.core.model.ProfileStats
 import com.lucasdias.gametrackr.core.model.StatusCount
-import com.lucasdias.gametrackr.core.model.UserProfile
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
@@ -21,45 +19,25 @@ import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
 import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
 import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import java.time.LocalDate
-import kotlin.math.abs
 
 object UserProfileMockData {
-    val user =
-        UserProfile(
-            name = "Ava Reyes",
-            username = "@avareyes",
-            avatarStart = CoverCyanStart,
-            avatarEnd = CoverCyanEnd,
-        )
+    const val USERNAME = "avareyes"
 
-    val friend = user.copy(isFriend = true)
+    const val AVATAR_HEX = "#0077B6"
 
-    private val avatarPalette =
-        listOf(
-            CoverCyanStart to CoverCyanEnd,
-            CoverVioletStart to CoverVioletEnd,
-            CoverEmeraldStart to CoverEmeraldEnd,
-            CoverCrimsonStart to CoverCrimsonEnd,
-            CoverAzureStart to CoverAzureEnd,
-            CoverIndigoStart to CoverIndigoEnd,
+    val names =
+        mapOf(
+            USERNAME to "Ava Reyes",
+            "shadowreaper" to "ShadowReaper",
+            "pixelwitcher" to "PixelWitcher",
+            "retrogamer" to "RetroGamer",
+            "chrono_runner" to "chrono_runner",
+            "master_of_none" to "master_of_none",
+            "questmaster" to "QuestMaster",
+            "voidwalker" to "VoidWalker",
+            "neonsamurai" to "NeonSamurai",
         )
-
-    fun forName(raw: String): UserProfile {
-        val handle = raw.trim()
-        val hasAt = handle.startsWith("@")
-        val displayName = if (hasAt) handle.drop(1) else handle
-        val username = if (hasAt) handle else "@" + handle.lowercase().replace(" ", "")
-        val (start, end) = avatarPalette[abs(handle.hashCode()) % avatarPalette.size]
-        return UserProfile(
-            name = displayName,
-            username = username,
-            avatarStart = start,
-            avatarEnd = end,
-        )
-    }
 
     val stats = ProfileStats(totalGames = 87, hours = 934, platinum = 12)
 

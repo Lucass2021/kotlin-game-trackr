@@ -18,10 +18,10 @@ class UserProfileViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val user = UserProfileMockData.user
+    private val username = "shadowreaper"
     private val repository = FakeProfileOverviewRepository()
 
-    private fun viewModel() = UserProfileViewModel(repository, user)
+    private fun viewModel() = UserProfileViewModel(repository, username)
 
     @Test
     fun `load shows the header, stats and sections from the repository`() =
@@ -33,9 +33,24 @@ class UserProfileViewModelTest {
 
             val state = viewModel.uiState.value
             assertEquals(UserProfileMockData.BIO, state.profile?.bio)
-            assertEquals(user.username, state.profile?.username)
+            assertEquals("@$username", state.profile?.username)
             assertEquals(UserProfileMockData.stats, state.overview?.stats)
             assertFalse(state.isFriend)
+        }
+
+    @Test
+    fun `the header comes from the repository profile for the username`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            val viewModel = viewModel()
+
+            viewModel.loadIfNeeded()
+            advanceUntilIdle()
+
+            val profile = viewModel.uiState.value.profile
+            assertEquals("ShadowReaper", profile?.name)
+            assertEquals("@shadowreaper", profile?.username)
+            assertEquals(UserProfileMockData.AVATAR_HEX, profile?.avatarHex)
+            assertEquals(UserProfileMockData.joinedAt, profile?.joinedAt)
         }
 
     @Test
@@ -98,7 +113,7 @@ class UserProfileViewModelTest {
             advanceUntilIdle()
 
             assertTrue(viewModel.uiState.value.isFriend)
-            assertTrue(repository.isFriend(user.username))
+            assertTrue(repository.isFriend(username))
             assertTrue(reopened.uiState.value.isFriend)
         }
 
@@ -153,7 +168,7 @@ class UserProfileViewModelTest {
             advanceUntilIdle()
 
             assertFalse(viewModel.uiState.value.isFriend)
-            assertFalse(repository.isFriend(user.username))
+            assertFalse(repository.isFriend(username))
             assertNull(viewModel.uiState.value.toastMessage)
         }
 }

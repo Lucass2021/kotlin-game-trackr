@@ -8,7 +8,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.lucasdias.gametrackr.core.model.Profile
-import com.lucasdias.gametrackr.data.profile.UserProfileMockData
 import com.lucasdias.gametrackr.feature.app.appshell.ShellRoutes
 import com.lucasdias.gametrackr.feature.app.appshell.popBackStackIfResumed
 import com.lucasdias.gametrackr.feature.app.profile.UserProfileScreen
@@ -63,19 +62,19 @@ internal fun NavGraphBuilder.profileGraph(
         route = ShellRoutes.USER_PROFILE_ROUTE,
         arguments =
             listOf(
-                navArgument(ShellRoutes.USER_PROFILE_ARG_NAME) {
+                navArgument(ShellRoutes.USER_PROFILE_ARG_USERNAME) {
                     type = NavType.StringType
                     defaultValue = ""
                 },
             ),
     ) { backStackEntry ->
-        val name = backStackEntry.arguments?.getString(ShellRoutes.USER_PROFILE_ARG_NAME).orEmpty()
+        val username = backStackEntry.arguments?.getString(ShellRoutes.USER_PROFILE_ARG_USERNAME).orEmpty()
         UserProfileScreen(
-            user = UserProfileMockData.forName(name),
+            username = username,
             isGuest = isGuest,
             onBack = { navController.popBackStackIfResumed() },
             onGameClick = { navController.navigate(ShellRoutes.gameDetail(it)) },
-            onViewStats = { navController.navigate(ShellRoutes.stats(name)) },
+            onViewStats = { navController.navigate(ShellRoutes.stats("@$username")) },
         )
     }
 }
