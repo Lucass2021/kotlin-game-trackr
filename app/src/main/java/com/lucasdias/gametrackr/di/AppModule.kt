@@ -193,7 +193,7 @@ val appModule =
         viewModel { DiscoverCommunitiesViewModel(get(), get()) }
         viewModel { CommunityFeedViewModel(get(), get(), get(), get()) }
         viewModel { HomeViewModel(get()) }
-        viewModel { (scope: SearchScope) -> SearchViewModel(scope, get()) }
+        viewModel { (scope: SearchScope) -> SearchViewModel(scope = scope, repository = get(), savedStateHandle = get()) }
         viewModel { (slug: String) -> GameDetailViewModel(get(), get(), get(), slug) }
         viewModel { AuthViewModel(get(), get()) }
         viewModel { LoginViewModel(get(), get()) }

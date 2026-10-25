@@ -1,9 +1,9 @@
 package com.lucasdias.gametrackr.feature.app.search
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lucasdias.gametrackr.core.model.Game
-import com.lucasdias.gametrackr.core.model.GamePlatform
 import com.lucasdias.gametrackr.core.pagination.FeedCache
 import com.lucasdias.gametrackr.core.pagination.FeedKey
 import com.lucasdias.gametrackr.core.pagination.Page
@@ -20,14 +20,22 @@ import kotlinx.coroutines.launch
 class SearchViewModel(
     scope: SearchScope,
     private val repository: GameRepository,
+    private val savedStateHandle: SavedStateHandle,
     private val cache: FeedCache = FeedCache(),
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(SearchUiState(scope = scope))
+    private val _uiState =
+        MutableStateFlow(
+            SearchUiState(
+                scope = scope,
+                query = savedStateHandle[KEY_QUERY] ?: "",
+                platformSlug = savedStateHandle[KEY_PLATFORM_SLUG],
+            ),
+        )
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private var pageJob: Job? = null
     private var searchJob: Job? = null
-    private var appliedKey = FeedKey(scope, search = null, platform = null)
+    private var appliedKey = FeedKey(scope, search = null, platformSlug = null)
 
     fun loadIfNeeded() {
         if (_uiState.value.platforms.isEmpty()) loadPlatforms()
@@ -51,6 +59,7 @@ class SearchViewModel(
 
     fun onQueryChange(query: String) {
         _uiState.update { it.copy(query = query, isSearchPending = true) }
+        savedStateHandle[KEY_QUERY] = query
         searchJob?.cancel()
         searchJob =
             viewModelScope.launch {
@@ -63,11 +72,14 @@ class SearchViewModel(
     fun onPlatformChange(platformSlug: String?) {
         if (platformSlug == _uiState.value.platformSlug) return
         _uiState.update { it.copy(platformSlug = platformSlug) }
+        savedStateHandle[KEY_PLATFORM_SLUG] = platformSlug
         load()
     }
 
     fun onClearFilters() {
         _uiState.update { it.copy(query = "", platformSlug = null) }
+        savedStateHandle[KEY_QUERY] = ""
+        savedStateHandle[KEY_PLATFORM_SLUG] = null
         load()
     }
 
@@ -82,7 +94,7 @@ class SearchViewModel(
         return FeedKey(
             scope = state.scope,
             search = state.query.trim().ifBlank { null },
-            platform = state.platforms.firstOrNull { it.slug == state.platformSlug },
+            platformSlug = state.platformSlug,
         )
     }
 
@@ -130,7 +142,7 @@ class SearchViewModel(
         key: FeedKey,
         page: Int,
     ): Result<Page<Game>> {
-        val platformSlug = key.platform?.slug
+        val platformSlug = key.platformSlug
         return when (key.scope) {
             SearchScope.MOST_ANTICIPATED -> repository.fetchAllMostAnticipated(page, SearchUiState.PAGE_SIZE, key.search, platformSlug)
             SearchScope.NEW_RELEASES -> repository.fetchAllNewReleases(page, SearchUiState.PAGE_SIZE, key.search, platformSlug)
@@ -145,5 +157,7 @@ class SearchViewModel(
 
     private companion object {
         const val SEARCH_DEBOUNCE_MS = 300L
+        const val KEY_QUERY = "query"
+        const val KEY_PLATFORM_SLUG = "platformSlug"
     }
 }

@@ -1,13 +1,12 @@
 package com.lucasdias.gametrackr.core.pagination
 
 import com.lucasdias.gametrackr.core.model.Game
-import com.lucasdias.gametrackr.core.model.GamePlatform
 import com.lucasdias.gametrackr.feature.app.search.SearchScope
 
 data class FeedKey(
     val scope: SearchScope,
     val search: String?,
-    val platform: GamePlatform?,
+    val platformSlug: String?,
 )
 
 class FeedCache(

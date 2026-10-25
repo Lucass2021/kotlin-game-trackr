@@ -1,5 +1,6 @@
 package com.lucasdias.gametrackr.feature.app.search
 
+import androidx.lifecycle.SavedStateHandle
 import com.lucasdias.gametrackr.core.model.Game
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.FakeLatency
@@ -22,7 +23,7 @@ class SearchViewModelTest {
 
     private val manyGames = List(SearchUiState.PAGE_SIZE + 5) { Game(id = 100 + it, name = "Game $it", slug = "game-$it") }
     private val repository = FakeGameRepository(searchResults = manyGames)
-    private val viewModel by lazy { SearchViewModel(SearchScope.ALL, repository) }
+    private val viewModel by lazy { SearchViewModel(SearchScope.ALL, repository, SavedStateHandle()) }
 
     @Test
     fun `load shows the first page and the platforms`() =
@@ -50,7 +51,7 @@ class SearchViewModelTest {
     @Test
     fun `the empty state waits for the first page`() =
         runTest(mainDispatcherRule.dispatcher) {
-            val viewModel = SearchViewModel(SearchScope.ALL, FakeGameRepository(searchResults = emptyList()))
+            val viewModel = SearchViewModel(SearchScope.ALL, FakeGameRepository(searchResults = emptyList()), SavedStateHandle())
 
             viewModel.loadIfNeeded()
             runCurrent()
