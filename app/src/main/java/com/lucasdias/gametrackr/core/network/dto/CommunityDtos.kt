@@ -1,24 +1,10 @@
 package com.lucasdias.gametrackr.core.network.dto
 
-import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityMember
 import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.PostComment
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
@@ -28,7 +14,8 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.math.abs
+
+private const val MEDIA_PALETTE_OFFSET = 3
 
 @Serializable
 data class PaginatedResponse<T>(
@@ -148,25 +135,10 @@ data class CommentBody(
     val comment: String,
 )
 
-object GradientPalette {
-    private val pairs: List<Pair<Color, Color>> =
-        listOf(
-            CoverEmeraldStart to CoverEmeraldEnd,
-            CoverCrimsonStart to CoverCrimsonEnd,
-            CoverIndigoStart to CoverIndigoEnd,
-            CoverAzureStart to CoverAzureEnd,
-            CoverVioletStart to CoverVioletEnd,
-            CoverCyanStart to CoverCyanEnd,
-            CoverPineStart to CoverPineEnd,
-        )
-
-    fun pair(id: Int): Pair<Color, Color> = pairs[abs(id) % pairs.size]
-}
-
 fun CommunityDto.toDomain(): Community {
     val avatarMedia = media?.firstOrNull { it.collectionName == "avatar" }?.originalUrl
     val coverMedia = media?.firstOrNull { it.collectionName == "cover" }?.originalUrl
-    val colors = GradientPalette.pair(id)
+    val palette = CoverPalette.forGradientId(id)
     val memberCount = members?.size ?: 0
     return Community(
         id = id.toLong(),
@@ -178,16 +150,15 @@ fun CommunityDto.toDomain(): Community {
         online = "--",
         description = description.orEmpty(),
         isJoined = isMember ?: false,
-        iconStart = colors.first,
-        iconEnd = colors.second,
+        icon = palette,
         createdMonth = formatMonthYear(createdAt),
     )
 }
 
 fun PostDto.toDomain(): CommunityPost {
     val firstImage = media?.firstOrNull()?.originalUrl
-    val avatarColors = GradientPalette.pair(id)
-    val mediaColors = GradientPalette.pair(id + 3)
+    val avatar = CoverPalette.forGradientId(id)
+    val media = CoverPalette.forGradientId(id + MEDIA_PALETTE_OFFSET)
     return CommunityPost(
         id = id.toLong(),
         author = "@${author?.name ?: "Unknown"}",
@@ -202,15 +173,13 @@ fun PostDto.toDomain(): CommunityPost {
         comments = comments?.size ?: 0,
         hasMedia = firstImage != null,
         isLiked = isLiked ?: false,
-        avatarStart = avatarColors.first,
-        avatarEnd = avatarColors.second,
-        mediaStart = mediaColors.first,
-        mediaEnd = mediaColors.second,
+        avatar = avatar,
+        media = media,
     )
 }
 
 fun CommentDto.toDomain(): PostComment {
-    val colors = GradientPalette.pair(id)
+    val palette = CoverPalette.forGradientId(id)
     return PostComment(
         id = id.toLong(),
         author = "@${author?.name ?: "Unknown"}",
@@ -219,19 +188,17 @@ fun CommentDto.toDomain(): PostComment {
         content = content,
         likes = likes,
         isLiked = isLiked ?: false,
-        avatarStart = colors.first,
-        avatarEnd = colors.second,
+        avatar = palette,
     )
 }
 
 fun CommunityUserDto.toDomain(): CommunityMember {
-    val colors = GradientPalette.pair(id)
+    val palette = CoverPalette.forGradientId(id)
     return CommunityMember(
         id = id.toLong(),
         author = "@$name",
         role = "Member",
-        avatarStart = colors.first,
-        avatarEnd = colors.second,
+        avatar = palette,
         username = username,
     )
 }

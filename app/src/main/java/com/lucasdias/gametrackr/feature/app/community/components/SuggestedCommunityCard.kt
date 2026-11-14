@@ -24,7 +24,6 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.pressScale
-import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
@@ -32,6 +31,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Radius
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.iconEnd
+import com.lucasdias.gametrackr.core.ui.theme.iconStart
 import com.lucasdias.gametrackr.data.community.CommunityMockData
 
 private val BORDER_WIDTH = 1.dp

@@ -1,7 +1,5 @@
 package com.lucasdias.gametrackr.core.model
 
-import androidx.compose.ui.graphics.Color
-
 data class Community(
     val id: Long,
     val name: String,
@@ -12,8 +10,7 @@ data class Community(
     val online: String,
     val description: String,
     val isJoined: Boolean,
-    val iconStart: Color,
-    val iconEnd: Color,
+    val icon: CoverPalette,
     val createdMonth: String? = null,
 ) {
     val subtitle: String get() = "#$category · $members members"
@@ -35,18 +32,15 @@ data class CommunityPost(
     val hasMedia: Boolean,
     val isLiked: Boolean = false,
     val isBookmarked: Boolean = false,
-    val avatarStart: Color,
-    val avatarEnd: Color,
-    val mediaStart: Color,
-    val mediaEnd: Color,
+    val avatar: CoverPalette,
+    val media: CoverPalette,
 )
 
 data class CommunityMember(
     val id: Long,
     val author: String,
     val role: String,
-    val avatarStart: Color,
-    val avatarEnd: Color,
+    val avatar: CoverPalette,
     val username: String? = null,
 )
 
@@ -58,8 +52,7 @@ data class PostComment(
     val content: String,
     val likes: Int,
     val isLiked: Boolean = false,
-    val avatarStart: Color,
-    val avatarEnd: Color,
+    val avatar: CoverPalette,
     val replies: List<PostComment> = emptyList(),
 )
 

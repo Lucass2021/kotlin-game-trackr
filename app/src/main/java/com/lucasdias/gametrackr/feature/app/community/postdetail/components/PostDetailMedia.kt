@@ -21,6 +21,8 @@ import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.Radius
+import com.lucasdias.gametrackr.core.ui.theme.mediaEnd
+import com.lucasdias.gametrackr.core.ui.theme.mediaStart
 import com.lucasdias.gametrackr.data.community.CommunityMockData
 
 private const val ASPECT_RATIO = 16f / 9f

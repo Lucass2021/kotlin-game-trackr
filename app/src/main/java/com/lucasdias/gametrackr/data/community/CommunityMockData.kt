@@ -3,21 +3,8 @@ package com.lucasdias.gametrackr.data.community
 import com.lucasdias.gametrackr.core.model.Community
 import com.lucasdias.gametrackr.core.model.CommunityMember
 import com.lucasdias.gametrackr.core.model.CommunityPost
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.PostComment
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 
 object CommunityMockData {
     val feed =
@@ -34,10 +21,8 @@ object CommunityMockData {
                 comments = 84,
                 hasMedia = true,
                 isLiked = true,
-                avatarStart = CoverVioletStart,
-                avatarEnd = CoverVioletEnd,
-                mediaStart = CoverEmeraldStart,
-                mediaEnd = CoverEmeraldEnd,
+                avatar = CoverPalette.VIOLET,
+                media = CoverPalette.EMERALD,
             ),
             CommunityPost(
                 id = 2,
@@ -50,10 +35,8 @@ object CommunityMockData {
                 likes = 2401,
                 comments = 312,
                 hasMedia = true,
-                avatarStart = CoverPineStart,
-                avatarEnd = CoverPineEnd,
-                mediaStart = CoverIndigoStart,
-                mediaEnd = CoverIndigoEnd,
+                avatar = CoverPalette.PINE,
+                media = CoverPalette.INDIGO,
             ),
             CommunityPost(
                 id = 3,
@@ -66,10 +49,8 @@ object CommunityMockData {
                 likes = 85,
                 comments = 12,
                 hasMedia = false,
-                avatarStart = CoverAzureStart,
-                avatarEnd = CoverAzureEnd,
-                mediaStart = CoverCyanStart,
-                mediaEnd = CoverCyanEnd,
+                avatar = CoverPalette.AZURE,
+                media = CoverPalette.CYAN,
             ),
         )
 
@@ -83,8 +64,7 @@ object CommunityMockData {
             online = "89",
             description = "The ultimate hub for breaking world records in classic and modern RPGs.",
             isJoined = false,
-            iconStart = CoverEmeraldStart,
-            iconEnd = CoverEmeraldEnd,
+            icon = CoverPalette.EMERALD,
         )
 
     val featured =
@@ -98,8 +78,7 @@ object CommunityMockData {
                 online = "120",
                 description = "Theories, item descriptions and everything the Lands Between refuse to explain.",
                 isJoined = false,
-                iconStart = CoverEmeraldStart,
-                iconEnd = CoverEmeraldEnd,
+                icon = CoverPalette.EMERALD,
             ),
             Community(
                 id = 21,
@@ -110,8 +89,7 @@ object CommunityMockData {
                 online = "203",
                 description = "Cartridges, CRTs and high scores. Nostalgia lives here.",
                 isJoined = false,
-                iconStart = CoverCrimsonStart,
-                iconEnd = CoverCrimsonEnd,
+                icon = CoverPalette.CRIMSON,
             ),
             Community(
                 id = 22,
@@ -122,8 +100,7 @@ object CommunityMockData {
                 online = "64",
                 description = "Discovery platform for the little games with the biggest ideas.",
                 isJoined = false,
-                iconStart = CoverVioletStart,
-                iconEnd = CoverVioletEnd,
+                icon = CoverPalette.VIOLET,
             ),
         )
 
@@ -138,8 +115,7 @@ object CommunityMockData {
                 online = "142",
                 description = "Sharing the best builds, materia setups and side quest routes.",
                 isJoined = true,
-                iconStart = CoverIndigoStart,
-                iconEnd = CoverIndigoEnd,
+                icon = CoverPalette.INDIGO,
             ),
             Community(
                 id = 31,
@@ -150,8 +126,7 @@ object CommunityMockData {
                 online = "870",
                 description = "The ultimate community for lineups, agent picks and ranked climbing.",
                 isJoined = false,
-                iconStart = CoverCrimsonStart,
-                iconEnd = CoverCrimsonEnd,
+                icon = CoverPalette.CRIMSON,
             ),
             Community(
                 id = 32,
@@ -162,8 +137,7 @@ object CommunityMockData {
                 online = "64",
                 description = "Discovery platform for the little games with the biggest ideas.",
                 isJoined = false,
-                iconStart = CoverVioletStart,
-                iconEnd = CoverVioletEnd,
+                icon = CoverPalette.VIOLET,
             ),
             Community(
                 id = 33,
@@ -174,8 +148,7 @@ object CommunityMockData {
                 online = "310",
                 description = "Advanced techniques for hardware tuning, shaders and texture packs.",
                 isJoined = false,
-                iconStart = CoverPineStart,
-                iconEnd = CoverPineEnd,
+                icon = CoverPalette.PINE,
             ),
             Community(
                 id = 34,
@@ -186,8 +159,7 @@ object CommunityMockData {
                 online = "198",
                 description = "Frame-perfect tricks, glitch hunting and world record splits.",
                 isJoined = true,
-                iconStart = CoverAzureStart,
-                iconEnd = CoverAzureEnd,
+                icon = CoverPalette.AZURE,
             ),
         )
 
@@ -203,8 +175,7 @@ object CommunityMockData {
                 "The ultimate hub for breaking world records in classic and modern RPGs. " +
                     "Share your routes, discuss glitch hunting techniques, and compare splits with the fastest players around.",
             isJoined = false,
-            iconStart = CoverEmeraldStart,
-            iconEnd = CoverEmeraldEnd,
+            icon = CoverPalette.EMERALD,
             createdMonth = "March 2024",
         )
 
@@ -221,10 +192,8 @@ object CommunityMockData {
                 likes = 432,
                 comments = 24,
                 hasMedia = true,
-                avatarStart = CoverAzureStart,
-                avatarEnd = CoverAzureEnd,
-                mediaStart = CoverPineStart,
-                mediaEnd = CoverPineEnd,
+                avatar = CoverPalette.AZURE,
+                media = CoverPalette.PINE,
             ),
             CommunityPost(
                 id = 51,
@@ -237,10 +206,8 @@ object CommunityMockData {
                 likes = 1204,
                 comments = 156,
                 hasMedia = false,
-                avatarStart = CoverCrimsonStart,
-                avatarEnd = CoverCrimsonEnd,
-                mediaStart = CoverCyanStart,
-                mediaEnd = CoverCyanEnd,
+                avatar = CoverPalette.CRIMSON,
+                media = CoverPalette.CYAN,
             ),
         )
 
@@ -259,10 +226,8 @@ object CommunityMockData {
             comments = 24,
             hasMedia = true,
             isLiked = true,
-            avatarStart = CoverVioletStart,
-            avatarEnd = CoverVioletEnd,
-            mediaStart = CoverIndigoStart,
-            mediaEnd = CoverIndigoEnd,
+            avatar = CoverPalette.VIOLET,
+            media = CoverPalette.INDIGO,
         )
 
     val detailPostHighlights =
@@ -282,8 +247,7 @@ object CommunityMockData {
                     "I absolutely agree. The resurgence of CRPGs specifically has been a breath of fresh air. " +
                         "2024 is looking like a legendary year for build variety.",
                 likes = 12,
-                avatarStart = CoverVioletStart,
-                avatarEnd = CoverVioletEnd,
+                avatar = CoverPalette.VIOLET,
                 replies =
                     listOf(
                         PostComment(
@@ -292,8 +256,7 @@ object CommunityMockData {
                             timeAgo = "1h",
                             content = "Specifically the combat mechanics in the latest release — they finally got the balance right!",
                             likes = 5,
-                            avatarStart = CoverEmeraldStart,
-                            avatarEnd = CoverEmeraldEnd,
+                            avatar = CoverPalette.EMERALD,
                         ),
                     ),
             ),
@@ -303,8 +266,7 @@ object CommunityMockData {
                 timeAgo = "5h",
                 content = "The inventory management is still a mess though. No matter how deep the story is, if the UI is clunky the experience suffers.",
                 likes = 8,
-                avatarStart = CoverAzureStart,
-                avatarEnd = CoverAzureEnd,
+                avatar = CoverPalette.AZURE,
             ),
             PostComment(
                 id = 73,
@@ -313,17 +275,16 @@ object CommunityMockData {
                 content = "Turn-based is back and I could not be happier. Give me a menu and a damage formula over another cinematic set piece.",
                 likes = 21,
                 isLiked = true,
-                avatarStart = CoverCrimsonStart,
-                avatarEnd = CoverCrimsonEnd,
+                avatar = CoverPalette.CRIMSON,
             ),
         )
 
     val members =
         listOf(
-            CommunityMember(80, "@ShadowReaper", "Moderator", CoverVioletStart, CoverVioletEnd, username = "shadowreaper"),
-            CommunityMember(81, "@chrono_runner", "Moderator", CoverAzureStart, CoverAzureEnd, username = "chrono_runner"),
-            CommunityMember(82, "@QuestMaster", "Member · joined 2 months ago", CoverEmeraldStart, CoverEmeraldEnd, username = "questmaster"),
-            CommunityMember(83, "@VoidWalker", "Member · joined 5 months ago", CoverCrimsonStart, CoverCrimsonEnd, username = "voidwalker"),
-            CommunityMember(84, "@NeonSamurai", "Member · joined 1 year ago", CoverCyanStart, CoverCyanEnd, username = "neonsamurai"),
+            CommunityMember(80, "@ShadowReaper", "Moderator", CoverPalette.VIOLET, username = "shadowreaper"),
+            CommunityMember(81, "@chrono_runner", "Moderator", CoverPalette.AZURE, username = "chrono_runner"),
+            CommunityMember(82, "@QuestMaster", "Member · joined 2 months ago", CoverPalette.EMERALD, username = "questmaster"),
+            CommunityMember(83, "@VoidWalker", "Member · joined 5 months ago", CoverPalette.CRIMSON, username = "voidwalker"),
+            CommunityMember(84, "@NeonSamurai", "Member · joined 1 year ago", CoverPalette.CYAN, username = "neonsamurai"),
         )
 }

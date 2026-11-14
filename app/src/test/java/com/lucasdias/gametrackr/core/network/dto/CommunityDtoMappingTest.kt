@@ -1,5 +1,6 @@
 package com.lucasdias.gametrackr.core.network.dto
 
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -47,5 +48,26 @@ class CommunityDtoMappingTest {
         val member = json.decodeFromString<CommunityUserDto>(body).toDomain()
 
         assertEquals("shadowreaper", member.username)
+    }
+
+    @Test
+    fun `the community palettes come from the api ids`() {
+        val post =
+            json
+                .decodeFromString<PostDto>(
+                    """{"id":7,"title":"Builds","slug":"builds","community_id":1,"author_id":3}""",
+                ).toDomain()
+        val member = json.decodeFromString<CommunityUserDto>("""{"id":3,"name":"Shadow Reaper"}""").toDomain()
+        val comment =
+            json
+                .decodeFromString<CommentDto>(
+                    """{"id":4,"content":"Nice","author_id":3,"post_id":7}""",
+                ).toDomain()
+
+        assertEquals(CoverPalette.CRIMSON, dto(null).toDomain().icon)
+        assertEquals(CoverPalette.EMERALD, post.avatar)
+        assertEquals(CoverPalette.AZURE, post.media)
+        assertEquals(CoverPalette.AZURE, member.avatar)
+        assertEquals(CoverPalette.VIOLET, comment.avatar)
     }
 }
