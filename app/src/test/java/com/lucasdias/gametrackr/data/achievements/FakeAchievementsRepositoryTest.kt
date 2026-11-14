@@ -1,8 +1,8 @@
 package com.lucasdias.gametrackr.data.achievements
 
-import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.core.model.Achievement
 import com.lucasdias.gametrackr.core.model.AchievementTier
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.GameAchievements
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -52,6 +52,6 @@ class FakeAchievementsRepositoryTest {
         fun game(
             id: Long,
             vararg achievements: Achievement,
-        ) = GameAchievements(id, "Game $id", "PC", Color.Black, Color.Black, achievements.toList())
+        ) = GameAchievements(id, "Game $id", "PC", CoverPalette.VIOLET, achievements.toList())
     }
 }

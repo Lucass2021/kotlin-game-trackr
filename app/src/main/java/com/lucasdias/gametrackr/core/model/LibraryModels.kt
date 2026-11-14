@@ -47,8 +47,7 @@ data class LibraryEntry(
     val status: LibraryStatus,
     val rating: Int,
     val hours: Int,
-    val coverStart: Color,
-    val coverEnd: Color,
+    val cover: CoverPalette,
     val isFavorite: Boolean = false,
 )
 
@@ -67,6 +66,5 @@ data class NewLibraryEntry(
     val startedAt: Long?,
     val finishedAt: Long?,
     val review: String?,
-    val coverStart: Color,
-    val coverEnd: Color,
+    val cover: CoverPalette,
 )

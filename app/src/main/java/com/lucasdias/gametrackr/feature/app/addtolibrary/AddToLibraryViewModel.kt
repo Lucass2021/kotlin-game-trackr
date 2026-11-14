@@ -91,8 +91,7 @@ class AddToLibraryViewModel(
             startedAt = startedAt,
             finishedAt = finishedAt,
             review = review.trim().ifEmpty { null },
-            coverStart = game.coverStart,
-            coverEnd = game.coverEnd,
+            cover = game.cover,
         )
 
     private companion object {

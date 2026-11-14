@@ -41,6 +41,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.coverEnd
+import com.lucasdias.gametrackr.core.ui.theme.coverStart
 import com.lucasdias.gametrackr.data.game.FakeGameRepository
 
 private val HERO_HEIGHT = 300.dp

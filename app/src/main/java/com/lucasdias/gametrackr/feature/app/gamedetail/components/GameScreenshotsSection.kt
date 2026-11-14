@@ -26,6 +26,8 @@ import com.lucasdias.gametrackr.core.model.GameScreenshot
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.Radius
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.end
+import com.lucasdias.gametrackr.core.ui.theme.start
 import com.lucasdias.gametrackr.data.game.FakeGameRepository
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
 

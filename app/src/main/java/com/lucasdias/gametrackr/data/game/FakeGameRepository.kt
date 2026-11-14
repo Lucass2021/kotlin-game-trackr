@@ -1,5 +1,6 @@
 package com.lucasdias.gametrackr.data.game
 
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.Game
 import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.core.model.GamePlatform
@@ -7,16 +8,6 @@ import com.lucasdias.gametrackr.core.model.GameScreenshot
 import com.lucasdias.gametrackr.core.model.GameSpec
 import com.lucasdias.gametrackr.core.pagination.Page
 import com.lucasdias.gametrackr.core.pagination.fakePage
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import com.lucasdias.gametrackr.data.FakeLatency
 import kotlinx.coroutines.delay
 
@@ -110,15 +101,14 @@ class FakeGameRepository(
                 rating = 4.8,
                 platforms = listOf("PS5", "PC"),
                 genres = listOf("Action RPG", "Open World", "Cyberpunk"),
-                coverStart = CoverVioletStart,
-                coverEnd = CoverVioletEnd,
+                cover = CoverPalette.VIOLET,
                 heroUrl = null,
                 screenshots =
                     listOf(
-                        GameScreenshot(CoverIndigoStart, CoverIndigoEnd),
-                        GameScreenshot(CoverCyanStart, CoverCyanEnd),
-                        GameScreenshot(CoverCrimsonStart, CoverCrimsonEnd),
-                        GameScreenshot(CoverEmeraldStart, CoverEmeraldEnd),
+                        GameScreenshot(CoverPalette.INDIGO),
+                        GameScreenshot(CoverPalette.CYAN),
+                        GameScreenshot(CoverPalette.CRIMSON),
+                        GameScreenshot(CoverPalette.EMERALD),
                     ),
                 about =
                     "Neon Ascent: Revival is the definitive next-gen cyberpunk experience. Set in " +

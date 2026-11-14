@@ -1,7 +1,5 @@
 package com.lucasdias.gametrackr.core.model
 
-import androidx.compose.ui.graphics.Color
-import com.lucasdias.gametrackr.core.network.dto.GradientPalette
 import java.time.LocalDate
 
 data class GamePlatform(
@@ -52,10 +50,7 @@ data class Game(
     val coverUrl: String? = null,
     val platformNames: List<String> = emptyList(),
 ) {
-    private val colors: Pair<Color, Color> = GradientPalette.pair(id)
-
-    val coverStart: Color get() = colors.first
-    val coverEnd: Color get() = colors.second
+    val cover: CoverPalette get() = CoverPalette.forGradientId(id)
 
     val year: String get() = releaseDate?.year?.toString() ?: TBA
 

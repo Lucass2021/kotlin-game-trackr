@@ -87,7 +87,7 @@ data class SetupItem(
     val title: String,
     val description: String,
     val images: List<SetupImage> = emptyList(),
-    val palette: SetupPalette = SetupPalette.forId(id),
+    val palette: CoverPalette = CoverPalette.forId(id),
 )
 
 data class SetupImage(

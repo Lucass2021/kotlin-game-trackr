@@ -63,8 +63,7 @@ class FakeLibraryRepository(
                     status = entry.status,
                     rating = entry.rating,
                     hours = entry.hours ?: 0,
-                    coverStart = entry.coverStart,
-                    coverEnd = entry.coverEnd,
+                    cover = entry.cover,
                     isFavorite = entries.getOrNull(index)?.isFavorite == true,
                 )
             if (index < 0) entries.add(0, added) else entries[index] = added

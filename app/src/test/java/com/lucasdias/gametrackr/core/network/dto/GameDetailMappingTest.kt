@@ -1,5 +1,6 @@
 package com.lucasdias.gametrackr.core.network.dto
 
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -37,6 +38,8 @@ class GameDetailMappingTest {
         assertEquals(listOf("Action RPG", "Cyberpunk"), game.genres)
         assertEquals(SCREENSHOT_URL, game.heroUrl)
         assertEquals(listOf(SCREENSHOT_URL, COVER_URL), game.screenshots.map { it.url })
+        assertEquals(CoverPalette.EMERALD, game.cover)
+        assertEquals(listOf(CoverPalette.EMERALD, CoverPalette.EMERALD), game.screenshots.map { it.cover })
         assertEquals(SUMMARY, game.about)
         assertEquals(
             listOf(

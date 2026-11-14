@@ -1,10 +1,9 @@
 package com.lucasdias.gametrackr.feature.app.library
 
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.NewLibraryEntry
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import com.lucasdias.gametrackr.data.library.FakeLibraryRepository
 import com.lucasdias.gametrackr.data.library.LibraryUpdates
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -63,8 +62,7 @@ class LibraryViewModelUpdatesTest {
                 startedAt = null,
                 finishedAt = null,
                 review = null,
-                coverStart = CoverVioletStart,
-                coverEnd = CoverVioletEnd,
+                cover = CoverPalette.VIOLET,
             )
     }
 }

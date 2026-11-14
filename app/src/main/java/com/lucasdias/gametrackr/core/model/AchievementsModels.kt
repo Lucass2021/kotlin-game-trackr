@@ -40,8 +40,7 @@ data class GameAchievements(
     val id: Long,
     val title: String,
     val platform: String,
-    val coverStart: Color,
-    val coverEnd: Color,
+    val cover: CoverPalette,
     val achievements: List<Achievement>,
 ) {
     val total: Int get() = achievements.size

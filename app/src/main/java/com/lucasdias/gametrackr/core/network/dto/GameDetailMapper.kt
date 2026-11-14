@@ -1,6 +1,6 @@
 package com.lucasdias.gametrackr.core.network.dto
 
-import androidx.compose.ui.graphics.Color
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.GameDetail
 import com.lucasdias.gametrackr.core.model.GameScreenshot
 import com.lucasdias.gametrackr.core.model.GameSpec
@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 fun GameDetailDto.toDomain(): GameDetail {
-    val palette = GradientPalette.pair(id)
+    val palette = CoverPalette.forGradientId(id)
     val releaseDate = firstReleaseDate?.let { Instant.ofEpochSecond(it).atZone(ZoneId.systemDefault()).toLocalDate() }
 
     return GameDetail(
@@ -20,10 +20,9 @@ fun GameDetailDto.toDomain(): GameDetail {
         rating = (totalRating ?: aggregatedRating ?: rating)?.div(RATING_SCALE),
         platforms = platforms.orEmpty().mapNotNull { it.abbreviation ?: PlatformLabel.short(it.slug, it.name) },
         genres = genres.names() + themes.names(),
-        coverStart = palette.first,
-        coverEnd = palette.second,
+        cover = palette,
         heroUrl = screenshots?.firstOrNull()?.url ?: artworks?.firstOrNull()?.url ?: cover?.url,
-        screenshots = screenshots.orEmpty().map { GameScreenshot(palette.first, palette.second, it.url) },
+        screenshots = screenshots.orEmpty().map { GameScreenshot(palette, it.url) },
         about = summary ?: storyline ?: NO_DESCRIPTION,
         specs = specs(releaseDate?.format(RELEASE_FORMATTER)),
     )

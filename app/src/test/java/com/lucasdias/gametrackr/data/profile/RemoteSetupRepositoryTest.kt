@@ -1,8 +1,8 @@
 package com.lucasdias.gametrackr.data.profile
 
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.SetupImage
 import com.lucasdias.gametrackr.core.model.SetupImageUpload
-import com.lucasdias.gametrackr.core.model.SetupPalette
 import com.lucasdias.gametrackr.core.network.ProfileApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -55,7 +55,7 @@ class RemoteSetupRepositoryTest {
             assertEquals(TITLE, setup.title)
             assertEquals("", setup.description)
             assertEquals(listOf(SetupImage(id = IMAGE_ID, url = RESOLVED_IMAGE_URL)), setup.images)
-            assertEquals(SetupPalette.forId(SETUP_ID), setup.palette)
+            assertEquals(CoverPalette.forId(SETUP_ID), setup.palette)
         }
 
     @Test

@@ -6,7 +6,6 @@ import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.Profile
 import com.lucasdias.gametrackr.core.model.ProfileColor
 import com.lucasdias.gametrackr.core.model.ProfileVisibility
-import com.lucasdias.gametrackr.core.model.SetupPalette
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 
 private const val AVATAR_GRADIENT_DEPTH = 0.28f
@@ -53,28 +52,4 @@ val ActivityKind.tint: Color
             ActivityKind.COMPLETED -> AppSecondary
             ActivityKind.RATED -> AppTertiary
             ActivityKind.ADDED -> AppTextSecondary
-        }
-
-val SetupPalette.start: Color
-    get() =
-        when (this) {
-            SetupPalette.VIOLET -> CoverVioletStart
-            SetupPalette.EMERALD -> CoverEmeraldStart
-            SetupPalette.CRIMSON -> CoverCrimsonStart
-            SetupPalette.INDIGO -> CoverIndigoStart
-            SetupPalette.AZURE -> CoverAzureStart
-            SetupPalette.CYAN -> CoverCyanStart
-            SetupPalette.PINE -> CoverPineStart
-        }
-
-val SetupPalette.end: Color
-    get() =
-        when (this) {
-            SetupPalette.VIOLET -> CoverVioletEnd
-            SetupPalette.EMERALD -> CoverEmeraldEnd
-            SetupPalette.CRIMSON -> CoverCrimsonEnd
-            SetupPalette.INDIGO -> CoverIndigoEnd
-            SetupPalette.AZURE -> CoverAzureEnd
-            SetupPalette.CYAN -> CoverCyanEnd
-            SetupPalette.PINE -> CoverPineEnd
         }

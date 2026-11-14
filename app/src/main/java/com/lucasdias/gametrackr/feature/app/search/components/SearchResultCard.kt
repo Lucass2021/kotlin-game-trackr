@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.Game
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
@@ -18,6 +17,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.coverEnd
+import com.lucasdias.gametrackr.core.ui.theme.coverStart
 import com.lucasdias.gametrackr.data.game.HomeMockData
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
 

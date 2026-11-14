@@ -17,6 +17,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.coverEnd
+import com.lucasdias.gametrackr.core.ui.theme.coverStart
 import com.lucasdias.gametrackr.data.game.HomeMockData
 
 private val COVER_HEIGHT = 200.dp

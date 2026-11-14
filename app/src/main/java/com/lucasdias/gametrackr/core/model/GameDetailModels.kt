@@ -1,17 +1,7 @@
 package com.lucasdias.gametrackr.core.model
 
-import androidx.compose.ui.graphics.Color
-import com.lucasdias.gametrackr.core.network.dto.GameDetailDto
-import com.lucasdias.gametrackr.core.network.dto.GameNamedDto
-import com.lucasdias.gametrackr.core.network.dto.GradientPalette
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-
 data class GameScreenshot(
-    val start: Color,
-    val end: Color,
+    val cover: CoverPalette,
     val url: String? = null,
 )
 
@@ -26,8 +16,7 @@ data class GameDetail(
     val rating: Double?,
     val platforms: List<String>,
     val genres: List<String>,
-    val coverStart: Color,
-    val coverEnd: Color,
+    val cover: CoverPalette,
     val heroUrl: String?,
     val screenshots: List<GameScreenshot>,
     val about: String,

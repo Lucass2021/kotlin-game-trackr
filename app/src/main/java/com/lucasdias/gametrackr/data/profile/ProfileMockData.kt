@@ -2,6 +2,7 @@ package com.lucasdias.gametrackr.data.profile
 
 import com.lucasdias.gametrackr.core.model.ActivityEvent
 import com.lucasdias.gametrackr.core.model.ActivityKind
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.LibraryEntry
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.Profile
@@ -9,21 +10,8 @@ import com.lucasdias.gametrackr.core.model.ProfileColor
 import com.lucasdias.gametrackr.core.model.ProfileOverview
 import com.lucasdias.gametrackr.core.model.ProfileStats
 import com.lucasdias.gametrackr.core.model.SetupItem
-import com.lucasdias.gametrackr.core.model.SetupPalette
 import com.lucasdias.gametrackr.core.model.StatusCount
 import com.lucasdias.gametrackr.core.model.User
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 import java.time.LocalDate
 
 object ProfileMockData {
@@ -67,10 +55,10 @@ object ProfileMockData {
 
     val favorites =
         listOf(
-            LibraryEntry("Elden Ring", "elden-ring", LibraryStatus.PLATINUM, 5, 210, CoverEmeraldStart, CoverEmeraldEnd),
-            LibraryEntry("Hollow Knight", "hollow-knight", LibraryStatus.COMPLETED, 5, 64, CoverIndigoStart, CoverIndigoEnd),
-            LibraryEntry("Chrono Trigger", "chrono-trigger", LibraryStatus.PLATINUM, 5, 38, CoverCrimsonStart, CoverCrimsonEnd),
-            LibraryEntry("Outer Wilds", "outer-wilds", LibraryStatus.COMPLETED, 5, 27, CoverCyanStart, CoverCyanEnd),
+            LibraryEntry("Elden Ring", "elden-ring", LibraryStatus.PLATINUM, 5, 210, CoverPalette.EMERALD),
+            LibraryEntry("Hollow Knight", "hollow-knight", LibraryStatus.COMPLETED, 5, 64, CoverPalette.INDIGO),
+            LibraryEntry("Chrono Trigger", "chrono-trigger", LibraryStatus.PLATINUM, 5, 38, CoverPalette.CRIMSON),
+            LibraryEntry("Outer Wilds", "outer-wilds", LibraryStatus.COMPLETED, 5, 27, CoverPalette.CYAN),
         )
 
     val currentlyPlaying =
@@ -81,10 +69,9 @@ object ProfileMockData {
                 LibraryStatus.PLAYING,
                 4,
                 32,
-                CoverVioletStart,
-                CoverVioletEnd,
+                CoverPalette.VIOLET,
             ),
-            LibraryEntry("Final Fantasy VII Rebirth", "final-fantasy-vii-rebirth", LibraryStatus.PLAYING, 5, 61, CoverAzureStart, CoverAzureEnd),
+            LibraryEntry("Final Fantasy VII Rebirth", "final-fantasy-vii-rebirth", LibraryStatus.PLAYING, 5, 61, CoverPalette.AZURE),
         )
 
     val activity =
@@ -102,19 +89,19 @@ object ProfileMockData {
                 id = 1,
                 title = "Main Battle Station",
                 description = "RTX 4090 + i9-14900K, 32\" 4K 144Hz",
-                palette = SetupPalette.INDIGO,
+                palette = CoverPalette.INDIGO,
             ),
             SetupItem(
                 id = 2,
                 title = "Retro Corner",
                 description = "CRT TV + SNES, N64, and PS2",
-                palette = SetupPalette.CRIMSON,
+                palette = CoverPalette.CRIMSON,
             ),
             SetupItem(
                 id = 3,
                 title = "Portable Setup",
                 description = "Steam Deck OLED + Backbone",
-                palette = SetupPalette.EMERALD,
+                palette = CoverPalette.EMERALD,
             ),
         )
 

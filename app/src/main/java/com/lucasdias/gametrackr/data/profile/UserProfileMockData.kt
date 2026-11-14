@@ -2,23 +2,12 @@ package com.lucasdias.gametrackr.data.profile
 
 import com.lucasdias.gametrackr.core.model.ActivityEvent
 import com.lucasdias.gametrackr.core.model.ActivityKind
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.LibraryEntry
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.model.ProfileOverview
 import com.lucasdias.gametrackr.core.model.ProfileStats
 import com.lucasdias.gametrackr.core.model.StatusCount
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverPineEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverPineStart
 import java.time.LocalDate
 
 object UserProfileMockData {
@@ -56,16 +45,16 @@ object UserProfileMockData {
 
     val favorites =
         listOf(
-            LibraryEntry("The Witcher 3", "the-witcher-3-wild-hunt", LibraryStatus.PLATINUM, 5, 168, CoverPineStart, CoverPineEnd),
-            LibraryEntry("Bloodborne", "bloodborne", LibraryStatus.COMPLETED, 5, 72, CoverCrimsonStart, CoverCrimsonEnd),
-            LibraryEntry("Celeste", "celeste", LibraryStatus.PLATINUM, 5, 24, CoverAzureStart, CoverAzureEnd),
-            LibraryEntry("Disco Elysium", "disco-elysium", LibraryStatus.COMPLETED, 5, 41, CoverIndigoStart, CoverIndigoEnd),
+            LibraryEntry("The Witcher 3", "the-witcher-3-wild-hunt", LibraryStatus.PLATINUM, 5, 168, CoverPalette.PINE),
+            LibraryEntry("Bloodborne", "bloodborne", LibraryStatus.COMPLETED, 5, 72, CoverPalette.CRIMSON),
+            LibraryEntry("Celeste", "celeste", LibraryStatus.PLATINUM, 5, 24, CoverPalette.AZURE),
+            LibraryEntry("Disco Elysium", "disco-elysium", LibraryStatus.COMPLETED, 5, 41, CoverPalette.INDIGO),
         )
 
     val currentlyPlaying =
         listOf(
-            LibraryEntry("Baldur's Gate 3", "baldurs-gate-iii", LibraryStatus.PLAYING, 5, 96, CoverEmeraldStart, CoverEmeraldEnd),
-            LibraryEntry("Helldivers 2", "helldivers-2", LibraryStatus.PLAYING, 4, 44, CoverCyanStart, CoverCyanEnd),
+            LibraryEntry("Baldur's Gate 3", "baldurs-gate-iii", LibraryStatus.PLAYING, 5, 96, CoverPalette.EMERALD),
+            LibraryEntry("Helldivers 2", "helldivers-2", LibraryStatus.PLAYING, 4, 44, CoverPalette.CYAN),
         )
 
     val activity =

@@ -23,6 +23,8 @@ import com.lucasdias.gametrackr.core.ui.components.pressScale
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.coverEnd
+import com.lucasdias.gametrackr.core.ui.theme.coverStart
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
 import com.lucasdias.gametrackr.feature.app.home.components.GameCoverArt
 

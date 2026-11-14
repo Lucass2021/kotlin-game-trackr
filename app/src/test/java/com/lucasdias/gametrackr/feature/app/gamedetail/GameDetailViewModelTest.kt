@@ -155,8 +155,7 @@ class GameDetailViewModelTest {
             startedAt = null,
             finishedAt = null,
             review = null,
-            coverStart = game.coverStart,
-            coverEnd = game.coverEnd,
+            cover = game.cover,
         )
     }
 

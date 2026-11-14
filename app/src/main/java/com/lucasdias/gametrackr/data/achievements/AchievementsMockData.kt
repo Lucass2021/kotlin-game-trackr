@@ -2,19 +2,8 @@ package com.lucasdias.gametrackr.data.achievements
 
 import com.lucasdias.gametrackr.core.model.Achievement
 import com.lucasdias.gametrackr.core.model.AchievementTier
+import com.lucasdias.gametrackr.core.model.CoverPalette
 import com.lucasdias.gametrackr.core.model.GameAchievements
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCyanStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 
 object AchievementsMockData {
     val games =
@@ -23,8 +12,7 @@ object AchievementsMockData {
                 id = 1,
                 title = "Elden Ring",
                 platform = "PlayStation 5",
-                coverStart = CoverEmeraldStart,
-                coverEnd = CoverEmeraldEnd,
+                cover = CoverPalette.EMERALD,
                 achievements =
                     listOf(
                         Achievement(101, "Elden Ring", "Obtain all achievements", AchievementTier.PLATINUM, "Jul 2024"),
@@ -77,8 +65,7 @@ object AchievementsMockData {
                 id = 2,
                 title = "Hollow Knight",
                 platform = "Nintendo Switch",
-                coverStart = CoverIndigoStart,
-                coverEnd = CoverIndigoEnd,
+                cover = CoverPalette.INDIGO,
                 achievements =
                     listOf(
                         Achievement(201, "Hollow Knight", "Obtain all achievements", AchievementTier.PLATINUM),
@@ -119,8 +106,7 @@ object AchievementsMockData {
                 id = 3,
                 title = "Chrono Trigger",
                 platform = "PlayStation 5",
-                coverStart = CoverCrimsonStart,
-                coverEnd = CoverCrimsonEnd,
+                cover = CoverPalette.CRIMSON,
                 achievements =
                     listOf(
                         Achievement(
@@ -147,8 +133,7 @@ object AchievementsMockData {
                 id = 4,
                 title = "Outer Wilds",
                 platform = "PC",
-                coverStart = CoverCyanStart,
-                coverEnd = CoverCyanEnd,
+                cover = CoverPalette.CYAN,
                 achievements =
                     listOf(
                         Achievement(401, "Outer Wilds", "Obtain all achievements", AchievementTier.PLATINUM),
@@ -181,8 +166,7 @@ object AchievementsMockData {
                 id = 5,
                 title = "Cyberpunk 2077: Phantom Liberty",
                 platform = "PlayStation 5",
-                coverStart = CoverVioletStart,
-                coverEnd = CoverVioletEnd,
+                cover = CoverPalette.VIOLET,
                 achievements =
                     listOf(
                         Achievement(501, "Phantom Liberty", "Obtain all achievements", AchievementTier.PLATINUM),
@@ -210,8 +194,7 @@ object AchievementsMockData {
                 id = 6,
                 title = "Final Fantasy VII Rebirth",
                 platform = "PlayStation 5",
-                coverStart = CoverAzureStart,
-                coverEnd = CoverAzureEnd,
+                cover = CoverPalette.AZURE,
                 achievements =
                     listOf(
                         Achievement(601, "Rebirth", "Obtain all achievements", AchievementTier.PLATINUM),

@@ -1,6 +1,5 @@
 package com.lucasdias.gametrackr.feature.app.addtolibrary
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -26,6 +25,8 @@ import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.coverEnd
+import com.lucasdias.gametrackr.core.ui.theme.coverStart
 import com.lucasdias.gametrackr.data.game.FakeGameRepository
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.AddToLibraryForm
 import com.lucasdias.gametrackr.feature.app.addtolibrary.components.AddToLibraryHeader
