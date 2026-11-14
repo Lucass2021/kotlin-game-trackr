@@ -4,13 +4,12 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.Achievement
 import com.lucasdias.gametrackr.core.model.AchievementSpotlight
 import com.lucasdias.gametrackr.core.model.LibraryStatus
+import com.lucasdias.gametrackr.core.model.StatAccent
 import com.lucasdias.gametrackr.core.model.StatBar
 import com.lucasdias.gametrackr.core.model.StatHighlight
 import com.lucasdias.gametrackr.core.model.StatusShare
 import com.lucasdias.gametrackr.core.model.UserStats
 import com.lucasdias.gametrackr.core.model.YearCount
-import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
 
 object StatsMockData {
     val stats =
@@ -29,22 +28,22 @@ object StatsMockData {
                 ),
             genres =
                 listOf(
-                    StatBar("RPG", "42 games", 1.0f, AppPrimary),
-                    StatBar("Action", "38 games", 0.9f, AppSecondary),
-                    StatBar("Strategy", "21 games", 0.5f, AppPrimary),
+                    StatBar("RPG", "42 games", 1.0f, StatAccent.PRIMARY),
+                    StatBar("Action", "38 games", 0.9f, StatAccent.SECONDARY),
+                    StatBar("Strategy", "21 games", 0.5f, StatAccent.PRIMARY),
                 ),
             platforms =
                 listOf(
-                    StatBar("PlayStation 5", "60%", 0.6f, AppSecondary),
-                    StatBar("PC Master Race", "25%", 0.25f, AppPrimary),
-                    StatBar("Nintendo Switch", "15%", 0.15f, AppSecondary),
+                    StatBar("PlayStation 5", "60%", 0.6f, StatAccent.SECONDARY),
+                    StatBar("PC Master Race", "25%", 0.25f, StatAccent.PRIMARY),
+                    StatBar("Nintendo Switch", "15%", 0.15f, StatAccent.SECONDARY),
                 ),
             yearsCompleted =
                 listOf(
-                    YearCount("2021", 9, AppSecondary.copy(alpha = 0.45f)),
-                    YearCount("2022", 14, AppPrimary.copy(alpha = 0.5f)),
-                    YearCount("2023", 22, AppSecondary),
-                    YearCount("2024", 24, AppPrimary),
+                    YearCount("2021", 9, StatAccent.SECONDARY_MUTED),
+                    YearCount("2022", 14, StatAccent.PRIMARY_MUTED),
+                    YearCount("2023", 22, StatAccent.SECONDARY),
+                    YearCount("2024", 24, StatAccent.PRIMARY),
                 ),
             spotlight =
                 AchievementSpotlight(

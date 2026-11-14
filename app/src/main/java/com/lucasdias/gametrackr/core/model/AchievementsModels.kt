@@ -1,26 +1,16 @@
 package com.lucasdias.gametrackr.core.model
 
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.ui.icon.AppIcon
-import com.lucasdias.gametrackr.core.ui.theme.AppNeutral
-import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import kotlin.math.roundToInt
 
 enum class AchievementTier(
-    val tint: Color,
     @param:StringRes val titleRes: Int,
 ) {
-    BRONZE(AppNeutral, R.string.achievements_tier_bronze),
-    SILVER(AppTextSecondary, R.string.achievements_tier_silver),
-    GOLD(AppPrimary, R.string.achievements_tier_gold),
-    PLATINUM(AppSecondary, R.string.achievements_tier_platinum),
-    ;
-
-    val icon: AppIcon get() = if (this == PLATINUM) AppIcon.TROPHY else AppIcon.MEDAL
+    BRONZE(R.string.achievements_tier_bronze),
+    SILVER(R.string.achievements_tier_silver),
+    GOLD(R.string.achievements_tier_gold),
+    PLATINUM(R.string.achievements_tier_platinum),
 }
 
 data class Achievement(

@@ -24,6 +24,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.tint
 import com.lucasdias.gametrackr.data.achievements.AchievementsMockData
 
 private val CHECK_ICON_SIZE = 12.dp

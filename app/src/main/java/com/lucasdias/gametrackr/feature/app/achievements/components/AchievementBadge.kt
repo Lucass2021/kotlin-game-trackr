@@ -20,6 +20,8 @@ import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.icon
+import com.lucasdias.gametrackr.core.ui.theme.tint
 import com.lucasdias.gametrackr.data.achievements.AchievementsMockData
 
 private val DEFAULT_SIZE = 44.dp

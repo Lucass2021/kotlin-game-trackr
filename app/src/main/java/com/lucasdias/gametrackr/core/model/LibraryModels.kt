@@ -1,14 +1,7 @@
 package com.lucasdias.gametrackr.core.model
 
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.ui.theme.AppOnPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppOutline
-import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppSecondary
-import com.lucasdias.gametrackr.core.ui.theme.AppTertiary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 
 enum class LibraryStatus(
     @param:StringRes val labelRes: Int,
@@ -19,26 +12,6 @@ enum class LibraryStatus(
     PLATINUM(R.string.library_status_platinum),
     ABANDONED(R.string.library_status_abandoned),
     WISHLIST(R.string.library_status_wishlist),
-    ;
-
-    val badgeBackground: Color
-        get() =
-            when (this) {
-                PLAYING, PLATINUM -> AppPrimary
-                COMPLETED -> AppSecondary
-                BACKLOG -> AppOutline
-                ABANDONED -> AppTertiary.copy(alpha = 0.18f)
-                WISHLIST -> AppSecondary.copy(alpha = 0.18f)
-            }
-
-    val badgeForeground: Color
-        get() =
-            when (this) {
-                PLAYING, COMPLETED, PLATINUM -> AppOnPrimary
-                BACKLOG -> AppTextSecondary
-                ABANDONED -> AppTertiary
-                WISHLIST -> AppSecondary
-            }
 }
 
 data class LibraryEntry(

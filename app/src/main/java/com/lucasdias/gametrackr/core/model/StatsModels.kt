@@ -1,7 +1,6 @@
 package com.lucasdias.gametrackr.core.model
 
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.Color
 
 data class StatHighlight(
     @param:StringRes val labelRes: Int,
@@ -18,14 +17,21 @@ data class StatBar(
     val label: String,
     val value: String,
     val fraction: Float,
-    val tint: Color,
+    val accent: StatAccent,
 )
 
 data class YearCount(
     val year: String,
     val count: Int,
-    val tint: Color,
+    val accent: StatAccent,
 )
+
+enum class StatAccent {
+    PRIMARY,
+    SECONDARY,
+    PRIMARY_MUTED,
+    SECONDARY_MUTED,
+}
 
 data class AchievementSpotlight(
     val title: String,

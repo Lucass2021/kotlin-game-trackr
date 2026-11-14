@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.sp
 import com.lucasdias.gametrackr.core.model.LibraryStatus
 import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.badgeBackground
+import com.lucasdias.gametrackr.core.ui.theme.badgeForeground
 
 private val LABEL_SIZE = 11.sp
 private val LABEL_LETTER_SPACING = 0.6.sp
