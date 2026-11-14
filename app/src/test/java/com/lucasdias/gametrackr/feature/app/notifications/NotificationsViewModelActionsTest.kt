@@ -50,6 +50,25 @@ class NotificationsViewModelActionsTest {
         }
 
     @Test
+    fun `mark all read survives reopening the screen`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            loadFirstPage()
+            viewModel.onMarkAllRead()
+            advanceUntilIdle()
+
+            val reopened = NotificationsViewModel(repository)
+            reopened.loadIfNeeded()
+            advanceUntilIdle()
+            reopened.onFilterChange(NotificationFilter.UNREAD)
+            advanceUntilIdle()
+
+            assertTrue(
+                reopened.uiState.value.items
+                    .isEmpty(),
+            )
+        }
+
+    @Test
     fun `mark all read with the unread filter leaves nothing to show`() =
         runTest(mainDispatcherRule.dispatcher) {
             loadFirstPage(NotificationFilter.UNREAD)
