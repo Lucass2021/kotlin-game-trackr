@@ -47,7 +47,7 @@ class AuthViewModel(
     }
 
     fun completePasswordReset(onFailure: () -> Unit) {
-        if (completeResetJob?.isActive == true) return
+        if (status.value is AuthStatus.Authenticated || completeResetJob?.isActive == true) return
         completeResetJob =
             viewModelScope.launch {
                 authRepository.completePasswordReset().onFailure { onFailure() }

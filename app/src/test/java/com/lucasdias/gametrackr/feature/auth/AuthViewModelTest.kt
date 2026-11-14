@@ -35,6 +35,39 @@ class AuthViewModelTest {
         }
 
     @Test
+    fun `a completed password reset is not completed again`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            val sessionManager = SessionManager()
+            val viewModel = AuthViewModel(repository, sessionManager)
+            advanceUntilIdle()
+
+            viewModel.completePasswordReset(onFailure = {})
+            advanceUntilIdle()
+            sessionManager.setAuthenticated(repository.user)
+            viewModel.completePasswordReset(onFailure = {})
+            advanceUntilIdle()
+
+            assertEquals(1, repository.completeResetCount)
+        }
+
+    @Test
+    fun `a new password reset after signing out is completed again`() =
+        runTest(mainDispatcherRule.dispatcher) {
+            val sessionManager = SessionManager()
+            val viewModel = AuthViewModel(repository, sessionManager)
+            advanceUntilIdle()
+
+            viewModel.completePasswordReset(onFailure = {})
+            advanceUntilIdle()
+            sessionManager.setAuthenticated(repository.user)
+            sessionManager.setUnauthenticated()
+            viewModel.completePasswordReset(onFailure = {})
+            advanceUntilIdle()
+
+            assertEquals(2, repository.completeResetCount)
+        }
+
+    @Test
     fun `a failed completion can be retried and reports the failure`() =
         runTest(mainDispatcherRule.dispatcher) {
             val viewModel = AuthViewModel(repository, SessionManager())
