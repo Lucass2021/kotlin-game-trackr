@@ -11,6 +11,10 @@ fun Throwable.toApiError(json: Json): ApiError =
             this
         }
 
+        is RefreshFailedException -> {
+            statusCode?.let(ApiError::Server) ?: ApiError.Network
+        }
+
         is IOException -> {
             ApiError.Network
         }

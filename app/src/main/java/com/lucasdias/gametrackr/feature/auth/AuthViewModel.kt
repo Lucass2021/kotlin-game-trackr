@@ -29,10 +29,10 @@ class AuthViewModel(
                 return@launch
             }
             authRepository.validate().onFailure { error ->
-                if (error is ApiError.Network) {
-                    sessionManager.setAuthenticated(null)
-                } else {
+                if (error is ApiError.Unauthorized || error is ApiError.Forbidden) {
                     sessionManager.setUnauthenticated()
+                } else {
+                    sessionManager.setAuthenticated(null)
                 }
             }
         }

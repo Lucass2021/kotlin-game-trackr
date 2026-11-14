@@ -8,6 +8,10 @@ class FakeAuthRepository(
 ) : AuthRepository {
     val user = User(id = 1, name = "Player", email = "player@gametrackr.com")
 
+    var hasStoredToken = false
+
+    var validateFailure: Throwable? = null
+
     var loginCount = 0
         private set
     var lastEmail: String? = null
@@ -55,13 +59,13 @@ class FakeAuthRepository(
         return failure?.let { Result.failure(it) } ?: Result.success(user)
     }
 
-    override suspend fun validate(): Result<User> = Result.success(user)
+    override suspend fun validate(): Result<User> = validateFailure?.let { Result.failure(it) } ?: Result.success(user)
 
     override suspend fun signInWithGoogle(token: String): Result<User> = Result.success(user)
 
     override suspend fun logout() = Unit
 
-    override suspend fun hasToken(): Boolean = false
+    override suspend fun hasToken(): Boolean = hasStoredToken
 
     override fun completeRegistration() = Unit
 

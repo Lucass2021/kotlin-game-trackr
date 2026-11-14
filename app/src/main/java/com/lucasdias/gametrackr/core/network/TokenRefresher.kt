@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.core.network
 import com.lucasdias.gametrackr.core.auth.SessionManager
 import com.lucasdias.gametrackr.core.auth.TokenStore
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.SerializationException
 import java.io.IOException
 
 class TokenRefresher(
@@ -15,21 +16,29 @@ class TokenRefresher(
         val current = runBlocking { tokenStore.get() } ?: return null
         if (current != spentToken) return current
 
-        val newToken =
+        val response =
             try {
-                val response = refreshApi.refresh("Bearer $current").execute()
-                if (response.isSuccessful) response.body()?.token else null
-            } catch (_: IOException) {
-                return null
+                refreshApi.refresh("Bearer $current").execute()
+            } catch (error: IOException) {
+                throw RefreshFailedException(cause = error)
+            } catch (error: SerializationException) {
+                throw RefreshFailedException(cause = error)
             }
 
-        if (newToken == null) {
+        if (response.code() == HTTP_UNAUTHORIZED) {
             runBlocking { tokenStore.clear() }
             sessionManager.setUnauthenticated()
             return null
         }
 
+        val newToken = response.body()?.token
+        if (!response.isSuccessful || newToken == null) throw RefreshFailedException(response.code())
+
         runBlocking { tokenStore.save(newToken) }
         return newToken
+    }
+
+    private companion object {
+        const val HTTP_UNAUTHORIZED = 401
     }
 }
