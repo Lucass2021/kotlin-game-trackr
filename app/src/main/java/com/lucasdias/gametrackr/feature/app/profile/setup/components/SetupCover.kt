@@ -28,6 +28,8 @@ import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppType
+import com.lucasdias.gametrackr.core.ui.theme.end
+import com.lucasdias.gametrackr.core.ui.theme.start
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
 
 @Composable

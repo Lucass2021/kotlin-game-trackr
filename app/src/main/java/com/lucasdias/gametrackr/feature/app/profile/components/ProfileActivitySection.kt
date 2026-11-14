@@ -33,6 +33,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Radius
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.icon
+import com.lucasdias.gametrackr.core.ui.theme.tint
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
 
 private val BORDER_WIDTH = 1.dp

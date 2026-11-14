@@ -33,8 +33,8 @@ import com.lucasdias.gametrackr.core.ui.theme.AppOutline
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.color
 import com.lucasdias.gametrackr.core.ui.theme.darkened
-import com.lucasdias.gametrackr.core.ui.theme.toAppColor
 import com.lucasdias.gametrackr.data.profile.ProfileMockData
 
 @Composable
@@ -78,7 +78,7 @@ private fun Swatch(
                 .clip(CircleShape)
                 .background(
                     Brush.linearGradient(
-                        listOf(color.hex.toAppColor(), color.hex.toAppColor().darkened(GRADIENT_DEPTH)),
+                        listOf(color.color, color.color.darkened(GRADIENT_DEPTH)),
                     ),
                 ).border(
                     width = if (isSelected) SELECTED_BORDER_WIDTH else BORDER_WIDTH,
