@@ -47,7 +47,7 @@ data class CreateTopicUiState(
             when {
                 title.isEmpty() -> UiText.Resource(R.string.validation_topic_title_required)
                 title.length < TITLE_MIN -> UiText.Resource(R.string.validation_topic_title_too_short)
-                title.length > TITLE_LIMIT -> UiText.Resource(R.string.validation_topic_title_too_long, listOf(TITLE_LIMIT))
+                title.length > TITLE_LIMIT -> UiText.Plural(R.plurals.validation_topic_title_too_long, TITLE_LIMIT)
                 else -> null
             }
 
@@ -55,7 +55,7 @@ data class CreateTopicUiState(
             when {
                 body.isEmpty() -> UiText.Resource(R.string.validation_topic_body_required)
                 body.length < BODY_MIN -> UiText.Resource(R.string.validation_topic_body_too_short)
-                body.length > BODY_LIMIT -> UiText.Resource(R.string.validation_topic_body_too_long, listOf(BODY_LIMIT))
+                body.length > BODY_LIMIT -> UiText.Plural(R.plurals.validation_topic_body_too_long, BODY_LIMIT)
                 else -> null
             }
     }

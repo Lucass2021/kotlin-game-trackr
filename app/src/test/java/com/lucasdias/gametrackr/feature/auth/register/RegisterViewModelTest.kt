@@ -75,7 +75,7 @@ class RegisterViewModelTest {
 
             val state = viewModel.uiState.value
             assertEquals(UiText.Resource(R.string.validation_name_too_short), state.nameError)
-            assertEquals(UiText.Resource(R.string.validation_password_too_short, listOf(6)), state.passwordError)
+            assertEquals(UiText.Plural(R.plurals.validation_password_too_short, 6), state.passwordError)
             assertEquals(UiText.Resource(R.string.validation_passwords_dont_match), state.confirmPasswordError)
             assertNull(state.termsError)
             assertEquals(0, repository.registerCount)

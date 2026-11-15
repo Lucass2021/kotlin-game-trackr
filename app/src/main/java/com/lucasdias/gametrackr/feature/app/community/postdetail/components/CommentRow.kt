@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,7 +64,7 @@ fun CommentRow(
             }
             Text(text = comment.content, color = AppTextPrimary, style = AppType.body(CONTENT_SIZE))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
-                MetaText(text = stringResource(R.string.post_detail_comment_likes, comment.likes))
+                MetaText(text = pluralStringResource(R.plurals.post_detail_comment_likes, comment.likes, comment.likes))
                 if (!isGuest) {
                     val replyInteraction = remember { MutableInteractionSource() }
                     MetaText(text = "·")

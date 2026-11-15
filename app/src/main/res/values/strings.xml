@@ -42,7 +42,10 @@
     <string name="validation_email_required">Email is required</string>
     <string name="validation_email_invalid">Enter a valid email</string>
     <string name="validation_password_required">Password is required</string>
-    <string name="validation_password_too_short">At least %1$d characters</string>
+    <plurals name="validation_password_too_short">
+        <item quantity="one">At least %1$d character</item>
+        <item quantity="other">At least %1$d characters</item>
+    </plurals>
     <string name="validation_passwords_dont_match">Passwords do not match</string>
     <string name="validation_terms_required">You must accept the terms to continue</string>
 
@@ -88,7 +91,10 @@
     <string name="success_register_button">Go to app</string>
     <string name="success_status_title">ACCOUNT STATUS</string>
     <string name="success_status_value">Validated and Active</string>
-    <string name="success_redirecting">Redirecting in %1$d seconds…</string>
+    <plurals name="success_redirecting">
+        <item quantity="one">Redirecting in %1$d second…</item>
+        <item quantity="other">Redirecting in %1$d seconds…</item>
+    </plurals>
 
     <string name="error_network">No internet connection. Please try again.</string>
     <string name="error_invalid_credentials">Invalid email or password.</string>
@@ -118,8 +124,14 @@
     <string name="home_most_anticipated">Most Anticipated</string>
     <string name="home_view_all">View All</string>
 
-    <string name="library_stats_games">%1$d games</string>
-    <string name="library_stats_platinum">%1$d platinum</string>
+    <plurals name="library_stats_games">
+        <item quantity="one">%1$d game</item>
+        <item quantity="other">%1$d games</item>
+    </plurals>
+    <plurals name="library_stats_platinum">
+        <item quantity="one">%1$d platinum</item>
+        <item quantity="other">%1$d platinum</item>
+    </plurals>
     <string name="library_hours">%1$dh</string>
     <string name="library_filter_all">All</string>
     <string name="library_status_playing">Playing</string>
@@ -279,7 +291,10 @@
     <string name="add_library_saved">Added to your library</string>
     <string name="add_library_date_done">Done</string>
     <string name="add_library_date_clear">Clear</string>
-    <string name="add_library_rate_stars">Rate %1$d of %2$d stars</string>
+    <plurals name="add_library_rate_stars">
+        <item quantity="one">Rate %1$d of %2$d star</item>
+        <item quantity="other">Rate %1$d of %2$d stars</item>
+    </plurals>
 
     <string name="community_action_like">Like</string>
     <string name="community_action_unlike">Unlike</string>
@@ -415,30 +430,54 @@
     <string name="post_detail_retry">Try again</string>
     <string name="post_detail_replying_to">Replying to %1$s</string>
     <string name="post_detail_cancel_reply">Cancel reply</string>
-    <string name="post_detail_comment_likes">%1$d likes</string>
+    <plurals name="post_detail_comment_likes">
+        <item quantity="one">%1$d like</item>
+        <item quantity="other">%1$d likes</item>
+    </plurals>
     <string name="post_detail_reply">Reply</string>
     <string name="post_detail_comment_placeholder">Add a comment…</string>
 
     <string name="validation_community_required">Pick a community</string>
     <string name="validation_topic_title_required">Title is required</string>
     <string name="validation_topic_title_too_short">At least 3 characters</string>
-    <string name="validation_topic_title_too_long">Title must be at most %1$d characters</string>
+    <plurals name="validation_topic_title_too_long">
+        <item quantity="one">Title must be at most %1$d character</item>
+        <item quantity="other">Title must be at most %1$d characters</item>
+    </plurals>
     <string name="validation_topic_body_required">Body is required</string>
     <string name="validation_topic_body_too_short">At least 10 characters</string>
-    <string name="validation_topic_body_too_long">Body must be at most %1$d characters</string>
+    <plurals name="validation_topic_body_too_long">
+        <item quantity="one">Body must be at most %1$d character</item>
+        <item quantity="other">Body must be at most %1$d characters</item>
+    </plurals>
     <string name="validation_community_name_required">Name is required</string>
     <string name="validation_community_name_too_short">At least 3 characters</string>
-    <string name="validation_community_name_too_long">Name must be at most %1$d characters</string>
+    <plurals name="validation_community_name_too_long">
+        <item quantity="one">Name must be at most %1$d character</item>
+        <item quantity="other">Name must be at most %1$d characters</item>
+    </plurals>
     <string name="validation_community_description_required">Description is required</string>
     <string name="validation_community_description_too_short">At least 10 characters</string>
-    <string name="validation_community_description_too_long">Description must be at most %1$d characters</string>
-    <string name="validation_name_too_long">Name must be at most %1$d characters</string>
+    <plurals name="validation_community_description_too_long">
+        <item quantity="one">Description must be at most %1$d character</item>
+        <item quantity="other">Description must be at most %1$d characters</item>
+    </plurals>
+    <plurals name="validation_name_too_long">
+        <item quantity="one">Name must be at most %1$d character</item>
+        <item quantity="other">Name must be at most %1$d characters</item>
+    </plurals>
     <string name="validation_display_name_required">Name is required</string>
     <string name="validation_username_required">Username is required</string>
     <string name="validation_username_too_short">At least 3 characters</string>
-    <string name="validation_username_too_long">Username must be at most %1$d characters</string>
+    <plurals name="validation_username_too_long">
+        <item quantity="one">Username must be at most %1$d character</item>
+        <item quantity="other">Username must be at most %1$d characters</item>
+    </plurals>
     <string name="validation_username_invalid">Only letters, numbers and underscore</string>
-    <string name="validation_bio_too_long">Bio must be at most %1$d characters</string>
+    <plurals name="validation_bio_too_long">
+        <item quantity="one">Bio must be at most %1$d character</item>
+        <item quantity="other">Bio must be at most %1$d characters</item>
+    </plurals>
 
     <string name="edit_profile_title">Edit profile</string>
     <string name="edit_profile_back">Back</string>
@@ -464,9 +503,15 @@
     <string name="edit_profile_visibility_private_detail">Only friends can see your library and stats.</string>
 
     <string name="achievements_title">Achievements</string>
-    <string name="achievements_summary_of">of %1$d unlocked</string>
+    <plurals name="achievements_summary_of">
+        <item quantity="one">of %1$d unlocked</item>
+        <item quantity="other">of %1$d unlocked</item>
+    </plurals>
     <string name="achievements_summary_percent">%1$d%%</string>
-    <string name="achievements_summary_a11y">%1$d of %2$d achievements unlocked</string>
+    <plurals name="achievements_summary_a11y">
+        <item quantity="one">%1$d of %2$d achievement unlocked</item>
+        <item quantity="other">%1$d of %2$d achievements unlocked</item>
+    </plurals>
     <string name="achievements_filter_all">All</string>
     <string name="achievements_filter_in_progress">In progress</string>
     <string name="achievements_filter_completed">Completed</string>

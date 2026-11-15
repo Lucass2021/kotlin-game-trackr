@@ -167,7 +167,7 @@ class CreateTopicViewModelTest {
             viewModel.onSubmit()
 
             assertEquals(
-                UiText.Resource(R.string.validation_topic_title_too_long, listOf(CreateTopicUiState.TITLE_LIMIT)),
+                UiText.Plural(R.plurals.validation_topic_title_too_long, CreateTopicUiState.TITLE_LIMIT),
                 viewModel.uiState.value.titleError,
             )
             assertEquals(0, repository.createPostCount)

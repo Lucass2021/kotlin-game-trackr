@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -56,7 +57,7 @@ fun AchievementsSummaryCard(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(Radius.lg)
-    val a11y = stringResource(R.string.achievements_summary_a11y, summary.unlockedCount, summary.total)
+    val a11y = pluralStringResource(R.plurals.achievements_summary_a11y, summary.total, summary.unlockedCount, summary.total)
 
     Column(
         modifier =
@@ -80,7 +81,7 @@ fun AchievementsSummaryCard(
                 style = AppType.headline(COUNT_SIZE, FontWeight.ExtraBold),
             )
             Text(
-                text = stringResource(R.string.achievements_summary_of, summary.total),
+                text = pluralStringResource(R.plurals.achievements_summary_of, summary.total, summary.total),
                 color = AppTextSecondary,
                 style = AppType.body(TOTAL_SIZE),
                 modifier = Modifier.weight(1f),

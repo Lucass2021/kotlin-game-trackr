@@ -55,7 +55,7 @@ class ChangePasswordViewModelTest {
             advanceUntilIdle()
 
             val state = viewModel.uiState.value
-            assertEquals(UiText.Resource(R.string.validation_password_too_short, listOf(6)), state.newPasswordError)
+            assertEquals(UiText.Plural(R.plurals.validation_password_too_short, 6), state.newPasswordError)
             assertEquals(UiText.Resource(R.string.validation_passwords_dont_match), state.confirmPasswordError)
             assertEquals(0, repository.changeCount)
         }

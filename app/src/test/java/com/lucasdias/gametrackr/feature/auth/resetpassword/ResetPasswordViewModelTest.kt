@@ -52,7 +52,7 @@ class ResetPasswordViewModelTest {
             viewModel.onSubmit()
             advanceUntilIdle()
 
-            assertEquals(UiText.Resource(R.string.validation_password_too_short, listOf(6)), viewModel.uiState.value.passwordError)
+            assertEquals(UiText.Plural(R.plurals.validation_password_too_short, 6), viewModel.uiState.value.passwordError)
             assertEquals(0, repository.resetCount)
         }
 

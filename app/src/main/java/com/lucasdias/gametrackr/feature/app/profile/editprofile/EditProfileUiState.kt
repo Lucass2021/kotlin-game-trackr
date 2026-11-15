@@ -65,7 +65,7 @@ data class EditProfileUiState(
             when {
                 name.isEmpty() -> UiText.Resource(R.string.validation_display_name_required)
                 name.length < NAME_MIN -> UiText.Resource(R.string.validation_name_too_short)
-                name.length > NAME_LIMIT -> UiText.Resource(R.string.validation_name_too_long, listOf(NAME_LIMIT))
+                name.length > NAME_LIMIT -> UiText.Plural(R.plurals.validation_name_too_long, NAME_LIMIT)
                 else -> null
             }
 
@@ -73,12 +73,11 @@ data class EditProfileUiState(
             when {
                 username.isEmpty() -> UiText.Resource(R.string.validation_username_required)
                 username.length < USERNAME_MIN -> UiText.Resource(R.string.validation_username_too_short)
-                username.length > USERNAME_LIMIT -> UiText.Resource(R.string.validation_username_too_long, listOf(USERNAME_LIMIT))
+                username.length > USERNAME_LIMIT -> UiText.Plural(R.plurals.validation_username_too_long, USERNAME_LIMIT)
                 username.any { it !in USERNAME_ALPHABET } -> UiText.Resource(R.string.validation_username_invalid)
                 else -> null
             }
 
-        private fun bioErrorFor(bio: String): UiText? =
-            if (bio.length > BIO_LIMIT) UiText.Resource(R.string.validation_bio_too_long, listOf(BIO_LIMIT)) else null
+        private fun bioErrorFor(bio: String): UiText? = if (bio.length > BIO_LIMIT) UiText.Plural(R.plurals.validation_bio_too_long, BIO_LIMIT) else null
     }
 }

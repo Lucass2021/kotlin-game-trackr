@@ -38,7 +38,7 @@ data class CreateCommunityUiState(
             when {
                 handle.isEmpty() -> UiText.Resource(R.string.validation_community_name_required)
                 handle.length < NAME_MIN -> UiText.Resource(R.string.validation_community_name_too_short)
-                handle.length > NAME_LIMIT -> UiText.Resource(R.string.validation_community_name_too_long, listOf(NAME_LIMIT))
+                handle.length > NAME_LIMIT -> UiText.Plural(R.plurals.validation_community_name_too_long, NAME_LIMIT)
                 else -> null
             }
 
@@ -53,7 +53,7 @@ data class CreateCommunityUiState(
                 }
 
                 description.length > DESCRIPTION_LIMIT -> {
-                    UiText.Resource(R.string.validation_community_description_too_long, listOf(DESCRIPTION_LIMIT))
+                    UiText.Plural(R.plurals.validation_community_description_too_long, DESCRIPTION_LIMIT)
                 }
 
                 else -> {

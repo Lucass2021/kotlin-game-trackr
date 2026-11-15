@@ -58,7 +58,7 @@ private fun FormFieldPreview() {
     AppPreview {
         FormField(
             label = "Bio",
-            error = UiText.Resource(R.string.validation_bio_too_long, listOf(1000)),
+            error = UiText.Plural(R.plurals.validation_bio_too_long, 1000),
             counter = -12,
         ) {
             Text(text = "Field content", color = AppTextSecondary)

@@ -6,7 +6,7 @@ import com.lucasdias.gametrackr.core.ui.text.UiText
 object AuthValidation {
     const val PASSWORD_MIN_LENGTH = 6
 
-    val passwordTooShort: UiText = UiText.Resource(R.string.validation_password_too_short, listOf(PASSWORD_MIN_LENGTH))
+    val passwordTooShort: UiText = UiText.Plural(R.plurals.validation_password_too_short, PASSWORD_MIN_LENGTH)
 
     fun emailError(email: String): UiText? {
         val trimmed = email.trim()

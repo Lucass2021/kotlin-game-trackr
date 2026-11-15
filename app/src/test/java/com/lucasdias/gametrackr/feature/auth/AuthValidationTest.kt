@@ -17,7 +17,7 @@ class AuthValidationTest {
     @Test
     fun `password needs the minimum length`() {
         assertEquals(UiText.Resource(R.string.validation_password_required), AuthValidation.passwordError(""))
-        assertEquals(UiText.Resource(R.string.validation_password_too_short, listOf(6)), AuthValidation.passwordError("12345"))
+        assertEquals(UiText.Plural(R.plurals.validation_password_too_short, 6), AuthValidation.passwordError("12345"))
         assertNull(AuthValidation.passwordError("123456"))
     }
 

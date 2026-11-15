@@ -8,7 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -37,7 +37,7 @@ fun InteractiveStarRating(
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
         (1..MAX_RATING).forEach { index ->
             val filled = index <= rating
-            val description = stringResource(R.string.add_library_rate_stars, index, MAX_RATING)
+            val description = pluralStringResource(R.plurals.add_library_rate_stars, MAX_RATING, index, MAX_RATING)
             Text(
                 text = if (filled) FILLED_STAR else EMPTY_STAR,
                 style = TextStyle(fontSize = STAR_SIZE),
