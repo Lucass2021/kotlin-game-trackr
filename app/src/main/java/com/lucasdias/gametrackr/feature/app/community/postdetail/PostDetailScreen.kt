@@ -22,7 +22,7 @@ import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.components.Toast
 import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.feature.app.community.components.ConfirmDialog
 import com.lucasdias.gametrackr.feature.app.community.postdetail.components.PostDetailContent
 import com.lucasdias.gametrackr.feature.app.community.postdetail.components.PostDetailTopBar
@@ -167,7 +167,7 @@ private fun PostDetailScreen(
 @Composable
 private fun PostDetailScreenPreview() {
     AppPreview {
-        PostDetailScreen(state = PostDetailUiState(post = CommunityMockData.detailPost), isGuest = false, isOwnPost = true)
+        PostDetailScreen(state = PostDetailUiState(post = CommunityPostMockData.detailPost), isGuest = false, isOwnPost = true)
     }
 }
 
@@ -175,6 +175,6 @@ private fun PostDetailScreenPreview() {
 @Composable
 private fun PostDetailScreenGuestPreview() {
     AppPreview {
-        PostDetailScreen(state = PostDetailUiState(post = CommunityMockData.detailPost), isGuest = true, isOwnPost = false)
+        PostDetailScreen(state = PostDetailUiState(post = CommunityPostMockData.detailPost), isGuest = true, isOwnPost = false)
     }
 }

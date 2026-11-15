@@ -33,7 +33,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 
 private val ICON_SIZE = 22.dp
 private val VALUE_SIZE = 15.sp
@@ -133,8 +133,8 @@ private fun EngagementAction(
 private fun PostDetailEngagementBarPreview() {
     AppPreview {
         PostDetailEngagementBar(
-            post = CommunityMockData.detailPost,
-            commentCount = CommunityMockData.detailPost.comments,
+            post = CommunityPostMockData.detailPost,
+            commentCount = CommunityPostMockData.detailPost.comments,
             isGuest = false,
             onLike = {},
             onComment = {},
@@ -149,8 +149,8 @@ private fun PostDetailEngagementBarPreview() {
 private fun PostDetailEngagementBarGuestPreview() {
     AppPreview {
         PostDetailEngagementBar(
-            post = CommunityMockData.detailPost,
-            commentCount = CommunityMockData.detailPost.comments,
+            post = CommunityPostMockData.detailPost,
+            commentCount = CommunityPostMockData.detailPost.comments,
             isGuest = true,
             onLike = {},
             onComment = {},

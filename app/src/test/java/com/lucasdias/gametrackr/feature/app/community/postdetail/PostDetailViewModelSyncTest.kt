@@ -3,6 +3,7 @@ package com.lucasdias.gametrackr.feature.app.community.postdetail
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.data.community.CommunityUpdates
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
@@ -22,7 +23,7 @@ class PostDetailViewModelSyncTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val post = CommunityMockData.communityPosts.first()
+    private val post = CommunityPostMockData.communityPosts.first()
     private val repository = FakeCommunityRepository()
     private val feedRepository = FakeCommunityFeedRepository(repository)
     private val postUpdates = PostUpdates()

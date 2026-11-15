@@ -2,6 +2,7 @@ package com.lucasdias.gametrackr.feature.app.community.communitydetail
 
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.data.community.CommunityUpdates
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
@@ -21,7 +22,7 @@ class CommunityDetailViewModelTest {
 
     private val community = CommunityMockData.detailCommunity
     private val manyPosts =
-        List(CommunityDetailUiState.PAGE_SIZE + 5) { CommunityMockData.communityPosts.first().copy(id = 1_000L + it) }
+        List(CommunityDetailUiState.PAGE_SIZE + 5) { CommunityPostMockData.communityPosts.first().copy(id = 1_000L + it) }
 
     @Test
     fun `load shows the posts and the members`() =
@@ -41,7 +42,7 @@ class CommunityDetailViewModelTest {
             advanceUntilIdle()
 
             val state = viewModel.uiState.value
-            assertEquals(CommunityMockData.communityPosts.map { it.id }, state.posts.map { it.id })
+            assertEquals(CommunityPostMockData.communityPosts.map { it.id }, state.posts.map { it.id })
             assertEquals(CommunityMockData.members, state.members)
             assertFalse(state.isLoading)
         }

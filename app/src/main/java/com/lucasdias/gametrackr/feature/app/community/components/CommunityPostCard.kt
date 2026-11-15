@@ -42,7 +42,7 @@ import com.lucasdias.gametrackr.core.ui.theme.avatarEnd
 import com.lucasdias.gametrackr.core.ui.theme.avatarStart
 import com.lucasdias.gametrackr.core.ui.theme.mediaEnd
 import com.lucasdias.gametrackr.core.ui.theme.mediaStart
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 
 private val BORDER_WIDTH = 1.dp
 private val AVATAR_SIZE = 40.dp
@@ -176,8 +176,8 @@ private fun CommunityPostCardPreview() {
             modifier = Modifier.padding(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
-            CommunityPostCard(post = CommunityMockData.feed.first())
-            CommunityPostCard(post = CommunityMockData.feed.last().copy(isBookmarked = true), isGuest = true)
+            CommunityPostCard(post = CommunityPostMockData.feed.first())
+            CommunityPostCard(post = CommunityPostMockData.feed.last().copy(isBookmarked = true), isGuest = true)
         }
     }
 }

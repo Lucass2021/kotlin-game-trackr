@@ -28,6 +28,7 @@ import com.lucasdias.gametrackr.core.ui.components.rememberRemainingHeight
 import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.feature.app.community.CommunityFeedActions
 import com.lucasdias.gametrackr.feature.app.community.CommunityFeedUiState
 
@@ -133,7 +134,7 @@ private fun CommunityFeedContentPreview() {
         CommunityFeedContent(
             state =
                 CommunityFeedUiState(
-                    posts = CommunityMockData.feed,
+                    posts = CommunityPostMockData.feed,
                     currentPage = 1,
                     suggestedCommunity = CommunityMockData.suggested,
                     loadMoreFailed = true,

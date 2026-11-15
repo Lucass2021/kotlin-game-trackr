@@ -16,9 +16,9 @@ import kotlinx.coroutines.delay
 
 class FakeCommunityRepository(
     communities: List<Community> = CommunityMockData.all,
-    posts: List<CommunityPost> = CommunityMockData.communityPosts,
+    posts: List<CommunityPost> = CommunityPostMockData.communityPosts,
     private val members: List<CommunityMember> = CommunityMockData.members,
-    comments: List<PostComment> = CommunityMockData.comments,
+    comments: List<PostComment> = CommunityPostMockData.comments,
     var failure: Throwable? = null,
 ) : CommunityRepository {
     private val communities = communities.toMutableList()
@@ -190,7 +190,7 @@ class FakeCommunityRepository(
 
     private fun newComment(content: String): PostComment {
         val nextId = (comments.flatMap { listOf(it) + it.replies }.maxOfOrNull { it.id } ?: 0) + 1
-        return CommunityMockData.comments.first().copy(
+        return CommunityPostMockData.comments.first().copy(
             id = nextId,
             author = "@you",
             timeAgo = "now",

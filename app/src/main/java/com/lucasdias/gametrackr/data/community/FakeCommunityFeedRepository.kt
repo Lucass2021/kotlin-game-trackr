@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 
 class FakeCommunityFeedRepository(
     private val remote: CommunityRepository,
-    private val followingPosts: List<CommunityPost> = CommunityMockData.feed,
+    private val followingPosts: List<CommunityPost> = CommunityPostMockData.feed,
     var failure: Throwable? = null,
 ) : CommunityFeedRepository {
     private val bookmarkedIds = mutableSetOf<Long>()

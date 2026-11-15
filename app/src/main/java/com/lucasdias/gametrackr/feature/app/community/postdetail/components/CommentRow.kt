@@ -30,7 +30,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.core.ui.theme.avatarEnd
 import com.lucasdias.gametrackr.core.ui.theme.avatarStart
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
 
 private val AVATAR_SIZE = 36.dp
@@ -113,9 +113,9 @@ private fun MetaText(
 private fun CommentRowPreview() {
     AppPreview {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-            CommentRow(comment = CommunityMockData.comments[0], onLike = {})
-            CommentRow(comment = CommunityMockData.comments[0].replies[0], onLike = {}, isReply = true)
-            CommentRow(comment = CommunityMockData.comments[1], onLike = {}, isGuest = true)
+            CommentRow(comment = CommunityPostMockData.comments[0], onLike = {})
+            CommentRow(comment = CommunityPostMockData.comments[0].replies[0], onLike = {}, isReply = true)
+            CommentRow(comment = CommunityPostMockData.comments[1], onLike = {}, isGuest = true)
         }
     }
 }

@@ -2,7 +2,7 @@ package com.lucasdias.gametrackr.feature.app.community
 
 import com.lucasdias.gametrackr.core.model.CommunityFeedFilter
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.data.community.CommunityUpdates
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
@@ -25,7 +25,7 @@ class CommunityFeedViewModelSyncTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val manyPosts =
-        List(CommunityFeedUiState.PAGE_SIZE + 5) { CommunityMockData.communityPosts.first().copy(id = 1_000L + it) }
+        List(CommunityFeedUiState.PAGE_SIZE + 5) { CommunityPostMockData.communityPosts.first().copy(id = 1_000L + it) }
     private val repository = FakeCommunityRepository()
     private val communityUpdates = CommunityUpdates()
     private val feed by lazy {
@@ -116,7 +116,7 @@ class CommunityFeedViewModelSyncTest {
             advanceUntilIdle()
 
             assertEquals(
-                CommunityMockData.feed.map { it.id },
+                CommunityPostMockData.feed.map { it.id },
                 feed.uiState.value.posts
                     .map { it.id },
             )

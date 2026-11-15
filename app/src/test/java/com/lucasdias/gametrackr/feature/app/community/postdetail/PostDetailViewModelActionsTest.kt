@@ -3,7 +3,7 @@ package com.lucasdias.gametrackr.feature.app.community.postdetail
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.findComment
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
 import com.lucasdias.gametrackr.data.community.PostUpdates
@@ -12,9 +12,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -22,8 +20,8 @@ class PostDetailViewModelActionsTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val post = CommunityMockData.communityPosts.first()
-    private val thread = CommunityMockData.comments.first()
+    private val post = CommunityPostMockData.communityPosts.first()
+    private val thread = CommunityPostMockData.comments.first()
     private val reply = thread.replies.first()
     private val repository = FakeCommunityRepository()
     private val viewModel = PostDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), post)
@@ -155,7 +153,7 @@ class PostDetailViewModelActionsTest {
             val state = viewModel.uiState.value
             assertEquals("Keep me", state.draft)
             assertEquals(thread, state.replyingTo)
-            assertEquals(CommunityMockData.comments, state.comments)
+            assertEquals(CommunityPostMockData.comments, state.comments)
             assertEquals(R.string.post_detail_comment_error, state.toastMessage)
         }
 

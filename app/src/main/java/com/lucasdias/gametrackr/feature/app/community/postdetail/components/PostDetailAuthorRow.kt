@@ -26,7 +26,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.core.ui.theme.avatarEnd
 import com.lucasdias.gametrackr.core.ui.theme.avatarStart
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityAvatar
 
 private val AVATAR_SIZE = 44.dp
@@ -68,6 +68,6 @@ fun PostDetailAuthorRow(
 @Composable
 private fun PostDetailAuthorRowPreview() {
     AppPreview {
-        PostDetailAuthorRow(post = CommunityMockData.detailPost, onAuthorClick = {})
+        PostDetailAuthorRow(post = CommunityPostMockData.detailPost, onAuthorClick = {})
     }
 }

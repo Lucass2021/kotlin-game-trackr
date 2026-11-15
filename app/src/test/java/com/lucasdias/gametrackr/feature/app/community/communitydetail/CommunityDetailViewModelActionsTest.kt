@@ -4,6 +4,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.data.community.CommunityUpdates
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
@@ -24,7 +25,7 @@ class CommunityDetailViewModelActionsTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val community = CommunityMockData.detailCommunity
-    private val post = CommunityMockData.communityPosts.first()
+    private val post = CommunityPostMockData.communityPosts.first()
     private val repository = FakeCommunityRepository(communities = listOf(community))
     private val feedRepository = FakeCommunityFeedRepository(repository)
     private val postUpdates = PostUpdates()

@@ -17,7 +17,7 @@ import com.lucasdias.gametrackr.core.ui.components.AppPreview
 import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 
 private val TITLE_SIZE = 28.sp
 private val BODY_SIZE = 16.sp
@@ -78,8 +78,8 @@ fun PostDetailContent(
 private fun PostDetailContentPreview() {
     AppPreview {
         PostDetailContent(
-            post = CommunityMockData.detailPost,
-            commentCount = CommunityMockData.detailPost.comments,
+            post = CommunityPostMockData.detailPost,
+            commentCount = CommunityPostMockData.detailPost.comments,
             isGuest = false,
             onAuthorClick = {},
             onCommunityClick = {},
@@ -97,8 +97,8 @@ private fun PostDetailContentPreview() {
 private fun PostDetailContentGuestPreview() {
     AppPreview {
         PostDetailContent(
-            post = CommunityMockData.detailPost,
-            commentCount = CommunityMockData.detailPost.comments,
+            post = CommunityPostMockData.detailPost,
+            commentCount = CommunityPostMockData.detailPost.comments,
             isGuest = true,
             onAuthorClick = {},
             onCommunityClick = {},

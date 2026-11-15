@@ -4,6 +4,7 @@ import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.CommunityFeedFilter
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.data.community.CommunityUpdates
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
@@ -21,7 +22,7 @@ class CommunityFeedViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val posts = CommunityMockData.communityPosts
+    private val posts = CommunityPostMockData.communityPosts
     private val manyPosts = List(CommunityFeedUiState.PAGE_SIZE + 5) { posts.first().copy(id = 1_000L + it) }
 
     private fun viewModel(repository: FakeCommunityRepository = FakeCommunityRepository()): CommunityFeedViewModel =
@@ -150,7 +151,7 @@ class CommunityFeedViewModelTest {
 
             assertEquals(CommunityFeedFilter.FOLLOWING, viewModel.uiState.value.filter)
             assertEquals(
-                CommunityMockData.feed.map { it.id },
+                CommunityPostMockData.feed.map { it.id },
                 viewModel.uiState.value.posts
                     .map { it.id },
             )

@@ -28,7 +28,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 
 private val ACTION_ICON_SIZE = 20.dp
 private val ACTION_VALUE_SIZE = 14.sp
@@ -127,7 +127,7 @@ private fun ActionButton(
 private fun CommunityPostActionsPreview() {
     AppPreview {
         CommunityPostActions(
-            post = CommunityMockData.feed.first(),
+            post = CommunityPostMockData.feed.first(),
             isGuest = false,
             onLike = {},
             onComment = {},

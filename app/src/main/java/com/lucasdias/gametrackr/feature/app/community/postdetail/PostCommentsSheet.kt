@@ -26,7 +26,7 @@ import com.lucasdias.gametrackr.core.ui.icon.AppIcon
 import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.feature.app.community.postdetail.components.CommentComposer
 import com.lucasdias.gametrackr.feature.app.community.postdetail.components.CommentRow
 import com.lucasdias.gametrackr.feature.app.community.postdetail.components.CommentsHeader
@@ -144,7 +144,7 @@ private fun CommentsBody(
 private fun CommentsBodyPreview() {
     AppPreview {
         CommentsBody(
-            state = PostDetailUiState(post = CommunityMockData.detailPost, comments = CommunityMockData.comments, hasLoadedComments = true),
+            state = PostDetailUiState(post = CommunityPostMockData.detailPost, comments = CommunityPostMockData.comments, hasLoadedComments = true),
             isGuest = false,
             onRetry = {},
             onCommentLike = {},
@@ -158,7 +158,7 @@ private fun CommentsBodyPreview() {
 private fun CommentsBodyErrorPreview() {
     AppPreview {
         CommentsBody(
-            state = PostDetailUiState(post = CommunityMockData.detailPost, commentsFailed = true),
+            state = PostDetailUiState(post = CommunityPostMockData.detailPost, commentsFailed = true),
             isGuest = false,
             onRetry = {},
             onCommentLike = {},

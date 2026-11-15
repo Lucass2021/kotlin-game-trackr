@@ -23,7 +23,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextPrimary
 import com.lucasdias.gametrackr.core.ui.theme.Radius
 import com.lucasdias.gametrackr.core.ui.theme.mediaEnd
 import com.lucasdias.gametrackr.core.ui.theme.mediaStart
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 
 private const val ASPECT_RATIO = 16f / 9f
 private val ICON_SIZE = 44.dp
@@ -59,6 +59,6 @@ fun PostDetailMedia(
 @Composable
 private fun PostDetailMediaPreview() {
     AppPreview {
-        PostDetailMedia(post = CommunityMockData.detailPost)
+        PostDetailMedia(post = CommunityPostMockData.detailPost)
     }
 }

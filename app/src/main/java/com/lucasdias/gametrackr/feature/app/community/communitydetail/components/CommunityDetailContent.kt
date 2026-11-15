@@ -26,6 +26,7 @@ import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
 import com.lucasdias.gametrackr.core.ui.theme.AppType
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.feature.app.community.CommunityDetailTab
 import com.lucasdias.gametrackr.feature.app.community.communitydetail.CommunityDetailUiState
 
@@ -134,7 +135,7 @@ private fun CommunityDetailContentPreview() {
     AppPreview {
         CommunityDetailContent(
             community = CommunityMockData.detailCommunity,
-            state = CommunityDetailUiState(posts = CommunityMockData.communityPosts, currentPage = 1),
+            state = CommunityDetailUiState(posts = CommunityPostMockData.communityPosts, currentPage = 1),
             isGuest = false,
             isOwner = false,
             onShare = {},

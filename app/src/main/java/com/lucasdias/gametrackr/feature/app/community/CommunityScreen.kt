@@ -26,6 +26,7 @@ import com.lucasdias.gametrackr.core.ui.shareText
 import com.lucasdias.gametrackr.core.ui.theme.AppBackground
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
 import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityDiscoverSegment
 import com.lucasdias.gametrackr.feature.app.community.components.CommunityFeedContent
 import com.lucasdias.gametrackr.feature.app.community.components.CommunitySegmentControl
@@ -163,7 +164,7 @@ private fun CommunityScreenPreview() {
         CommunityScreen(
             feedState =
                 CommunityFeedUiState(
-                    posts = CommunityMockData.feed,
+                    posts = CommunityPostMockData.feed,
                     currentPage = 1,
                     suggestedCommunity = CommunityMockData.suggested,
                 ),

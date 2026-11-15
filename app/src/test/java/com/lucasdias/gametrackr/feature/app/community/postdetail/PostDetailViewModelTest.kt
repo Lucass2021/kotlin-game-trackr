@@ -3,7 +3,7 @@ package com.lucasdias.gametrackr.feature.app.community.postdetail
 import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.totalCount
 import com.lucasdias.gametrackr.core.testing.MainDispatcherRule
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import com.lucasdias.gametrackr.data.community.FakeCommunityFeedRepository
 import com.lucasdias.gametrackr.data.community.FakeCommunityRepository
 import com.lucasdias.gametrackr.data.community.PostUpdates
@@ -21,7 +21,7 @@ class PostDetailViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val post = CommunityMockData.communityPosts.first()
+    private val post = CommunityPostMockData.communityPosts.first()
     private val repository = FakeCommunityRepository()
     private val viewModel = PostDetailViewModel(repository, FakeCommunityFeedRepository(repository), PostUpdates(), post)
 
@@ -32,9 +32,9 @@ class PostDetailViewModelTest {
             advanceUntilIdle()
 
             val state = viewModel.uiState.value
-            assertEquals(CommunityMockData.comments, state.comments)
+            assertEquals(CommunityPostMockData.comments, state.comments)
             assertTrue(state.hasLoadedComments)
-            assertEquals(CommunityMockData.comments.totalCount(), state.commentCount)
+            assertEquals(CommunityPostMockData.comments.totalCount(), state.commentCount)
         }
 
     @Test
@@ -45,7 +45,7 @@ class PostDetailViewModelTest {
             viewModel.loadIfNeeded()
             advanceUntilIdle()
 
-            assertEquals(CommunityMockData.comments.totalCount(), viewModel.uiState.value.commentCount)
+            assertEquals(CommunityPostMockData.comments.totalCount(), viewModel.uiState.value.commentCount)
         }
 
     @Test
@@ -75,7 +75,7 @@ class PostDetailViewModelTest {
 
             val state = viewModel.uiState.value
             assertFalse(state.commentsFailed)
-            assertEquals(CommunityMockData.comments, state.comments)
+            assertEquals(CommunityPostMockData.comments, state.comments)
         }
 
     @Test
@@ -118,7 +118,7 @@ class PostDetailViewModelTest {
 
             val state = viewModel.uiState.value
             assertEquals("Great post", state.comments.last().content)
-            assertEquals(CommunityMockData.comments.size + 1, state.comments.size)
+            assertEquals(CommunityPostMockData.comments.size + 1, state.comments.size)
         }
 
     @Test

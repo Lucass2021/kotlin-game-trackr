@@ -1,12 +1,12 @@
 package com.lucasdias.gametrackr.core.model
 
-import com.lucasdias.gametrackr.data.community.CommunityMockData
+import com.lucasdias.gametrackr.data.community.CommunityPostMockData
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
 class PostCommentThreadsTest {
-    private val comments = CommunityMockData.comments
+    private val comments = CommunityPostMockData.comments
     private val thread = comments.first()
     private val reply = thread.replies.first()
 
