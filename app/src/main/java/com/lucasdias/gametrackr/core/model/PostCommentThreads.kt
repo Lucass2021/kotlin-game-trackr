@@ -1,5 +1,7 @@
 package com.lucasdias.gametrackr.core.model
 
+fun List<PostComment>.totalCount(): Int = sumOf { 1 + it.replies.size }
+
 fun List<PostComment>.findComment(id: Long): PostComment? = flatMap { listOf(it) + it.replies }.firstOrNull { it.id == id }
 
 fun List<PostComment>.replacingComment(

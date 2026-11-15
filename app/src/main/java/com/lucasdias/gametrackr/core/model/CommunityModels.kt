@@ -56,8 +56,6 @@ data class PostComment(
     val replies: List<PostComment> = emptyList(),
 )
 
-fun List<PostComment>.totalCount(): Int = sumOf { 1 + it.replies.size }
-
 data class LikeStatus(
     val isLiked: Boolean,
     val likes: Int,

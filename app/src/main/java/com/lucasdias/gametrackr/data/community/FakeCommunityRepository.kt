@@ -5,9 +5,6 @@ import com.lucasdias.gametrackr.core.model.CommunityMember
 import com.lucasdias.gametrackr.core.model.CommunityPost
 import com.lucasdias.gametrackr.core.model.LikeStatus
 import com.lucasdias.gametrackr.core.model.PostComment
-import com.lucasdias.gametrackr.core.model.addingReply
-import com.lucasdias.gametrackr.core.model.findComment
-import com.lucasdias.gametrackr.core.model.replacingComment
 import com.lucasdias.gametrackr.core.network.ApiError
 import com.lucasdias.gametrackr.core.pagination.Page
 import com.lucasdias.gametrackr.core.pagination.fakePage
@@ -23,7 +20,7 @@ class FakeCommunityRepository(
 ) : CommunityRepository {
     private val communities = communities.toMutableList()
     private val posts = posts.toMutableList()
-    private val comments = comments.toMutableList()
+    private val commentStore = FakeCommentStore(comments)
     private val joinedIds = communities.filter { it.isJoined }.map { it.id }.toMutableSet()
 
     var createCommunityCount = 0
@@ -109,7 +106,7 @@ class FakeCommunityRepository(
 
     override suspend fun fetchPostComments(postId: Long): Result<List<PostComment>> {
         fetchCommentsCount++
-        return respond { comments.toList() }
+        return respond { commentStore.all }
     }
 
     override suspend fun createPost(
@@ -153,7 +150,7 @@ class FakeCommunityRepository(
         comment: String,
     ): Result<PostComment> {
         sendCommentCount++
-        return respond { newComment(comment).also { comments.add(it) } }
+        return respond { commentStore.add(comment) }
     }
 
     override suspend fun replyToComment(
@@ -162,10 +159,7 @@ class FakeCommunityRepository(
         comment: String,
     ): Result<PostComment> {
         sendCommentCount++
-        return respond {
-            if (comment(commentId) == null) throw ApiError.NotFound
-            newComment(comment).also { replaceComments(comments.addingReply(commentId, it)) }
-        }
+        return respond { commentStore.reply(commentId, comment) ?: throw ApiError.NotFound }
     }
 
     override suspend fun toggleCommentLike(
@@ -173,38 +167,14 @@ class FakeCommunityRepository(
         commentId: Long,
     ): Result<LikeStatus> {
         commentLikeCount++
-        return respond {
-            val current = comment(commentId) ?: throw ApiError.NotFound
-            val liked = !current.isLiked
-            val status = LikeStatus(isLiked = liked, likes = current.likes + if (liked) 1 else -1)
-            replaceComments(comments.replacingComment(commentId) { it.copy(isLiked = status.isLiked, likes = status.likes) })
-            status
-        }
+        return respond { commentStore.toggleLike(commentId) ?: throw ApiError.NotFound }
     }
 
     fun isJoined(communityId: Long): Boolean = communityId in joinedIds
 
     fun post(id: Long): CommunityPost? = posts.firstOrNull { it.id == id }
 
-    fun comment(id: Long): PostComment? = comments.findComment(id)
-
-    private fun newComment(content: String): PostComment {
-        val nextId = (comments.flatMap { listOf(it) + it.replies }.maxOfOrNull { it.id } ?: 0) + 1
-        return CommunityPostMockData.comments.first().copy(
-            id = nextId,
-            author = "@you",
-            timeAgo = "now",
-            content = content,
-            likes = 0,
-            isLiked = false,
-            replies = emptyList(),
-        )
-    }
-
-    private fun replaceComments(updated: List<PostComment>) {
-        comments.clear()
-        comments.addAll(updated)
-    }
+    fun comment(id: Long): PostComment? = commentStore.find(id)
 
     private suspend fun <T> respond(block: () -> T): Result<T> {
         val error = failure
