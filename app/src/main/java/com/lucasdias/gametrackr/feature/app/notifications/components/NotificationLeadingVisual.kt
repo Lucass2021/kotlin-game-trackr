@@ -27,6 +27,10 @@ import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
 import com.lucasdias.gametrackr.core.ui.theme.AppSurfaceCard
 import com.lucasdias.gametrackr.core.ui.theme.Radius
 import com.lucasdias.gametrackr.core.ui.theme.Spacing
+import com.lucasdias.gametrackr.core.ui.theme.end
+import com.lucasdias.gametrackr.core.ui.theme.icon
+import com.lucasdias.gametrackr.core.ui.theme.start
+import com.lucasdias.gametrackr.core.ui.theme.tint
 import com.lucasdias.gametrackr.data.notifications.NotificationsMockData
 
 private val VISUAL_SIZE = 48.dp
@@ -50,7 +54,7 @@ fun NotificationLeadingVisual(
                         Modifier
                             .size(VISUAL_SIZE)
                             .clip(CircleShape)
-                            .background(Brush.linearGradient(listOf(leading.start, leading.end)))
+                            .background(Brush.linearGradient(listOf(leading.cover.start, leading.cover.end)))
                             .border(BORDER_WIDTH, AppOutline, CircleShape),
                 )
                 AvatarBadgeView(leading.badge)
@@ -68,9 +72,9 @@ fun NotificationLeadingVisual(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = leading.icon.image(),
+                    imageVector = leading.kind.icon.image(),
                     contentDescription = null,
-                    tint = leading.tint,
+                    tint = leading.kind.tint,
                     modifier = Modifier.size(ICON_SIZE),
                 )
             }
@@ -82,7 +86,7 @@ fun NotificationLeadingVisual(
                     modifier
                         .size(VISUAL_SIZE)
                         .clip(boxShape)
-                        .background(Brush.linearGradient(listOf(leading.start, leading.end)))
+                        .background(Brush.linearGradient(listOf(leading.cover.start, leading.cover.end)))
                         .border(BORDER_WIDTH, AppOutline, boxShape),
             )
         }

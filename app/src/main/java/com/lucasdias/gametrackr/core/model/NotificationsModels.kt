@@ -1,21 +1,7 @@
 package com.lucasdias.gametrackr.core.model
 
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.Color
 import com.lucasdias.gametrackr.R
-import com.lucasdias.gametrackr.core.ui.icon.AppIcon
-import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 
 enum class NotificationSection(
     @StringRes val title: Int,
@@ -36,21 +22,20 @@ enum class AvatarBadge { ONLINE, ACCEPTED }
 
 sealed interface NotificationLeading {
     data class Avatar(
-        val start: Color,
-        val end: Color,
+        val cover: CoverPalette,
         val badge: AvatarBadge? = null,
     ) : NotificationLeading
 
     data class IconBox(
-        val icon: AppIcon,
-        val tint: Color,
+        val kind: NotificationIconKind,
     ) : NotificationLeading
 
     data class Thumbnail(
-        val start: Color,
-        val end: Color,
+        val cover: CoverPalette,
     ) : NotificationLeading
 }
+
+enum class NotificationIconKind { LIKE, ACHIEVEMENT, MESSAGE }
 
 data class NotificationItem(
     val id: Int,

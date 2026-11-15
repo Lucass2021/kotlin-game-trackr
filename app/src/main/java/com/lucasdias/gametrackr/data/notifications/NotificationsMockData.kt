@@ -1,27 +1,13 @@
 package com.lucasdias.gametrackr.data.notifications
 
-import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.Color
-import com.lucasdias.gametrackr.R
 import com.lucasdias.gametrackr.core.model.AvatarBadge
+import com.lucasdias.gametrackr.core.model.CoverPalette
+import com.lucasdias.gametrackr.core.model.NotificationIconKind
 import com.lucasdias.gametrackr.core.model.NotificationItem
 import com.lucasdias.gametrackr.core.model.NotificationLeading
 import com.lucasdias.gametrackr.core.model.NotificationSection
 import com.lucasdias.gametrackr.core.model.NotificationSpan
 import com.lucasdias.gametrackr.core.model.NotificationSpanStyle
-import com.lucasdias.gametrackr.core.ui.icon.AppIcon
-import com.lucasdias.gametrackr.core.ui.theme.AppPrimary
-import com.lucasdias.gametrackr.core.ui.theme.AppTextSecondary
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverAzureStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverCrimsonStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverEmeraldStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverIndigoStart
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletEnd
-import com.lucasdias.gametrackr.core.ui.theme.CoverVioletStart
 
 object NotificationsMockData {
     val items =
@@ -29,7 +15,7 @@ object NotificationsMockData {
             NotificationItem(
                 id = 1,
                 section = NotificationSection.NEW,
-                leading = NotificationLeading.Avatar(CoverEmeraldStart, CoverEmeraldEnd, AvatarBadge.ONLINE),
+                leading = NotificationLeading.Avatar(CoverPalette.EMERALD, AvatarBadge.ONLINE),
                 spans =
                     listOf(
                         NotificationSpan("@NeonShadow_X", NotificationSpanStyle.ACTOR),
@@ -42,7 +28,7 @@ object NotificationsMockData {
             NotificationItem(
                 id = 2,
                 section = NotificationSection.NEW,
-                leading = NotificationLeading.Avatar(CoverAzureStart, CoverAzureEnd, AvatarBadge.ONLINE),
+                leading = NotificationLeading.Avatar(CoverPalette.AZURE, AvatarBadge.ONLINE),
                 spans =
                     listOf(
                         NotificationSpan("@QuestMaster", NotificationSpanStyle.ACTOR),
@@ -56,7 +42,7 @@ object NotificationsMockData {
             NotificationItem(
                 id = 3,
                 section = NotificationSection.NEW,
-                leading = NotificationLeading.IconBox(AppIcon.LIKE, AppPrimary),
+                leading = NotificationLeading.IconBox(NotificationIconKind.LIKE),
                 spans =
                     listOf(
                         NotificationSpan("@RetroGamer", NotificationSpanStyle.ACTOR),
@@ -70,7 +56,7 @@ object NotificationsMockData {
             NotificationItem(
                 id = 4,
                 section = NotificationSection.TODAY,
-                leading = NotificationLeading.Thumbnail(CoverIndigoStart, CoverIndigoEnd),
+                leading = NotificationLeading.Thumbnail(CoverPalette.INDIGO),
                 spans =
                     listOf(
                         NotificationSpan("New post in ", NotificationSpanStyle.TEXT),
@@ -82,7 +68,7 @@ object NotificationsMockData {
             NotificationItem(
                 id = 5,
                 section = NotificationSection.TODAY,
-                leading = NotificationLeading.Avatar(CoverVioletStart, CoverVioletEnd),
+                leading = NotificationLeading.Avatar(CoverPalette.VIOLET),
                 spans =
                     listOf(
                         NotificationSpan("@cyber_queen", NotificationSpanStyle.ACTOR),
@@ -94,7 +80,7 @@ object NotificationsMockData {
             NotificationItem(
                 id = 6,
                 section = NotificationSection.TODAY,
-                leading = NotificationLeading.IconBox(AppIcon.MEDAL, AppPrimary),
+                leading = NotificationLeading.IconBox(NotificationIconKind.ACHIEVEMENT),
                 spans =
                     listOf(
                         NotificationSpan("You unlocked the ", NotificationSpanStyle.TEXT),
@@ -106,7 +92,7 @@ object NotificationsMockData {
             NotificationItem(
                 id = 7,
                 section = NotificationSection.THIS_WEEK,
-                leading = NotificationLeading.Avatar(CoverCrimsonStart, CoverCrimsonEnd, AvatarBadge.ACCEPTED),
+                leading = NotificationLeading.Avatar(CoverPalette.CRIMSON, AvatarBadge.ACCEPTED),
                 spans =
                     listOf(
                         NotificationSpan("@PixelWarrior", NotificationSpanStyle.ACTOR),
@@ -117,7 +103,7 @@ object NotificationsMockData {
             NotificationItem(
                 id = 8,
                 section = NotificationSection.THIS_WEEK,
-                leading = NotificationLeading.IconBox(AppIcon.ENVELOPE, AppTextSecondary),
+                leading = NotificationLeading.IconBox(NotificationIconKind.MESSAGE),
                 spans =
                     listOf(
                         NotificationSpan("@vortex_king", NotificationSpanStyle.ACTOR),
