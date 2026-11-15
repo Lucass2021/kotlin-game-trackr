@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,6 +51,7 @@ fun CommunityScreen(
 ) {
     val feedState by feedViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val resources = LocalResources.current
 
     LaunchedEffect(feedViewModel) { feedViewModel.loadIfNeeded() }
     val discoverState by discoverViewModel.uiState.collectAsStateWithLifecycle()
@@ -70,7 +72,7 @@ fun CommunityScreen(
                 onFilterChange = feedViewModel::onFilterChange,
                 onPostClick = onPostClick,
                 onLike = feedViewModel::onLike,
-                onShare = { post -> context.shareText(context.getString(R.string.post_detail_share_message, post.title)) },
+                onShare = { post -> context.shareText(resources.getString(R.string.post_detail_share_message, post.title)) },
                 onBookmark = feedViewModel::onBookmark,
                 onCommunityClick = onCommunityClick,
                 onJoinSuggested = feedViewModel::onJoinSuggested,
