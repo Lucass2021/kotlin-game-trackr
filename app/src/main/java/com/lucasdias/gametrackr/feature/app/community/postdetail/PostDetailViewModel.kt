@@ -111,25 +111,15 @@ class PostDetailViewModel(
         }
     }
 
-    fun onCommentsOpen() {
-        _uiState.update { it.copy(showComments = true) }
-    }
+    fun onCommentsOpen() = _uiState.update { it.copy(showComments = true) }
 
-    fun onCommentsDismiss() {
-        _uiState.update { it.copy(showComments = false) }
-    }
+    fun onCommentsDismiss() = _uiState.update { it.copy(showComments = false) }
 
-    fun onDraftChange(draft: String) {
-        _uiState.update { it.copy(draft = draft) }
-    }
+    fun onDraftChange(draft: String) = _uiState.update { it.copy(draft = draft) }
 
-    fun onReplyTap(comment: PostComment) {
-        _uiState.update { it.copy(replyingTo = comment) }
-    }
+    fun onReplyTap(comment: PostComment) = _uiState.update { it.copy(replyingTo = comment) }
 
-    fun onReplyCancel() {
-        _uiState.update { it.copy(replyingTo = null) }
-    }
+    fun onReplyCancel() = _uiState.update { it.copy(replyingTo = null) }
 
     fun onSend() {
         val state = _uiState.value
@@ -170,13 +160,9 @@ class PostDetailViewModel(
         }
     }
 
-    fun onDeleteRequest() {
-        _uiState.update { it.copy(showDeleteConfirmation = true) }
-    }
+    fun onDeleteRequest() = _uiState.update { it.copy(showDeleteConfirmation = true) }
 
-    fun onDeleteDismissed() {
-        _uiState.update { it.copy(showDeleteConfirmation = false) }
-    }
+    fun onDeleteDismissed() = _uiState.update { it.copy(showDeleteConfirmation = false) }
 
     fun onDeleteConfirmed() {
         _uiState.update { it.copy(showDeleteConfirmation = false) }
@@ -190,9 +176,7 @@ class PostDetailViewModel(
         }
     }
 
-    fun onToastShown() {
-        _uiState.update { it.copy(toastMessage = null) }
-    }
+    fun onToastShown() = _uiState.update { it.copy(toastMessage = null) }
 
     private fun replaceComment(
         commentId: Long,

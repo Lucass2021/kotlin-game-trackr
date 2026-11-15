@@ -31,7 +31,6 @@ class CommunityDetailViewModel(
     val uiState: StateFlow<CommunityDetailUiState> = _uiState.asStateFlow()
 
     private var postsJob: Job? = null
-    private var membersJob: Job? = null
     private var isJoinPending = false
     private val postActions =
         PostListActions(
@@ -45,6 +44,13 @@ class CommunityDetailViewModel(
             showToast = { message -> _uiState.update { it.copy(toastMessage = message) } },
             communityId = community.id,
         )
+    private val membersLoader =
+        CommunityMembersLoader(
+            scope = viewModelScope,
+            repository = repository,
+            communityId = community.id,
+            updateState = { transform -> _uiState.update(transform) },
+        )
 
     fun loadIfNeeded() {
         val state = _uiState.value
@@ -54,13 +60,13 @@ class CommunityDetailViewModel(
 
     fun load() {
         loadPosts(page = 1, isRefresh = false)
-        loadMembers()
+        membersLoader.load()
     }
 
     fun refresh() {
         _uiState.update { it.copy(isRefreshing = true) }
         loadPosts(page = 1, isRefresh = true)
-        loadMembers()
+        membersLoader.load()
     }
 
     fun loadMore() {
@@ -69,7 +75,7 @@ class CommunityDetailViewModel(
         loadPosts(page = state.currentPage + 1, isRefresh = false)
     }
 
-    fun retryMembers() = loadMembers()
+    fun retryMembers() = membersLoader.load()
 
     fun onTabSelect(tab: CommunityDetailTab) {
         _uiState.update { it.copy(tab = tab) }
@@ -183,18 +189,6 @@ class CommunityDetailViewModel(
                             )
                         }
                     }
-            }
-    }
-
-    private fun loadMembers() {
-        membersJob?.cancel()
-        _uiState.update { it.copy(membersFailed = false) }
-        membersJob =
-            viewModelScope.launch {
-                repository
-                    .fetchCommunityMembers(community.id)
-                    .onSuccess { members -> _uiState.update { it.copy(members = members) } }
-                    .onFailure { _uiState.update { it.copy(membersFailed = true) } }
             }
     }
 }
