@@ -489,8 +489,7 @@
     <string name="edit_profile_field_visibility">Profile visibility</string>
     <string name="edit_profile_name_placeholder">How should we call you?</string>
     <string name="edit_profile_username_placeholder">lucasdias</string>
-    <string name="edit_profile_username_prefix">\@</string>
-    <string name="edit_profile_bio_placeholder">Tell other players what you\'re into...</string>
+    <string name="edit_profile_bio_placeholder">Tell other players what you\'re into…</string>
     <string name="edit_profile_discard_title">Discard your changes?</string>
     <string name="discard_confirm">Discard</string>
     <string name="discard_cancel">Keep editing</string>

@@ -96,7 +96,7 @@ private fun FormTextFieldPreview() {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
             FormTextField(value = "", onValueChange = {}, placeholder = "How should we call you?")
             FormTextField(value = "lucasdias", onValueChange = {}, placeholder = "", prefix = "@")
-            FormTextField(value = "", onValueChange = {}, placeholder = "Tell other players...", singleLine = false)
+            FormTextField(value = "", onValueChange = {}, placeholder = "Tell other players…", singleLine = false)
         }
     }
 }

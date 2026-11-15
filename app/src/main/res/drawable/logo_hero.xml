@@ -1,4 +1,6 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="VectorRaster,VectorPath"
     android:width="350dp"
     android:height="164dp"
     android:viewportWidth="350"
